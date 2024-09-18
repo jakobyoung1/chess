@@ -173,7 +173,6 @@ public class ChessPiece {
                                         moves.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.ROOK));
                                         moves.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.BISHOP));
                                         moves.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.KNIGHT));
-
                                     } else {
                                         moves.add(new ChessMove(myPosition, newPosition, null));
                                     }
@@ -181,7 +180,14 @@ public class ChessPiece {
                             } else {
                                 // if not at starting pos
                                 if (abs(myPosition.getRow()-newPosition.getRow()) == 1) {
-                                    moves.add(new ChessMove(myPosition, newPosition, null));
+                                    if (newPosition.getRow() == 1 || newPosition.getRow() == 8) {
+                                        moves.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.QUEEN));
+                                        moves.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.ROOK));
+                                        moves.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.BISHOP));
+                                        moves.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.KNIGHT));
+                                    } else {
+                                        moves.add(new ChessMove(myPosition, newPosition, null));
+                                    }
                                 }
                             }
                         }
@@ -189,7 +195,14 @@ public class ChessPiece {
                         // if there is a piece
                         //if the piece is not in front of me, attack!
                         if (piece.getTeamColor() != this.getTeamColor() && myPosition.getColumn() != newPosition.getColumn()) {
-                            moves.add(new ChessMove(myPosition, newPosition, null));
+                            if (newPosition.getRow() == 1 || newPosition.getRow() == 8) {
+                                moves.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.QUEEN));
+                                moves.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.ROOK));
+                                moves.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.BISHOP));
+                                moves.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.KNIGHT));
+                            } else {
+                                moves.add(new ChessMove(myPosition, newPosition, null));
+                            }
                         } // else dont move at all
                     }
                 }
