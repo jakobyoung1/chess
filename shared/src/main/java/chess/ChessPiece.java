@@ -154,7 +154,7 @@ public class ChessPiece {
                         // if there is not a piece
                         if (myPosition.getColumn() == newPosition.getColumn()) {
                             // if i am just moving forward
-                            if (myPosition.getRow() == 2) {
+                            if (myPosition.getRow() == 2 || myPosition.getRow() == 7) {
                                 // if at starting pos
                                 moves.add(new ChessMove(myPosition, newPosition, null));
                             } else {
