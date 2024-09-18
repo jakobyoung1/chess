@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
 
+import static chess.ChessGame.TeamColor.BLACK;
 import static chess.ChessGame.TeamColor.WHITE;
 import static chess.ChessPiece.PieceType.KING;
 import static java.lang.Math.abs;
@@ -150,13 +151,24 @@ public class ChessPiece {
                 if (board.inBounds(nRow, nCol)) {
                     ChessPosition newPosition = new ChessPosition(nRow, nCol);
                     ChessPiece piece = board.getPiece(newPosition);
+                    //checking for a piece directly in front of me - stop a jump on initial move
+                    ChessPosition piece2pos;
+                    if (this.getTeamColor()==BLACK) {
+                        piece2pos = new ChessPosition(myPosition.getRow()-1, myPosition.getColumn());
+                    } else {
+                        piece2pos = new ChessPosition(myPosition.getRow()+1, myPosition.getColumn());
+                    }
+                    ChessPiece piece2 = board.getPiece(piece2pos);
+
                     if (piece == null) {
                         // if there is not a piece
                         if (myPosition.getColumn() == newPosition.getColumn()) {
                             // if i am just moving forward
                             if (myPosition.getRow() == 2 || myPosition.getRow() == 7) {
                                 // if at starting pos
-                                moves.add(new ChessMove(myPosition, newPosition, null));
+                                if (piece2 == null) {
+                                    moves.add(new ChessMove(myPosition, newPosition, null));
+                                }
                             } else {
                                 // if not at starting pos
                                 if (abs(myPosition.getRow()-newPosition.getRow()) == 1) {
