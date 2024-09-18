@@ -151,6 +151,7 @@ public class ChessPiece {
                 if (board.inBounds(nRow, nCol)) {
                     ChessPosition newPosition = new ChessPosition(nRow, nCol);
                     ChessPiece piece = board.getPiece(newPosition);
+
                     //checking for a piece directly in front of me - stop a jump on initial move
                     ChessPosition piece2pos;
                     if (this.getTeamColor()==BLACK) {
@@ -167,7 +168,15 @@ public class ChessPiece {
                             if (myPosition.getRow() == 2 || myPosition.getRow() == 7) {
                                 // if at starting pos
                                 if (piece2 == null) {
-                                    moves.add(new ChessMove(myPosition, newPosition, null));
+                                    if (newPosition.getRow() == 1 || newPosition.getRow() == 8) {
+                                        moves.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.QUEEN));
+                                        moves.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.ROOK));
+                                        moves.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.BISHOP));
+                                        moves.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.KNIGHT));
+
+                                    } else {
+                                        moves.add(new ChessMove(myPosition, newPosition, null));
+                                    }
                                 }
                             } else {
                                 // if not at starting pos
