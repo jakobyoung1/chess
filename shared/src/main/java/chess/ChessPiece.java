@@ -2,6 +2,8 @@ package chess;
 
 import chess.Moves.ChessMove;
 import chess.Moves.KingMoves;
+import chess.Moves.KnightMoves;
+import chess.Moves.PawnMoves;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -66,148 +68,18 @@ public class ChessPiece {
 
         //KING MOVEMENT
         if (this.type == PieceType.KING) {
-            ArrayList<ChessMove> moves = new ArrayList<>();
-            // Corrected directions array matching the expected output order
-            int[][] directions = {
-                    {1, -1},
-                    {0, 1},
-                    {1, 0},
-                    {-1, 0},
-                    {1, 1},
-                    {0, -1},
-                    {-1, 1},
-                    {-1, -1}
-            };
-            for (int[] direction : directions) {
-                int nRow = myPosition.getRow() + direction[0];
-                int nCol = myPosition.getColumn() + direction[1];
-
-                if (board.inBounds(nRow, nCol)) {
-                    ChessPosition newPosition = new ChessPosition(nRow, nCol);
-                    ChessPiece piece = board.getPiece(newPosition);
-                    if (piece == null || piece.getTeamColor() != this.getTeamColor()) {
-                        moves.add(new ChessMove(myPosition, newPosition, null));
-                    }
-                }
-            }
-            return moves;
+            return KingMoves.getKingMoves(board, myPosition, this);
         }
 
 
         //KNIGHT MOVEMENT
         if (this.type == PieceType.KNIGHT) {
-            HashSet<ChessMove> moves = new HashSet<>();
-            // Corrected directions array matching the expected output order
-            int[][] directions = {
-                    {2, 1},
-                    {2, -1},
-                    {1, 2},
-                    {1, -2},
-                    {-1, 2},
-                    {-1, -2},
-                    {-2, 1},
-                    {-2, -1}
-            };
-            for (int[] direction : directions) {
-                int nRow = myPosition.getRow() + direction[0];
-                int nCol = myPosition.getColumn() + direction[1];
-
-                if (board.inBounds(nRow, nCol)) {
-                    ChessPosition newPosition = new ChessPosition(nRow, nCol);
-                    ChessPiece piece = board.getPiece(newPosition);
-                    if (piece == null || piece.getTeamColor() != this.getTeamColor()) {
-                        moves.add(new ChessMove(myPosition, newPosition, null));
-                    }
-                }
-            }
-            return moves;
+            return KnightMoves.getKnightMoves(board, myPosition, this);
         }
 
         //PAWN MOVEMENT
         if (this.type == PieceType.PAWN) {
-            HashSet<ChessMove> moves = new HashSet<>();
-            int [][] directions;
-            // Corrected directions array matching the expected output order
-            if (this.getTeamColor()==WHITE) {
-                directions = new int[][] {
-                        {1, 0},
-                        {2, 0},
-                        {1, 1},
-                        {1, -1}
-                };
-            } else {
-                directions = new int[][]{
-                        {-1, 0},
-                        {-2, 0},
-                        {-1, 1},
-                        {-1, -1}
-                };
-            }
-
-            for (int[] direction : directions) {
-                int nRow = myPosition.getRow() + direction[0];
-                int nCol = myPosition.getColumn() + direction[1];
-
-                if (board.inBounds(nRow, nCol)) {
-                    ChessPosition newPosition = new ChessPosition(nRow, nCol);
-                    ChessPiece piece = board.getPiece(newPosition);
-
-                    //checking for a piece directly in front of me - stop a jump on initial move
-                    ChessPosition piece2pos;
-                    if (this.getTeamColor()==BLACK) {
-                        piece2pos = new ChessPosition(myPosition.getRow()-1, myPosition.getColumn());
-                    } else {
-                        piece2pos = new ChessPosition(myPosition.getRow()+1, myPosition.getColumn());
-                    }
-                    ChessPiece piece2 = board.getPiece(piece2pos);
-
-                    if (piece == null) {
-                        // if there is not a piece
-                        if (myPosition.getColumn() == newPosition.getColumn()) {
-                            // if i am just moving forward
-                            if (myPosition.getRow() == 2 || myPosition.getRow() == 7) {
-                                // if at starting pos
-                                if (piece2 == null) {
-                                    if (newPosition.getRow() == 1 || newPosition.getRow() == 8) {
-                                        moves.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.QUEEN));
-                                        moves.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.ROOK));
-                                        moves.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.BISHOP));
-                                        moves.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.KNIGHT));
-                                    } else {
-                                        moves.add(new ChessMove(myPosition, newPosition, null));
-                                    }
-                                }
-                            } else {
-                                // if not at starting pos
-                                if (abs(myPosition.getRow()-newPosition.getRow()) == 1) {
-                                    if (newPosition.getRow() == 1 || newPosition.getRow() == 8) {
-                                        moves.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.QUEEN));
-                                        moves.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.ROOK));
-                                        moves.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.BISHOP));
-                                        moves.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.KNIGHT));
-                                    } else {
-                                        moves.add(new ChessMove(myPosition, newPosition, null));
-                                    }
-                                }
-                            }
-                        }
-                    } else {
-                        // if there is a piece
-                        //if the piece is not in front of me, attack!
-                        if (piece.getTeamColor() != this.getTeamColor() && myPosition.getColumn() != newPosition.getColumn()) {
-                            if (newPosition.getRow() == 1 || newPosition.getRow() == 8) {
-                                moves.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.QUEEN));
-                                moves.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.ROOK));
-                                moves.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.BISHOP));
-                                moves.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.KNIGHT));
-                            } else {
-                                moves.add(new ChessMove(myPosition, newPosition, null));
-                            }
-                        } // else dont move at all
-                    }
-                }
-            }
-            return moves;
+            return PawnMoves.getPawnMoves(board, myPosition, this);
         }
 
 
