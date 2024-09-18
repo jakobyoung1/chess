@@ -1,6 +1,6 @@
 package passoff.chess;
 
-import chess.ChessMove;
+import chess.Moves.ChessMove;
 import chess.ChessPiece;
 import chess.ChessPosition;
 import org.junit.jupiter.api.Assertions;
