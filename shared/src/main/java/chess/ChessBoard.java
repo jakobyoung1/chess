@@ -51,7 +51,7 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        throw new RuntimeException("Not implemented");
+        System.out.println("Working on board reset");
     }
 
     public boolean inBounds(int row, int col) {
