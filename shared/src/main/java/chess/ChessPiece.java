@@ -2,14 +2,9 @@ package chess;
 
 import chess.Moves.*;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Objects;
 
-import static chess.ChessGame.TeamColor.BLACK;
-import static chess.ChessGame.TeamColor.WHITE;
-import static chess.ChessPiece.PieceType.KING;
 import static java.lang.Math.abs;
 
 /**
