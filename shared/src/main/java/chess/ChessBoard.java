@@ -3,6 +3,9 @@ package chess;
 import java.util.Arrays;
 import java.util.Objects;
 
+import static chess.ChessGame.TeamColor.WHITE;
+import static chess.ChessPiece.PieceType.*;
+
 /**
  * A chessboard that can hold and rearrange chess pieces.
  * <p>
@@ -52,6 +55,59 @@ public class ChessBoard {
      */
     public void resetBoard() {
         System.out.println("Working on board reset");
+
+        for (int row = 0; row < 8; row++) {
+            for (int column = 0; column < 8; column++) {
+                squares[row][column] = null;
+                if (row == 0) {
+                    switch (column) {
+                        case 0:
+                            squares[row][column] = new ChessPiece(WHITE, ROOK);
+                        case 1:
+                            squares[row][column] = new ChessPiece(WHITE, KNIGHT);
+                        case 2:
+                            squares[row][column] = new ChessPiece(WHITE, BISHOP);
+                        case 3:
+                            squares[row][column] = new ChessPiece(WHITE, QUEEN);
+                        case 4:
+                            squares[row][column] = new ChessPiece(WHITE, KING);
+                        case 5:
+                            squares[row][column] = new ChessPiece(WHITE, BISHOP);
+                        case 6:
+                            squares[row][column] = new ChessPiece(WHITE, KNIGHT);
+                        case 7:
+                            squares[row][column] = new ChessPiece(WHITE, ROOK);
+                    }
+                } else if (row == 1) {
+                    squares[row][column] = new ChessPiece(WHITE, PAWN);
+                } if (row == 7) {
+                    switch (column) {
+                        case 0:
+                            squares[row][column] = new ChessPiece(WHITE, ROOK);
+                        case 1:
+                            squares[row][column] = new ChessPiece(WHITE, KNIGHT);
+                        case 2:
+                            squares[row][column] = new ChessPiece(WHITE, BISHOP);
+                        case 3:
+                            squares[row][column] = new ChessPiece(WHITE, QUEEN);
+                        case 4:
+                            squares[row][column] = new ChessPiece(WHITE, KING);
+                        case 5:
+                            squares[row][column] = new ChessPiece(WHITE, BISHOP);
+                        case 6:
+                            squares[row][column] = new ChessPiece(WHITE, KNIGHT);
+                        case 7:
+                            squares[row][column] = new ChessPiece(WHITE, ROOK);
+                    }
+                } else if (row == 6) {
+                    squares[row][column] = new ChessPiece(WHITE, PAWN);
+                }
+
+            }
+        }
+
+
+
     }
 
     public boolean inBounds(int row, int col) {
