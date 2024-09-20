@@ -3,6 +3,7 @@ package chess;
 import java.util.Arrays;
 import java.util.Objects;
 
+import static chess.ChessGame.TeamColor.BLACK;
 import static chess.ChessGame.TeamColor.WHITE;
 import static chess.ChessPiece.PieceType.*;
 
@@ -56,51 +57,68 @@ public class ChessBoard {
     public void resetBoard() {
         System.out.println("Working on board reset");
 
-        for (int row = 0; row < 8; row++) {
+        for (int row = 7; row >= 0; row--) {
             for (int column = 0; column < 8; column++) {
                 squares[row][column] = null;
                 if (row == 0) {
+                    //System.out.println("FOR ROW: " + row + " COL: " + column + "   ");
                     switch (column) {
                         case 0:
                             squares[row][column] = new ChessPiece(WHITE, ROOK);
+                            break;
                         case 1:
                             squares[row][column] = new ChessPiece(WHITE, KNIGHT);
+                            break;
                         case 2:
                             squares[row][column] = new ChessPiece(WHITE, BISHOP);
+                            break;
                         case 3:
                             squares[row][column] = new ChessPiece(WHITE, QUEEN);
+                            break;
                         case 4:
                             squares[row][column] = new ChessPiece(WHITE, KING);
+                            break;
                         case 5:
                             squares[row][column] = new ChessPiece(WHITE, BISHOP);
+                            break;
                         case 6:
                             squares[row][column] = new ChessPiece(WHITE, KNIGHT);
+                            break;
                         case 7:
                             squares[row][column] = new ChessPiece(WHITE, ROOK);
+                            break;
                     }
                 } else if (row == 1) {
                     squares[row][column] = new ChessPiece(WHITE, PAWN);
-                } if (row == 7) {
+                }  else if (row == 6) {
+                    squares[row][column] = new ChessPiece(BLACK, PAWN);
+                } else if (row == 7) {
                     switch (column) {
                         case 0:
-                            squares[row][column] = new ChessPiece(WHITE, ROOK);
+                            squares[row][column] = new ChessPiece(BLACK, ROOK);
+                            break;
                         case 1:
-                            squares[row][column] = new ChessPiece(WHITE, KNIGHT);
+                            squares[row][column] = new ChessPiece(BLACK, KNIGHT);
+                            break;
                         case 2:
-                            squares[row][column] = new ChessPiece(WHITE, BISHOP);
+                            squares[row][column] = new ChessPiece(BLACK, BISHOP);
+                            break;
                         case 3:
-                            squares[row][column] = new ChessPiece(WHITE, QUEEN);
+                            squares[row][column] = new ChessPiece(BLACK, QUEEN);
+                            break;
                         case 4:
-                            squares[row][column] = new ChessPiece(WHITE, KING);
+                            squares[row][column] = new ChessPiece(BLACK, KING);
+                            break;
                         case 5:
-                            squares[row][column] = new ChessPiece(WHITE, BISHOP);
+                            squares[row][column] = new ChessPiece(BLACK, BISHOP);
+                            break;
                         case 6:
-                            squares[row][column] = new ChessPiece(WHITE, KNIGHT);
+                            squares[row][column] = new ChessPiece(BLACK, KNIGHT);
+                            break;
                         case 7:
-                            squares[row][column] = new ChessPiece(WHITE, ROOK);
+                            squares[row][column] = new ChessPiece(BLACK, ROOK);
+                            break;
                     }
-                } else if (row == 6) {
-                    squares[row][column] = new ChessPiece(WHITE, PAWN);
                 }
 
             }
@@ -130,9 +148,19 @@ public class ChessBoard {
 
     @Override
     public String toString() {
-        return "ChessBoard{" +
-                Arrays.toString(squares) +
-                '}';
+        String output = new String();
+        for (int row = 0; row < 8; row++) {
+            for (int column = 0; column < 8; column++) {
+                if (squares[row][column] != null) {
+                    output += squares[row][column].toString() + " ";
+                } else {
+                    output += " ";
+                }
+            }
+            output += "\n";
+        }
+        //System.out.println(output);
+        return output;
     }
 
     @Override

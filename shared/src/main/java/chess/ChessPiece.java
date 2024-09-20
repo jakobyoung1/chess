@@ -97,6 +97,46 @@ public class ChessPiece {
         return null;
     }
 
+    public String toString() {
+        switch (pieceColor) {
+            case WHITE:
+                switch (type) {
+                    case KING:
+                        return "K";
+                    case QUEEN:
+                        return "Q";
+                    case BISHOP:
+                        return "B";
+                    case KNIGHT:
+                        return "N";
+                    case ROOK:
+                        return "R";
+                    case PAWN:
+                        return "P";
+                    default:
+                        return "";
+                }
+            case BLACK:
+                switch (type) {
+                    case KING:
+                        return "k";
+                    case QUEEN:
+                        return "q";
+                    case BISHOP:
+                        return "b";
+                    case KNIGHT:
+                        return "n";
+                    case ROOK:
+                        return "r";
+                    case PAWN:
+                        return "p";
+                    default:
+                        return "";
+                }
+        }
+        return null;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
