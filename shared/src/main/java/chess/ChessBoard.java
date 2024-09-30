@@ -17,7 +17,7 @@ public class ChessBoard {
 
     private final int width = 8;
     private final int height = 8;
-    private ChessPiece[][] squares = new ChessPiece[8][8];
+    private ChessPiece[][] squares = new ChessPiece[height][width];
 
     public ChessBoard() {
         
@@ -32,7 +32,6 @@ public class ChessBoard {
     public void addPiece(ChessPosition position, ChessPiece piece) {
         if (inBounds(position.getRow(), position.getColumn())) {
             squares[position.getRow()-1][position.getColumn()-1] = piece;
-
         }
     }
 
@@ -55,8 +54,6 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        System.out.println("Working on board reset");
-
         for (int row = 7; row >= 0; row--) {
             for (int column = 0; column < 8; column++) {
                 squares[row][column] = null;

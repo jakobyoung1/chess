@@ -12,6 +12,7 @@ public class BishopMoves {
         //diagonal
         int[][] directions = {{-1, 1}, {-1, -1}, {1, 1}, {1, -1}};
 
+
         for (int[] direction : directions) {
 
             int nRow = myPosition.getRow();
