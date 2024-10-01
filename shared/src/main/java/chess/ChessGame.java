@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -11,6 +12,11 @@ import java.util.Collection;
 public class ChessGame {
 
     private static ChessBoard board;
+    private static ArrayList<ChessPiece> blackPieces = new ArrayList<>();
+    private static ArrayList<ChessPiece> whitePieces = new ArrayList<>();
+    private static boolean whiteInCheck = false;
+    private static boolean blackInCheck = false;
+
 
     public ChessGame() {
 
@@ -49,6 +55,9 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece pc = board.getPiece(startPosition);
+        if (pc == null) {
+            return null;
+        }
         return pc.pieceMoves(board, startPosition);
     }
 
@@ -59,7 +68,9 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        ChessPiece pc = board.getPiece(move.getStartPosition());
+        board.addPiece(move.getEndPosition(), pc);
+        board.addPiece(move.getStartPosition(), null);
     }
 
     /**
@@ -69,7 +80,14 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        switch (teamColor) {
+            case WHITE:
+                return whiteInCheck;
+            case BLACK:
+                return blackInCheck;
+            default:
+                return false;
+        }
     }
 
     /**
