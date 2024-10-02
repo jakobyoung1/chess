@@ -14,8 +14,7 @@ public class ChessGame {
     private static ChessBoard board;
     private static ArrayList<ChessPiece> blackPieces = new ArrayList<>();
     private static ArrayList<ChessPiece> whitePieces = new ArrayList<>();
-    private static boolean whiteInCheck = false;
-    private static boolean blackInCheck = false;
+
 
 
     public ChessGame() {
@@ -80,14 +79,8 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        switch (teamColor) {
-            case WHITE:
-                return whiteInCheck;
-            case BLACK:
-                return blackInCheck;
-            default:
-                return false;
-        }
+        var kingPos = board.getKingPos(teamColor);
+        return false;
     }
 
     /**

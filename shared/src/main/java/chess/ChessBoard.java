@@ -19,8 +19,19 @@ public class ChessBoard {
     private final int height = 8;
     private ChessPiece[][] squares = new ChessPiece[height][width];
 
+    private static ChessPosition whiteKing;
+    private static ChessPosition blackKing;
+
     public ChessBoard() {
         
+    }
+
+    public ChessPosition getKingPos(ChessGame.TeamColor color) {
+        return switch (color) {
+            case WHITE -> whiteKing;
+            case BLACK -> blackKing;
+            default -> null;
+        };
     }
 
     /**
@@ -74,6 +85,7 @@ public class ChessBoard {
                             break;
                         case 4:
                             squares[row][column] = new ChessPiece(WHITE, KING);
+                            whiteKing = new ChessPosition(row, column);
                             break;
                         case 5:
                             squares[row][column] = new ChessPiece(WHITE, BISHOP);
@@ -105,6 +117,7 @@ public class ChessBoard {
                             break;
                         case 4:
                             squares[row][column] = new ChessPiece(BLACK, KING);
+                            blackKing = new ChessPosition(row, column);
                             break;
                         case 5:
                             squares[row][column] = new ChessPiece(BLACK, BISHOP);
