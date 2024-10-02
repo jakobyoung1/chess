@@ -3,6 +3,7 @@ package chess;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import static chess.ChessPiece.PieceType.KING;
 import static chess.ChessPiece.PieceType.KNIGHT;
 
 /**
@@ -84,9 +85,14 @@ public class ChessGame {
         var kingPos = board.getKingPos(teamColor);
         TeamColor opColor = (teamColor == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
 
-        if (knightThreatensKing(kingPos, opColor)) return true;
+        return knightThreatensKing(kingPos, opColor)  && kingThreatensKing(kingPos, opColor);
+    }
 
-        return false;
+    public static boolean wouldBeInCheck(TeamColor teamColor, ChessMove move) {
+        var kingPos = move.getEndPosition();
+        TeamColor opColor = (teamColor == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
+
+        return knightThreatensKing(kingPos, opColor) || kingThreatensKing(kingPos, opColor);
     }
 
     private static boolean knightThreatensKing(ChessPosition pos, TeamColor opCol) {
@@ -102,6 +108,27 @@ public class ChessGame {
             if (board.inBounds(nRow, nCol)) {
                 ChessPiece piece = board.getPiece(newPos);
                 if (piece != null && piece.getTeamColor() == opCol && piece.getPieceType()==KNIGHT) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private static boolean kingThreatensKing(ChessPosition pos, TeamColor opCol) {
+        int[][] direction = {
+                {-1, -1}, {-1, 0}, {-1, 1}, {0, -1},
+                {0, 1}, {1, -1}, {1, 0}, {1, 1}
+        };
+
+        for (int[] move : direction) {
+            int nRow = pos.getRow() + move[0];
+            int nCol = pos.getColumn() + move[1];
+            ChessPosition newPos = new ChessPosition(nRow, nCol);
+            if (board.inBounds(nRow, nCol)) {
+                ChessPiece piece = board.getPiece(newPos);
+                //System.out.println("Checking for a king in range at: " + nRow + ", " + nCol + "\n");
+                if (piece != null && piece.getTeamColor() == opCol && piece.getPieceType()==KING) {
                     return true;
                 }
             }
