@@ -3,6 +3,8 @@ package chess;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import static chess.ChessPiece.PieceType.KNIGHT;
+
 /**
  * For a class that can manage a chess game, making moves on a board
  * <p>
@@ -80,6 +82,30 @@ public class ChessGame {
      */
     public boolean isInCheck(TeamColor teamColor) {
         var kingPos = board.getKingPos(teamColor);
+        TeamColor opColor = (teamColor == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
+
+        if (knightThreatensKing(kingPos, opColor)) return true;
+
+        return false;
+    }
+
+    private static boolean knightThreatensKing(ChessPosition pos, TeamColor opCol) {
+        int[][] direction = {
+                {-2, -1}, {-1, -2}, {1, -2}, {2, -1},
+                {2, 1}, {1, 2}, {-1, 2}, {-2, 1}
+        };
+
+        for (int[] move : direction) {
+            int nRow = pos.getRow() + move[0];
+            int nCol = pos.getColumn() + move[1];
+            ChessPosition newPos = new ChessPosition(nRow, nCol);
+            if (board.inBounds(nRow, nCol)) {
+                ChessPiece piece = board.getPiece(newPos);
+                if (piece != null && piece.getTeamColor() == opCol && piece.getPieceType()==KNIGHT) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
