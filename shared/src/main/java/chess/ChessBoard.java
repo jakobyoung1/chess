@@ -35,14 +35,24 @@ public class ChessBoard {
     }
 
     public void updateKingPosition(ChessGame.TeamColor color) {
+        boolean isThereKing = false;
         for (int row = 0; row < height; row++) {
             for (int column = 0; column < width; column++) {
                 ChessPiece piece = squares[row][column];
                 if (piece != null && piece.getPieceType() == KING && piece.getTeamColor() == color) {
                     if (color == WHITE) {
+                        isThereKing = true;
                         whiteKing = new ChessPosition(row + 1, column + 1); // +1 to adjust to 1-based indexing
                     } else if (color == BLACK) {
+                        isThereKing = true;
                         blackKing = new ChessPosition(row + 1, column + 1);
+                    }
+                    if (!isThereKing) {
+                        if (color == WHITE) {
+                            whiteKing = new ChessPosition(99999999, 99999999);
+                        } else {
+                            blackKing = new ChessPosition(99999999, 99999999);
+                        }
                     }
                     return; // Exit once the king is found
                 }

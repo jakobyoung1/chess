@@ -78,8 +78,13 @@ public class ChessGame {
             Collection<ChessMove> validMoves = pc.pieceMoves(board, move.getStartPosition());
 
             if (validMoves.contains(move)) {
-                board.addPiece(move.getEndPosition(), pc);
-                board.addPiece(move.getStartPosition(), null);
+                if (move.getPromotionPiece()==null) {
+                    board.addPiece(move.getEndPosition(), pc);
+                    board.addPiece(move.getStartPosition(), null);
+                } else {
+                    board.addPiece(move.getEndPosition(), new ChessPiece(pc.getTeamColor(), move.getPromotionPiece()));
+                    board.addPiece(move.getStartPosition(), null);
+                }
 
                 // update king pos
                 if (pc.getPieceType() == ChessPiece.PieceType.KING) {
@@ -108,6 +113,7 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
+        board.updateKingPosition(teamColor);
         var kingPos = board.getKingPos(teamColor);
         TeamColor opColor = (teamColor == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
 
@@ -126,8 +132,11 @@ public class ChessGame {
         if (movingPiece.getPieceType() == KING) {
             kingPos = move.getEndPosition();
         }
+        boolean inCheck = false;
 
-        boolean inCheck = isInCheckAfterMove(teamColor, kingPos);
+        if (kingPos != null) {
+            inCheck = isInCheckAfterMove(teamColor, kingPos);
+        }
 
         board.addPiece(move.getStartPosition(), movingPiece);
         board.addPiece(move.getEndPosition(), targetPiece);
