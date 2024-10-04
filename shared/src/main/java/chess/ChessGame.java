@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 import static chess.ChessPiece.PieceType.KING;
@@ -71,8 +72,16 @@ public class ChessGame {
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
         ChessPiece pc = board.getPiece(move.getStartPosition());
-        board.addPiece(move.getEndPosition(), pc);
-        board.addPiece(move.getStartPosition(), null);
+        if (pc != null) {
+            if (Arrays.asList(pc.pieceMoves(board, move.getStartPosition())).contains(move)) {
+                board.addPiece(move.getEndPosition(), pc);
+                board.addPiece(move.getStartPosition(), null);
+            } else {
+                throw new InvalidMoveException();
+            }
+        } else {
+            throw new InvalidMoveException();
+        }
     }
 
     /**
