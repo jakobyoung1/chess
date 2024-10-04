@@ -85,14 +85,14 @@ public class ChessGame {
         var kingPos = board.getKingPos(teamColor);
         TeamColor opColor = (teamColor == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
 
-        return knightThreatensKing(kingPos, opColor)  && kingThreatensKing(kingPos, opColor);
+        return knightThreatensKing(kingPos, opColor) || kingThreatensKing(kingPos, opColor) || rookOrQueenThreatensKing(kingPos, opColor) || bishopOrQueenThreatensKing(kingPos, opColor) || pawnThreatensKing(kingPos, opColor);
     }
 
     public static boolean wouldBeInCheck(TeamColor teamColor, ChessMove move) {
         var kingPos = move.getEndPosition();
         TeamColor opColor = (teamColor == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
 
-        return knightThreatensKing(kingPos, opColor) || kingThreatensKing(kingPos, opColor);
+        return knightThreatensKing(kingPos, opColor) || kingThreatensKing(kingPos, opColor) || rookOrQueenThreatensKing(kingPos, opColor) || bishopOrQueenThreatensKing(kingPos, opColor) || pawnThreatensKing(kingPos, opColor);
     }
 
     private static boolean knightThreatensKing(ChessPosition pos, TeamColor opCol) {
@@ -129,6 +129,65 @@ public class ChessGame {
                 ChessPiece piece = board.getPiece(newPos);
                 //System.out.println("Checking for a king in range at: " + nRow + ", " + nCol + "\n");
                 if (piece != null && piece.getTeamColor() == opCol && piece.getPieceType()==KING) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private static boolean rookOrQueenThreatensKing(ChessPosition pos, TeamColor opCol) {
+        int[][] directions = {
+                {1, 0}, {-1, 0}, {0, 1}, {0, -1}
+        };
+
+        return linearThreatensKing(pos, opCol, directions, ChessPiece.PieceType.ROOK, ChessPiece.PieceType.QUEEN);
+    }
+
+    private static boolean bishopOrQueenThreatensKing(ChessPosition pos, TeamColor opCol) {
+        int[][] directions = {
+                {1, 1}, {1, -1}, {-1, 1}, {-1, -1}
+        };
+
+        return linearThreatensKing(pos, opCol, directions, ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.QUEEN);
+    }
+
+    private static boolean linearThreatensKing(ChessPosition pos, TeamColor opCol, int[][] directions, ChessPiece.PieceType... pieceTypes) {
+        for (int[] direction : directions) {
+            int nRow = pos.getRow();
+            int nCol = pos.getColumn();
+
+            while (true) {
+                nRow += direction[0];
+                nCol += direction[1];
+                if (!board.inBounds(nRow, nCol)) break;
+
+                ChessPosition newPos = new ChessPosition(nRow, nCol);
+                ChessPiece piece = board.getPiece(newPos);
+                if (piece != null) {
+                    if (piece.getTeamColor() == opCol &&
+                            (piece.getPieceType() == pieceTypes[0] || piece.getPieceType() == pieceTypes[1])) {
+                        return true;
+                    }
+                    break;
+                }
+            }
+        }
+        return false;
+    }
+
+    private static boolean pawnThreatensKing(ChessPosition pos, TeamColor opCol) {
+        int[][] direction = (opCol == TeamColor.WHITE)
+                ? new int[][]{{-1, -1}, {-1, 1}}
+                : new int[][]{{1, -1}, {1, 1}};
+
+        for (int[] move : direction) {
+            int nRow = pos.getRow() + move[0];
+            int nCol = pos.getColumn() + move[1];
+            ChessPosition newPos = new ChessPosition(nRow, nCol);
+            if (board.inBounds(nRow, nCol)) {
+                ChessPiece piece = board.getPiece(newPos);
+                if (piece != null && piece.getTeamColor() == opCol && piece.getPieceType() == ChessPiece.PieceType.PAWN) {
                     return true;
                 }
             }
