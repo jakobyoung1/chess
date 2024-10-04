@@ -46,18 +46,28 @@ public class PawnMoves {
                             // at starting pos - allow double move
                             if (pieceInFront == null) {
                                 if (newPosition.getRow() == 1 || newPosition.getRow() == 8) {
-                                    promotePawn(moves, myPosition, newPosition);
+                                    promotePawn(moves, myPosition, newPosition, piece);
                                 } else {
-                                    moves.add(new ChessMove(myPosition, newPosition, null));
+                                    ChessMove newmove = new ChessMove(myPosition, newPosition, null);
+                                    if (ChessGame.wouldBeInCheck(piece.getTeamColor(), newmove)) {
+                                        // do nothing
+                                    } else {
+                                        moves.add(newmove);
+                                    }
                                 }
                             }
                         } else {
                             // move forward
                             if (abs(myPosition.getRow() - newPosition.getRow()) == 1) {
                                 if (newPosition.getRow() == 1 || newPosition.getRow() == 8) {
-                                    promotePawn(moves, myPosition, newPosition);
+                                    promotePawn(moves, myPosition, newPosition, piece);
                                 } else {
-                                    moves.add(new ChessMove(myPosition, newPosition, null));
+                                    ChessMove newmove = new ChessMove(myPosition, newPosition, null);
+                                    if (ChessGame.wouldBeInCheck(piece.getTeamColor(), newmove)) {
+                                        // do nothing
+                                    } else {
+                                        moves.add(newmove);
+                                    }
                                 }
                             }
                         }
@@ -66,9 +76,14 @@ public class PawnMoves {
                     // there's a piece, attack if diagonal
                     if (pieceAtNewPosition.getTeamColor() != piece.getTeamColor() && myPosition.getColumn() != newPosition.getColumn()) {
                         if (newPosition.getRow() == 1 || newPosition.getRow() == 8) {
-                            promotePawn(moves, myPosition, newPosition);
+                            promotePawn(moves, myPosition, newPosition, piece);
                         } else {
-                            moves.add(new ChessMove(myPosition, newPosition, null));
+                            ChessMove newmove = new ChessMove(myPosition, newPosition, null);
+                            if (ChessGame.wouldBeInCheck(piece.getTeamColor(), newmove)) {
+                                // do nothing
+                            } else {
+                                moves.add(newmove);
+                            }
                         }
                     }
                 }
@@ -77,10 +92,15 @@ public class PawnMoves {
         return moves;
     }
 
-    private static void promotePawn(HashSet<ChessMove> moves, ChessPosition from, ChessPosition to) {
-        moves.add(new ChessMove(from, to, ChessPiece.PieceType.QUEEN));
-        moves.add(new ChessMove(from, to, ChessPiece.PieceType.ROOK));
-        moves.add(new ChessMove(from, to, ChessPiece.PieceType.BISHOP));
-        moves.add(new ChessMove(from, to, ChessPiece.PieceType.KNIGHT));
+    private static void promotePawn(HashSet<ChessMove> moves, ChessPosition from, ChessPosition to, ChessPiece piece) {
+        ChessMove newmove = new ChessMove(from, to, null);
+        if (ChessGame.wouldBeInCheck(piece.getTeamColor(), newmove)) {
+            // do nothing
+        } else {
+            moves.add(new ChessMove(from, to, ChessPiece.PieceType.QUEEN));
+            moves.add(new ChessMove(from, to, ChessPiece.PieceType.ROOK));
+            moves.add(new ChessMove(from, to, ChessPiece.PieceType.BISHOP));
+            moves.add(new ChessMove(from, to, ChessPiece.PieceType.KNIGHT));
+        }
     }
 }

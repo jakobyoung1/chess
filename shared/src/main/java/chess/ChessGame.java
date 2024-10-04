@@ -89,10 +89,35 @@ public class ChessGame {
     }
 
     public static boolean wouldBeInCheck(TeamColor teamColor, ChessMove move) {
-        var kingPos = move.getEndPosition();
+        ChessPiece movingPiece = board.getPiece(move.getStartPosition());
+        ChessPiece targetPiece = board.getPiece(move.getEndPosition());
+        board.updateKingPosition(teamColor);
+        ChessPosition kingPos = board.getKingPos(teamColor);
+
+        board.addPiece(move.getEndPosition(), movingPiece);
+        board.addPiece(move.getStartPosition(), null);
+
+        if (movingPiece.getPieceType() == KING) {
+            kingPos = move.getEndPosition();
+        }
+
+        boolean inCheck = isInCheckAfterMove(teamColor, kingPos);
+
+        board.addPiece(move.getStartPosition(), movingPiece);
+        board.addPiece(move.getEndPosition(), targetPiece);
+
+        return inCheck;
+    }
+
+    private static boolean isInCheckAfterMove(TeamColor teamColor, ChessPosition kingPos) {
         TeamColor opColor = (teamColor == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
 
-        return knightThreatensKing(kingPos, opColor) || kingThreatensKing(kingPos, opColor) || rookOrQueenThreatensKing(kingPos, opColor) || bishopOrQueenThreatensKing(kingPos, opColor) || pawnThreatensKing(kingPos, opColor);
+        // Check all possible threats to the king's position
+        return knightThreatensKing(kingPos, opColor) ||
+                kingThreatensKing(kingPos, opColor) ||
+                rookOrQueenThreatensKing(kingPos, opColor) ||
+                bishopOrQueenThreatensKing(kingPos, opColor) ||
+                pawnThreatensKing(kingPos, opColor);
     }
 
     private static boolean knightThreatensKing(ChessPosition pos, TeamColor opCol) {
@@ -141,7 +166,7 @@ public class ChessGame {
                 {1, 0}, {-1, 0}, {0, 1}, {0, -1}
         };
 
-        return linearThreatensKing(pos, opCol, directions, ChessPiece.PieceType.ROOK, ChessPiece.PieceType.QUEEN);
+        return lineThreatensKing(pos, opCol, directions, ChessPiece.PieceType.ROOK, ChessPiece.PieceType.QUEEN);
     }
 
     private static boolean bishopOrQueenThreatensKing(ChessPosition pos, TeamColor opCol) {
@@ -149,10 +174,10 @@ public class ChessGame {
                 {1, 1}, {1, -1}, {-1, 1}, {-1, -1}
         };
 
-        return linearThreatensKing(pos, opCol, directions, ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.QUEEN);
+        return lineThreatensKing(pos, opCol, directions, ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.QUEEN);
     }
 
-    private static boolean linearThreatensKing(ChessPosition pos, TeamColor opCol, int[][] directions, ChessPiece.PieceType... pieceTypes) {
+    private static boolean lineThreatensKing(ChessPosition pos, TeamColor opCol, int[][] directions, ChessPiece.PieceType... pieceTypes) {
         for (int[] direction : directions) {
             int nRow = pos.getRow();
             int nCol = pos.getColumn();
@@ -160,13 +185,14 @@ public class ChessGame {
             while (true) {
                 nRow += direction[0];
                 nCol += direction[1];
-                if (!board.inBounds(nRow, nCol)) break;
+                if (!board.inBounds(nRow, nCol)) {
+                    break;
+                }
 
                 ChessPosition newPos = new ChessPosition(nRow, nCol);
                 ChessPiece piece = board.getPiece(newPos);
                 if (piece != null) {
-                    if (piece.getTeamColor() == opCol &&
-                            (piece.getPieceType() == pieceTypes[0] || piece.getPieceType() == pieceTypes[1])) {
+                    if (piece.getTeamColor() == opCol && (piece.getPieceType() == pieceTypes[0] || piece.getPieceType() == pieceTypes[1])) {
                         return true;
                     }
                     break;

@@ -23,7 +23,7 @@ public class KingMoves {
                 if (pieceAtNewPosition == null || pieceAtNewPosition.getTeamColor() != piece.getTeamColor()) {
                     ChessMove newmove = new ChessMove(myPosition, newPosition, null);
                     if (ChessGame.wouldBeInCheck(piece.getTeamColor(), newmove)) {
-                        // do nothing
+                        //nothing
                     } else {
                         moves.add(newmove);
                     }

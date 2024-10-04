@@ -25,10 +25,20 @@ public class RookMoves {
                 ChessPiece pieceAtNewPosition = board.getPiece(newPosition);
 
                 if (pieceAtNewPosition == null) {
-                    moves.add(new ChessMove(myPosition, newPosition, null));
+                    ChessMove newmove = new ChessMove(myPosition, newPosition, null);
+                    if (ChessGame.wouldBeInCheck(piece.getTeamColor(), newmove)) {
+                        // do nothing
+                    } else {
+                        moves.add(newmove);
+                    }
                 } else {
                     if (pieceAtNewPosition.getTeamColor() != piece.getTeamColor()) {
-                        moves.add(new ChessMove(myPosition, newPosition, null));
+                        ChessMove newmove = new ChessMove(myPosition, newPosition, null);
+                        if (ChessGame.wouldBeInCheck(piece.getTeamColor(), newmove)) {
+                            // do nothing
+                        } else {
+                            moves.add(newmove);
+                        }
                     }
                     break;
                 }
