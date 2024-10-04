@@ -23,7 +23,6 @@ public class ChessBoard {
     private static ChessPosition blackKing;
 
     public ChessBoard() {
-        
     }
 
     public ChessPosition getKingPos(ChessGame.TeamColor color) {

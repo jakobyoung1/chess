@@ -23,7 +23,9 @@ public class ChessGame {
 
 
     public ChessGame() {
-
+        board = new ChessBoard();
+        board.resetBoard();
+        turn = TeamColor.WHITE;
     }
 
     /**
@@ -299,8 +301,30 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+    if (isInCheck(teamColor)) {
+        return false; // If in check, it cannot be stalemate
     }
+
+    for (int row = 1; row <= board.getHeight(); row++) {
+        for (int col = 1; col <= board.getWidth(); col++) {
+            ChessPosition currentPosition = new ChessPosition(row, col);
+            ChessPiece piece = board.getPiece(currentPosition);
+
+            if (piece != null && piece.getTeamColor() == teamColor) {
+                Collection<ChessMove> validMoves = piece.pieceMoves(board, currentPosition);
+
+                for (ChessMove move : validMoves) {
+                    if (!ChessGame.wouldBeInCheck(teamColor, move)) {
+                        return false; // A valid move exists, so it's not stalemate
+                    }
+                }
+            }
+        }
+    }
+
+    return true;
+}
+
 
     /**
      * Sets this game's chessboard with a given board
