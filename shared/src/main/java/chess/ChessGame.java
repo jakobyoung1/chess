@@ -3,6 +3,7 @@ package chess;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import static chess.ChessPiece.PieceType.KING;
 import static chess.ChessPiece.PieceType.KNIGHT;
@@ -72,17 +73,33 @@ public class ChessGame {
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
         ChessPiece pc = board.getPiece(move.getStartPosition());
-        if (pc != null) {
-            if (Arrays.asList(pc.pieceMoves(board, move.getStartPosition())).contains(move)) {
+
+        if (pc != null && pc.getTeamColor() == turn) {
+            Collection<ChessMove> validMoves = pc.pieceMoves(board, move.getStartPosition());
+
+            if (validMoves.contains(move)) {
                 board.addPiece(move.getEndPosition(), pc);
                 board.addPiece(move.getStartPosition(), null);
+
+                // update king pos
+                if (pc.getPieceType() == ChessPiece.PieceType.KING) {
+                    if (pc.getTeamColor() == ChessGame.TeamColor.WHITE) {
+                        board.updateKingPosition(ChessGame.TeamColor.WHITE);
+                    } else {
+                        board.updateKingPosition(ChessGame.TeamColor.BLACK);
+                    }
+                }
+
+                turn = (turn == ChessGame.TeamColor.WHITE) ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
+
             } else {
-                throw new InvalidMoveException();
+                throw new InvalidMoveException("Invalid move.");
             }
         } else {
-            throw new InvalidMoveException();
+            throw new InvalidMoveException("No piece at start position.");
         }
     }
+
 
     /**
      * Determines if the given team is in check
