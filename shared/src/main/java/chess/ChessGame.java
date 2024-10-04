@@ -17,7 +17,7 @@ public class ChessGame {
     private static ChessBoard board;
     private static ArrayList<ChessPiece> blackPieces = new ArrayList<>();
     private static ArrayList<ChessPiece> whitePieces = new ArrayList<>();
-
+    private static TeamColor turn;
 
 
     public ChessGame() {
@@ -37,7 +37,7 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-        throw new RuntimeException("Not implemented");
+        turn = team;
     }
 
     /**
