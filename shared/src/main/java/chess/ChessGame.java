@@ -62,7 +62,14 @@ public class ChessGame {
         if (pc == null) {
             return null;
         }
-        return pc.pieceMoves(board, startPosition);
+        Collection<ChessMove> moves = pc.pieceMoves(board, startPosition);
+        ArrayList<ChessMove> afterMoves = new ArrayList<>();
+        for (ChessMove m : moves) {
+            if (!wouldBeInCheck(pc.getTeamColor(), m, board)) {
+                afterMoves.add(m);
+            }
+        }
+        return afterMoves;
     }
 
     /**
@@ -77,7 +84,7 @@ public class ChessGame {
         if (pc != null && pc.getTeamColor() == turn) {
             Collection<ChessMove> validMoves = pc.pieceMoves(board, move.getStartPosition());
 
-            if (validMoves.contains(move)) {
+            if (validMoves.contains(move) && !ChessGame.wouldBeInCheck(pc.getTeamColor(), move, board)) {
                 if (move.getPromotionPiece()==null) {
                     board.addPiece(move.getEndPosition(), pc);
                     board.addPiece(move.getStartPosition(), null);
@@ -87,15 +94,15 @@ public class ChessGame {
                 }
 
                 // update king pos
-                if (pc.getPieceType() == ChessPiece.PieceType.KING) {
-                    if (pc.getTeamColor() == ChessGame.TeamColor.WHITE) {
-                        board.updateKingPosition(ChessGame.TeamColor.WHITE);
+                if (pc.getPieceType() == KING) {
+                    if (pc.getTeamColor() == TeamColor.WHITE) {
+                        board.updateKingPosition(TeamColor.WHITE);
                     } else {
-                        board.updateKingPosition(ChessGame.TeamColor.BLACK);
+                        board.updateKingPosition(TeamColor.BLACK);
                     }
                 }
 
-                turn = (turn == ChessGame.TeamColor.WHITE) ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
+                turn = (turn == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
 
             } else {
                 throw new InvalidMoveException("Invalid move.");
