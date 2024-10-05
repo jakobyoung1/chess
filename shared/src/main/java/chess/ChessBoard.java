@@ -46,15 +46,15 @@ public class ChessBoard {
                         isThereKing = true;
                         blackKing = new ChessPosition(row + 1, column + 1);
                     }
-                    if (!isThereKing) {
-                        if (color == WHITE) {
-                            whiteKing = new ChessPosition(99999999, 99999999);
-                        } else {
-                            blackKing = new ChessPosition(99999999, 99999999);
-                        }
-                    }
                     return; // Exit once the king is found
                 }
+            }
+        }
+        if (!isThereKing) {
+            if (color == WHITE) {
+                whiteKing = new ChessPosition(99999999, 99999999);
+            } else {
+                blackKing = new ChessPosition(99999999, 99999999);
             }
         }
         // If the king is not found, you may want to handle this case (e.g., throw an exception or log an error)
