@@ -58,6 +58,7 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
 
+
         //KING MOVEMENT
         if (this.type == PieceType.KING) {
             return KingMoves.getKingMoves(board, myPosition, this);

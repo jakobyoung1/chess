@@ -26,7 +26,7 @@ public class QueenMoves {
 
                 if (pieceAtNewPosition == null) {
                     ChessMove newmove = new ChessMove(myPosition, newPosition, null);
-                    if (ChessGame.wouldBeInCheck(piece.getTeamColor(), newmove)) {
+                    if (ChessGame.wouldBeInCheck(piece.getTeamColor(), newmove, board)) {
                         // do nothing
                     } else {
                         moves.add(newmove);
@@ -34,7 +34,7 @@ public class QueenMoves {
                 } else {
                     if (pieceAtNewPosition.getTeamColor() != piece.getTeamColor()) {
                         ChessMove newmove = new ChessMove(myPosition, newPosition, null);
-                        if (ChessGame.wouldBeInCheck(piece.getTeamColor(), newmove)) {
+                        if (ChessGame.wouldBeInCheck(piece.getTeamColor(), newmove, board)) {
                             // do nothing
                         } else {
                             moves.add(newmove);

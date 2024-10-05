@@ -17,8 +17,6 @@ import static chess.ChessPiece.PieceType.KNIGHT;
 public class ChessGame {
 
     private static ChessBoard board;
-    private static ArrayList<ChessPiece> blackPieces = new ArrayList<>();
-    private static ArrayList<ChessPiece> whitePieces = new ArrayList<>();
     private static TeamColor turn;
 
 
@@ -122,7 +120,8 @@ public class ChessGame {
         return knightThreatensKing(kingPos, opColor) || kingThreatensKing(kingPos, opColor) || rookOrQueenThreatensKing(kingPos, opColor) || bishopOrQueenThreatensKing(kingPos, opColor) || pawnThreatensKing(kingPos, opColor);
     }
 
-    public static boolean wouldBeInCheck(TeamColor teamColor, ChessMove move) {
+    public static boolean wouldBeInCheck(TeamColor teamColor, ChessMove move, ChessBoard bord) {
+        board = bord;
         ChessPiece movingPiece = board.getPiece(move.getStartPosition());
         ChessPiece targetPiece = board.getPiece(move.getEndPosition());
         board.updateKingPosition(teamColor);
@@ -279,7 +278,7 @@ public class ChessGame {
                 Collection<ChessMove> validMoves = piece.pieceMoves(board, currentPosition);
 
                 for (ChessMove move : validMoves) {
-                    if (!ChessGame.wouldBeInCheck(teamColor, move)) {
+                    if (!ChessGame.wouldBeInCheck(teamColor, move, board)) {
                         return false;
                     }
 
@@ -314,7 +313,7 @@ public class ChessGame {
                 Collection<ChessMove> validMoves = piece.pieceMoves(board, currentPosition);
 
                 for (ChessMove move : validMoves) {
-                    if (!ChessGame.wouldBeInCheck(teamColor, move)) {
+                    if (!ChessGame.wouldBeInCheck(teamColor, move, board)) {
                         return false; // A valid move exists, so it's not stalemate
                     }
                 }
@@ -343,4 +342,5 @@ public class ChessGame {
     public ChessBoard getBoard() {
         return board;
     }
+
 }
