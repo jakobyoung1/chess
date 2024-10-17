@@ -30,11 +30,11 @@ public class KnightMoves {
                 ChessPiece pieceAtNewPosition = board.getPiece(newPosition);
                 if (pieceAtNewPosition == null || pieceAtNewPosition.getTeamColor() != piece.getTeamColor()) {
                     ChessMove newmove = new ChessMove(myPosition, newPosition, null);
-                    if (ChessGame.wouldBeInCheck(piece.getTeamColor(), newmove, board)) {
+                    //if (ChessGame.wouldBeInCheck(piece.getTeamColor(), newmove, board)) {
                         // do nothing
-                    } else {
+                    //} else {
                         moves.add(newmove);
-                    }
+                    //}
                 }
             }
         }

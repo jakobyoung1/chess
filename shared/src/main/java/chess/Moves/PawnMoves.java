@@ -49,11 +49,11 @@ public class PawnMoves {
                                     promotePawn(moves, myPosition, newPosition, piece, board);
                                 } else {
                                     ChessMove newmove = new ChessMove(myPosition, newPosition, null);
-                                    if (ChessGame.wouldBeInCheck(piece.getTeamColor(), newmove, board)) {
+                                    //if (ChessGame.wouldBeInCheck(piece.getTeamColor(), newmove, board)) {
                                         // do nothing
-                                    } else {
+                                    //} else {
                                         moves.add(newmove);
-                                    }
+                                    //}
                                 }
                             }
                         } else {
@@ -63,11 +63,11 @@ public class PawnMoves {
                                     promotePawn(moves, myPosition, newPosition, piece, board);
                                 } else {
                                     ChessMove newmove = new ChessMove(myPosition, newPosition, null);
-                                    if (ChessGame.wouldBeInCheck(piece.getTeamColor(), newmove, board)) {
+                                    //if (ChessGame.wouldBeInCheck(piece.getTeamColor(), newmove, board)) {
                                         // do nothing
-                                    } else {
+                                    //} else {
                                         moves.add(newmove);
-                                    }
+                                    //}
                                 }
                             }
                         }
