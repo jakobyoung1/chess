@@ -1,49 +1,46 @@
 package server;
 
+import chess.ChessMove;
+import chess.InvalidMoveException;
+import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import model.GameData;
-import model.GameMove;
 import model.AuthData;
 import java.sql.Connection;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class GameService {
     private final GameDAO gameDAO;
+    private static final AtomicInteger nextGameId = new AtomicInteger(1);
 
-    // Constructor that accepts a Connection object
     public GameService(Connection connection) {
         this.gameDAO = new GameDAO(connection);
     }
 
-    // Start a new game: Takes a request and returns a result
     public StartGameResult startGame(StartGameRequest request) throws DataAccessException {
-        GameData newGame = new GameData(request.player1(), request.player2());
-        gameDAO.insertGame(newGame);
+        int gameId = nextGameId.getAndIncrement();
+        GameData newGame = new GameData(gameId, request.player1(), request.player2(), request.gameName());
 
-        return new StartGameResult(newGame.getGameId(), newGame.getInitialBoardState(), "Game started successfully");
+        gameDAO.createGame(newGame);
+
+        return new StartGameResult(newGame.getGameId(), newGame.getGame(), "Game started successfully");
     }
 
-    // Make a move in the game: Takes a request and returns a result
-    public MoveResult makeMove(MoveRequest request) throws DataAccessException {
+    public MoveResult makeMove(MoveRequest request) throws DataAccessException, InvalidMoveException {
         GameData game = gameDAO.getGame(request.gameId());
 
         if (game == null) {
             return new MoveResult("Error: Game not found");
         }
 
-        GameMove move = new GameMove(request.player(), request.move());
-        boolean isValid = game.isValidMove(move);
-
-        if (!isValid) {
-            return new MoveResult("Error: Invalid move");
-        }
+        ChessMove move = new ChessMove(request.move().getStartPosition(), request.move().getEndPosition(), request.move().getPromotionPiece());
 
         game.makeMove(move);
-        gameDAO.updateGame(game);
+        gameDAO.updateGame(game.getGameId(), game.getGame());
 
-        return new MoveResult(game.getGameId(), game.getBoardState(), "Move made successfully");
+        return new MoveResult(game.getGameId(), game.getGame(), "Move made successfully");
     }
 
-    // Get the current state of the game: Takes a request and returns a result
     public GameStateResult getGameState(GameStateRequest request) throws DataAccessException {
         GameData game = gameDAO.getGame(request.gameId());
 
@@ -51,6 +48,6 @@ public class GameService {
             return new GameStateResult("Error: Game not found");
         }
 
-        return new GameStateResult(game.getGameId(), game.getBoardState(), "Game state retrieved successfully");
+        return new GameStateResult(game.getGameId(), game.getGame(), "Game state retrieved successfully");
     }
 }

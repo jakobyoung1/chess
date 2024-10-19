@@ -1,3 +1,5 @@
 package server;
 
-public record MoveRequest(String gameId, String player, String move) {}
+import chess.ChessMove;
+
+public record MoveRequest(String gameId, ChessMove move) {}

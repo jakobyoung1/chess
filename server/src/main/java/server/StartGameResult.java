@@ -1,3 +1,5 @@
 package server;
 
-public record StartGameResult(String gameId, String initialBoardState, String message) {}
+import chess.ChessGame;
+
+public record StartGameResult(int gameId, ChessGame game, String message) {}

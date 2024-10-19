@@ -59,11 +59,11 @@ public class GameDAO {
         return games;
     }
 
-    public void updateGame(String gameID, String gameState) throws DataAccessException {
+    public void updateGame(Integer gameID, ChessGame game) throws DataAccessException {
         String sql = "UPDATE Games SET gameState = ? WHERE gameID = ?";
         try (PreparedStatement s = connection.prepareStatement(sql)) {
-            s.setString(1, gameState);
-            s.setString(2, gameID);
+            s.setInt(1, gameID);
+            s.setObject(2, game);
             s.executeUpdate();
         } catch (SQLException e) {
             throw new DataAccessException("Could not updateGame", e);

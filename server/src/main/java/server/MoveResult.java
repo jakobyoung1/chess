@@ -1,6 +1,8 @@
 package server;
 
-public record MoveResult(String gameId, String boardState, String message) {
+import chess.ChessGame;
+
+public record MoveResult(Integer gameId, ChessGame game, String message) {
     public MoveResult(String message) {
         this(null, null, message);  // Error case
     }
