@@ -1,71 +1,31 @@
 package dataaccess;
 
 import model.UserData;
-import java.sql.*;
+import java.util.HashMap;
+import java.util.Map;
 
-public class UserDAO {
-    private final Connection connection;
+public class UserDAO implements UserDataAccess {
+    private final Map<String, UserData> users = new HashMap<>();
 
-    public UserDAO(Connection connection) {
-        this.connection = connection;
-    }
-
-    public void insertUser(UserData ud) throws DataAccessException {
-        String sql = "INSERT INTO Users (username, password, email) VALUES (?, ?, ?)";
-        try (PreparedStatement s = connection.prepareStatement(sql)) {
-            s.setString(1, ud.username());
-            s.setString(2, ud.password());
-            s.setString(3, ud.email());
-            s.executeUpdate();
-        } catch (SQLException e) {
-            throw new DataAccessException("Could not insert user", e);
+    @Override
+    public void insertUser(UserData user) throws DataAccessException {
+        if (users.containsKey(user.getUsername())) {
+            throw new DataAccessException("User already exists");
         }
+        users.put(user.getUsername(), user);
     }
 
+    @Override
     public UserData getUser(String username) throws DataAccessException {
-        String sql = "SELECT * FROM Users WHERE username = ?";
-        try (PreparedStatement s = connection.prepareStatement(sql)) {
-            s.setString(1, username);
-            ResultSet rs = s.executeQuery();
-            if (rs.next()) {
-                return new UserData(rs.getString("username"), rs.getString("password"), rs.getString("email"));
-            } else {
-                return null;
-            }
-        } catch (SQLException e) {
-            throw new DataAccessException("Could not retrieve user", e);
+        UserData user = users.get(username);
+        if (user == null) {
+            throw new DataAccessException("User not found");
         }
+        return user;
     }
 
-    public void updateUser(UserData ud) throws DataAccessException {
-        String sql = "UPDATE Users SET password = ?, email = ? WHERE username = ?";
-        try (PreparedStatement s = connection.prepareStatement(sql)) {
-            s.setString(1, ud.password());
-            s.setString(2, ud.email());
-            s.setString(3, ud.username());
-            s.executeUpdate();
-        } catch (SQLException e) {
-            throw new DataAccessException("Could not update user", e);
-        }
-    }
-
-    public void deleteUser(String username) throws DataAccessException {
-        String sql = "DELETE FROM Users WHERE username = ?";
-        try (PreparedStatement s = connection.prepareStatement(sql)) {
-            s.setString(1, username);
-            s.executeUpdate();
-        } catch (SQLException e) {
-            throw new DataAccessException("Could not delete user", e);
-        }
-    }
-
-    // Clear (Clear all user data for testing)
+    @Override
     public void clear() throws DataAccessException {
-        String sql = "DELETE FROM Users";
-        try (PreparedStatement s = connection.prepareStatement(sql)) {
-            s.executeUpdate();
-        } catch (SQLException e) {
-            throw new DataAccessException("Error clearing user data", e);
-        }
+        users.clear();
     }
 }
