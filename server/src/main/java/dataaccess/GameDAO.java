@@ -2,90 +2,55 @@ package dataaccess;
 
 import chess.ChessGame;
 import model.GameData;
-import java.sql.*;
-import java.util.ArrayList;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
 
 public class GameDAO {
-    private final Connection connection;
+    private Map<Integer, GameData> games = new HashMap<>();
 
-    public GameDAO(Connection connection) {
-        this.connection = connection;
+    public GameDAO(HashMap<Integer, GameData> games) {
+        this.games = games;
     }
 
     public void createGame(GameData game) throws DataAccessException {
-        String sql = "INSERT INTO Games (gameID, player1, player2, gameName, ) VALUES (?, ?, ?, ?)";
-        try (PreparedStatement s = connection.prepareStatement(sql)) {
-            s.setInt(1, game.gameID());
-            s.setString(2, game.whiteUsername());
-            s.setString(3, game.blackUsername());
-            s.setString(4, game.gameName());
-            s.setObject(5, game.game());
-            s.executeUpdate();
-        } catch (SQLException e) {
-            throw new DataAccessException("Could not add game", e);
+        if (games.containsKey(game.getGameId())) {
+            throw new DataAccessException("Game already exists");
         }
+        games.put(game.getGameId(), game);
     }
 
-    public GameData getGame(String gameID) throws DataAccessException {
-        String sql = "SELECT * FROM Games WHERE gameID = ?";
-        try (PreparedStatement s = connection.prepareStatement(sql)) {
-            s.setString(1, gameID);
-            ResultSet rs = s.executeQuery();
-            if (rs.next()) {
-                return new GameData(rs.getInt("gameID"), rs.getString("gameState"),
-                        rs.getString("player1"), rs.getString("player2"), (ChessGame) rs.getObject("game"));
-            } else {
-                return null;
-            }
-        } catch (SQLException e) {
-            throw new DataAccessException("Could not getGame", e);
+    public GameData getGame(int gameId) throws DataAccessException {
+        GameData game = games.get(gameId);
+        if (game == null) {
+            throw new DataAccessException("Game not found");
         }
+        return game;
     }
 
     public List<GameData> listGames() throws DataAccessException {
-        List<GameData> games = new ArrayList<>();
-        String sql = "SELECT * FROM Games";
-        try (PreparedStatement s = connection.prepareStatement(sql)) {
-            ResultSet rs = s.executeQuery();
-            while (rs.next()) {
-                GameData game = new GameData(rs.getInt("gameID"), rs.getString("gameState"),
-                        rs.getString("player1"), rs.getString("player2"), (ChessGame) rs.getObject("game"));
-                games.add(game);
-            }
-        } catch (SQLException e) {
-            throw new DataAccessException("Could not listGames", e);
-        }
-        return games;
+        return new ArrayList<>(games.values());  // Return all games in the map as a list
     }
 
-    public void updateGame(Integer gameID, ChessGame game) throws DataAccessException {
-        String sql = "UPDATE Games SET gameState = ? WHERE gameID = ?";
-        try (PreparedStatement s = connection.prepareStatement(sql)) {
-            s.setInt(1, gameID);
-            s.setObject(2, game);
-            s.executeUpdate();
-        } catch (SQLException e) {
-            throw new DataAccessException("Could not updateGame", e);
+    public void updateGame(int gameId, ChessGame updatedGame) throws DataAccessException {
+        GameData gameData = games.get(gameId);
+        if (gameData == null) {
+            throw new DataAccessException("Game not found");
         }
+        gameData.setGame(updatedGame);
+        games.put(gameId, gameData);
     }
 
-    public void deleteGame(String gameID) throws DataAccessException {
-        String sql = "DELETE FROM Games WHERE gameID = ?";
-        try (PreparedStatement s = connection.prepareStatement(sql)) {
-            s.setString(1, gameID);
-            s.executeUpdate();
-        } catch (SQLException e) {
-            throw new DataAccessException("Could not delete Game", e);
+    public void deleteGame(int gameId) throws DataAccessException {
+        if (!games.containsKey(gameId)) {
+            throw new DataAccessException("Game not found");
         }
+        games.remove(gameId);
     }
 
     public void clear() throws DataAccessException {
-        String sql = "DELETE FROM Games";
-        try (PreparedStatement s = connection.prepareStatement(sql)) {
-            s.executeUpdate();
-        } catch (SQLException e) {
-            throw new DataAccessException("Could not access data", e);
-        }
+        games.clear();
     }
 }

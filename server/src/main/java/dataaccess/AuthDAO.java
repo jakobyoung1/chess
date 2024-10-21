@@ -1,57 +1,39 @@
 package dataaccess;
 
 import model.AuthData;
-import java.sql.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AuthDAO {
-    private final Connection connection;
+    private final Map<String, AuthData> authTokens;
 
-    public AuthDAO(Connection connection) {
-        this.connection = connection;
+    public AuthDAO(Map<String, AuthData> authTokens) {
+        this.authTokens = authTokens;
     }
 
     public void createAuth(AuthData auth) throws DataAccessException {
-        String sql = "INSERT INTO Auth (authToken, username) VALUES (?, ?)";
-        try (PreparedStatement s = connection.prepareStatement(sql)) {
-            s.setString(1, auth.authToken());
-            s.setString(2, auth.username());
-            s.executeUpdate();
-        } catch (SQLException e) {
-            throw new DataAccessException("Could not create new Auth", e);
+        if (authTokens.containsKey(auth.authToken())) {
+            throw new DataAccessException("Auth token already exists");
         }
+        authTokens.put(auth.authToken(), auth);
     }
 
     public AuthData getAuth(String authToken) throws DataAccessException {
-        String sql = "SELECT * FROM Auth WHERE authToken = ?";
-        try (PreparedStatement s = connection.prepareStatement(sql)) {
-            s.setString(1, authToken);
-            ResultSet rs = s.executeQuery();
-            if (rs.next()) {
-                return new AuthData(rs.getString("authToken"), rs.getString("username"));
-            } else {
-                return null;
-            }
-        } catch (SQLException e) {
-            throw new DataAccessException("Could not retrieve Auth", e);
+        AuthData auth = authTokens.get(authToken);
+        if (auth == null) {
+            return null;
         }
+        return auth;
     }
 
     public void deleteAuth(String authToken) throws DataAccessException {
-        String sql = "DELETE FROM Auth WHERE authToken = ?";
-        try (PreparedStatement s = connection.prepareStatement(sql)) {
-            s.setString(1, authToken);
-            s.executeUpdate();
-        } catch (SQLException e) {
-            throw new DataAccessException("Could not delete auth", e);
+        if (!authTokens.containsKey(authToken)) {
+            throw new DataAccessException("Auth token not found");
         }
+        authTokens.remove(authToken);
     }
 
     public void clear() throws DataAccessException {
-        String sql = "DELETE FROM Auth";
-        try (PreparedStatement s = connection.prepareStatement(sql)) {
-            s.executeUpdate();
-        } catch (SQLException e) {
-            throw new DataAccessException("Could not clear auth data", e);
-        }
+        authTokens.clear();
     }
 }

@@ -1,4 +1,4 @@
-package server;
+package server.results;
 
 import chess.ChessGame;
 

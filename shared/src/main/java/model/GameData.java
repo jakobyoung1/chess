@@ -6,9 +6,9 @@ import chess.InvalidMoveException;
 
 public class GameData {
     private final int gameId;
-    private final String whiteUsername;
-    private final String blackUsername;
-    private final ChessGame game;
+    private String whiteUsername;
+    private String blackUsername;
+    private ChessGame game;
     private final String gameName;
 
     public GameData(int gameId, String whiteUsername, String blackUsername, String gameName) {
@@ -23,9 +23,7 @@ public class GameData {
         return gameId;
     }
 
-    // The new makeMove method
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        // Call the makeMove method from the ChessGame class to update the board
         game.makeMove(move);
     }
 
@@ -37,4 +35,23 @@ public class GameData {
         return gameName;
     }
 
+    public void setGame(ChessGame game) {
+        this.game = game;
+    }
+
+    public void setWhiteUsername(String user) {
+        whiteUsername = user;
+    }
+
+    public void setBlackUsername(String user) {
+        blackUsername = user;
+    }
+
+    public String getWhiteUsername() {
+        return whiteUsername;
+    }
+
+    public String getBlackUsername() {
+        return blackUsername;
+    }
 }

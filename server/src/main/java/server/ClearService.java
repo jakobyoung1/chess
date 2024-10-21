@@ -4,17 +4,17 @@ import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
 import dataaccess.GameDAO;
 import dataaccess.AuthDAO;
-import java.sql.Connection;
+import server.results.ClearResult;
 
 public class ClearService {
     private final UserDAO userDAO;
     private final GameDAO gameDAO;
     private final AuthDAO authDAO;
 
-    public ClearService(Connection connection) {
-        this.userDAO = new UserDAO(connection);
-        this.gameDAO = new GameDAO(connection);
-        this.authDAO = new AuthDAO(connection);
+    public ClearService(UserDAO userDAO, GameDAO gameDAO, AuthDAO authDAO) {
+        this.userDAO = userDAO;
+        this.gameDAO = gameDAO;
+        this.authDAO = authDAO;
     }
 
     public ClearResult clear() throws DataAccessException {
