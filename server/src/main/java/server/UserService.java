@@ -58,10 +58,15 @@ public class UserService {
     }
 
     public LogoutResult logout(LogoutRequest request) throws DataAccessException {
-        authDAO.deleteAuth(request.authToken());
+        try {
+            authDAO.deleteAuth(request.authToken());
 
-        return new LogoutResult("Logout successful");
+            return new LogoutResult("Logout successful");
+        } catch (DataAccessException e) {
+            return new LogoutResult("Error: Invalid auth token");
+        }
     }
+
 
     private AuthData generateAuthToken(String username) {
         String authToken = UUID.randomUUID().toString();  // Generate a unique token

@@ -22,7 +22,7 @@ public class LogoutHandler implements Route {
         String authToken = req.headers("Authorization");
 
         if (authToken == null || authToken.isEmpty()) {
-            res.status(400);
+            res.status(400);  // Bad Request
             return gson.toJson(new LogoutResult("Error: Missing auth token"));
         }
 
