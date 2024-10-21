@@ -24,6 +24,13 @@ public class RegisterHandler implements Route {
         RegisterResult result = userService.register(request);
 
         res.type("application/json");
+        if (result.message().contains("Error: Username and password must not be null")) {
+            res.status(400);
+        } else if (result.message().contains("Error: Username already taken")) {
+            res.status(403);
+        } else {
+            res.status(200);
+        }
         return gson.toJson(result);
     }
 }

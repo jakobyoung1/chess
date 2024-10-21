@@ -19,14 +19,16 @@ public class LoginHandler implements Route {
     public Object handle(Request req, Response res) throws Exception {
         Gson gson = new Gson();
 
-        // Deserialize the login request
         LoginRequest request = gson.fromJson(req.body(), LoginRequest.class);
 
-        // Call the UserService to log in the user
         LoginResult result = userService.login(request);
 
-        // Set response content type to JSON and return the result
         res.type("application/json");
+        if (result.message().contains("Error")) {
+            res.status(401);
+        } else {
+            res.status(200);
+        }
         return gson.toJson(result);
     }
 }
