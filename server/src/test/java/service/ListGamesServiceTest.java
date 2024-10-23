@@ -17,23 +17,25 @@ public class ListGamesServiceTest {
 
         ListGamesService service = new ListGamesService(gameDAO);
 
+        // trying a positive test
         try {
-            ListGamesRequest request = new ListGamesRequest(); // Create a ListGamesRequest object
-            ListGamesResult result = service.listGames(request);
+            ListGamesRequest req = new ListGamesRequest();
+            ListGamesResult res = service.listGames(req);
 
-            assert result.getGames().size() == 2 : "Positive Test Failed: Expected 2 games";
+            assert res.getGames().size() == 2 : "Positive Test Failed";
             System.out.println("Positive Test Passed");
         } catch (DataAccessException e) {
             System.out.println("Positive Test Exception: " + e.getMessage());
         }
 
+        //negative test
         try {
             gameDAO.clear();
 
-            ListGamesRequest request = new ListGamesRequest(); // Create a ListGamesRequest object
-            ListGamesResult result = service.listGames(request);
+            ListGamesRequest req = new ListGamesRequest();
+            ListGamesResult res = service.listGames(req);
 
-            assert result.getGames().size() == 0 : "Negative Test Failed: Expected no games";
+            assert res.getGames().size() == 0 : "Negative Test Failed";
             System.out.println("Negative Test Passed");
         } catch (DataAccessException e) {
             System.out.println("Negative Test Exception: " + e.getMessage());

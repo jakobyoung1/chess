@@ -14,20 +14,20 @@ public class LoginServiceTest {
         LoginService service = new LoginService(new UserDAO(new HashMap<>(), new HashMap<>()), new AuthDAO(new HashMap<>()));
 
         try {
-            LoginRequest request = new LoginRequest("validUser", "validPassword");
-            LoginResult result = service.login(request);
+            LoginRequest req = new LoginRequest("validUser", "validPassword");
+            LoginResult res = service.login(req);
 
-            assert result.authToken() != null : "Positive Test Failed: Expected valid authToken";
+            assert res.authToken() != null : "Positive Test Failed";
             System.out.println("Positive Test Passed");
         } catch (DataAccessException e) {
             System.out.println("Positive Test Exception: " + e.getMessage());
         }
 
         try {
-            LoginRequest request = new LoginRequest("invalidUser", "wrongPassword");
-            LoginResult result = service.login(request);
+            LoginRequest req = new LoginRequest("invalidUser", "wrongPassword");
+            LoginResult res = service.login(req);
 
-            assert result == null : "Negative Test Failed: Expected null for invalid login";
+            assert res == null : "Negative Test Failed";
             System.out.println("Negative Test Passed");
         } catch (DataAccessException e) {
             System.out.println("Negative Test Exception: " + e.getMessage());

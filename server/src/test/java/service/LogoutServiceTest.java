@@ -12,21 +12,24 @@ import java.util.HashMap;
 public class LogoutServiceTest {
     public static void main(String[] args) {
         LogoutService service = new LogoutService(new UserDAO(new HashMap<>(), new HashMap<>()), new AuthDAO(new HashMap<>()));
-        try {
-            LogoutRequest request = new LogoutRequest("validAuthToken");
-            LogoutResult result = service.logout(request);
 
-            assert result != null : "Positive Test Failed: Expected successful logout";
+        // positive test
+        try {
+            LogoutRequest req = new LogoutRequest("validAuthToken");
+            LogoutResult res = service.logout(req);
+
+            assert res != null : "Positive Test Failed";
             System.out.println("Positive Test Passed");
         } catch (DataAccessException e) {
             System.out.println("Positive Test Exception: " + e.getMessage());
         }
 
+        // negative test
         try {
-            LogoutRequest request = new LogoutRequest("invalidAuthToken");
-            LogoutResult result = service.logout(request);
+            LogoutRequest req = new LogoutRequest("invalidAuthToken");
+            LogoutResult res = service.logout(req);
 
-            assert result == null : "Negative Test Failed: Expected null result for invalid authToken";
+            assert res == null : "Negative Test Failed";
             System.out.println("Negative Test Passed");
         } catch (DataAccessException e) {
             System.out.println("Negative Test Exception: " + e.getMessage());

@@ -19,35 +19,38 @@ public class JoinGameServiceTest {
         try {
             gameDAO.createGame(game1);
 
+            // trying a positive test
             try {
-                JoinGameRequest request = new JoinGameRequest("WHITE", "player1", 1);
-                JoinGameResult result = service.joinGame(request);
-                assert result.getMessage().equals("Joined game successfully") : "Positive Test Failed: Expected success message";
+                JoinGameRequest req = new JoinGameRequest("WHITE", "player1", 1);
+                JoinGameResult res = service.joinGame(req);
+                assert res.getMessage().equals("Joined game") : "Positive Test Failed";
                 System.out.println("Positive Test Passed");
             } catch (DataAccessException e) {
                 System.out.println("Positive Test Exception: " + e.getMessage());
             }
 
+            // trying a negative test
             try {
-                JoinGameRequest request = new JoinGameRequest("BLACK", "player2", -1);  // Invalid game ID
-                JoinGameResult result = service.joinGame(request);
-                assert result.getMessage().contains("Error: Invalid game ID") : "Negative Test Failed: Expected invalid game ID error";
+                JoinGameRequest req = new JoinGameRequest("BLACK", "player2", -1);
+                JoinGameResult res = service.joinGame(req);
+                assert res.getMessage().contains("Error: Invalid game ID") : "Negative Test Failed";
                 System.out.println("Negative Test Passed");
             } catch (DataAccessException e) {
                 System.out.println("Negative Test Exception: " + e.getMessage());
             }
 
+            // trying a negative test
             try {
-                JoinGameRequest request = new JoinGameRequest("WHITE", "player3", 1);  // White already taken
-                JoinGameResult result = service.joinGame(request);
-                assert result.getMessage().contains("Error: Player color already taken") : "Negative Test Failed: Expected player color taken error";
+                JoinGameRequest req = new JoinGameRequest("WHITE", "player3", 1);  // White already taken
+                JoinGameResult res = service.joinGame(req);
+                assert res.getMessage().contains("Error: Player color taken") : "Negative Test Failed";
                 System.out.println("Negative Test Passed");
             } catch (DataAccessException e) {
                 System.out.println("Negative Test Exception: " + e.getMessage());
             }
 
         } catch (DataAccessException e) {
-            System.out.println("Game creation failed: " + e.getMessage());
+            System.out.println("Create game failed: " + e.getMessage());
         }
     }
 }

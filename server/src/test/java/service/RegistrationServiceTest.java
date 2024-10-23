@@ -14,21 +14,21 @@ public class RegistrationServiceTest {
         RegistrationService service = new RegistrationService(new UserDAO(new HashMap<>(), new HashMap<>()), new AuthDAO(new HashMap<>()));
 
         try {
-            RegisterRequest request = new RegisterRequest("newUser", "newPassword", "newUser@mail.com");
-            RegisterResult result = service.register(request);
+            RegisterRequest req = new RegisterRequest("newUser", "newPassword", "newUser@mail.com");
+            RegisterResult res = service.register(req);
 
-            assert result.authToken() != null : "Positive Test Failed: Expected valid authToken";
-            assert "newUser".equals(result.username()) : "Positive Test Failed: Expected newUser as username";
+            assert res.authToken() != null : "Positive Test Failed";
+            assert "newUser".equals(res.username()) : "Positive Test Failed";
             System.out.println("Positive Test Passed");
         } catch (DataAccessException e) {
             System.out.println("Positive Test Exception: " + e.getMessage());
         }
 
         try {
-            RegisterRequest request = new RegisterRequest("existingUser", "existingPassword", "existingUser@mail.com");
-            RegisterResult result = service.register(request);
+            RegisterRequest req = new RegisterRequest("existingUser", "existingPassword", "existingUser@mail.com");
+            RegisterResult res = service.register(req);
 
-            assert result == null || result.message().contains("Error: already taken") : "Negative Test Failed: Expected error for existing username";
+            assert res == null || res.message().contains("Error: already taken") : "Negative Test Failed";
             System.out.println("Negative Test Passed");
         } catch (DataAccessException e) {
             System.out.println("Negative Test Exception: " + e.getMessage());

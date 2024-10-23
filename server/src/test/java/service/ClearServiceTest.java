@@ -14,6 +14,7 @@ public class ClearServiceTest {
 
         ClearService service = new ClearService(new UserDAO(new HashMap<>(), new HashMap<>()), new GameDAO(new HashMap<>()), new AuthDAO(new HashMap<>()));
 
+        // trying a positive test
         try {
             ClearResult res = service.clear();
             assert res.message().equals("Clear successful") : "Failed Positive Test";
@@ -22,6 +23,7 @@ public class ClearServiceTest {
             System.out.println("PT e: " + e.getMessage());
         }
 
+        // trying a negative test
         try {
             ClearResult res = service.clear();
             assert res.message().contains("Error") : "Failed Negative Test";
