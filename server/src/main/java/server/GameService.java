@@ -44,6 +44,12 @@ public class GameService {
     public JoinGameResult joinGame(JoinGameRequest request) throws DataAccessException {
         System.out.println("joinGameResult ID: " + request.gameID());
 
+        // Check if playerColor is valid
+        if (request.playerColor() == null ||
+                (!"WHITE".equals(request.playerColor()) && !"BLACK".equals(request.playerColor()))) {
+            return new JoinGameResult(request.gameID(), "Error: Invalid player color");
+        }
+
         GameData game = gameDAO.getGame(request.gameID());
 
         if (game == null) {
@@ -51,22 +57,20 @@ public class GameService {
         }
 
         if ("WHITE".equals(request.playerColor()) && game.getWhiteUsername() == null) {
-            System.out.println("Joining as WHITE: " + request.username());
             game.setWhiteUsername(request.username());
         }
         else if ("BLACK".equals(request.playerColor()) && game.getBlackUsername() == null) {
-            System.out.println("Joining as BLACK: " + request.username());
             game.setBlackUsername(request.username());
         }
         else {
             return new JoinGameResult(request.gameID(), "Error: Player color already taken");
         }
 
-
         gameDAO.updateGame(game.getGameId(), game.getGame());
 
         return new JoinGameResult(request.gameID(), "Joined game successfully");
     }
+
 
 
     public MoveResult makeMove(MoveRequest request) throws DataAccessException, InvalidMoveException {

@@ -36,13 +36,23 @@ public class JoinGameHandler implements Route {
         JoinGameRequest request = gson.fromJson(req.body(), JoinGameRequest.class);
 
         System.out.println("handler received gameID: " + request.gameID());
-        System.out.println("Joining as WHITE: " + username);
+        System.out.println("Joining as: " + username);
 
         JoinGameRequest updatedRequest = new JoinGameRequest(request.playerColor(), username, request.gameID());
 
         JoinGameResult result = gameService.joinGame(updatedRequest);
 
         res.type("application/json");
+
+        if (result.message().contains("Error: Invalid player color")) {
+            res.status(400);
+        } else if (result.message().contains("Error")) {
+            res.status(400);
+        } else {
+            res.status(200);
+        }
+
         return gson.toJson(result);
     }
+
 }
