@@ -18,11 +18,7 @@ public class ClearService {
     }
 
     public ClearResult clear() throws DataAccessException {
-        if(userDAO.getUsers().isEmpty()
-            && authDAO.getAuthTokens().isEmpty()
-                && gameDAO.getGames().isEmpty()) {
-            return new ClearResult("Error: No data to clear");
-        }
+
         try {
             userDAO.clear();
             gameDAO.clear();

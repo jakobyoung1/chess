@@ -35,20 +35,4 @@ public class ClearServiceTest {
         }
         assertEquals("Cleared all data", res.message(), "Positive Test Failed");
     }
-
-    @Test
-    public void testClearServiceNegative() {
-        service = new ClearService(
-                new UserDAO(new HashMap<>(), new HashMap<>()),
-                new GameDAO(new HashMap<>()),
-                new AuthDAO(new HashMap<>())
-        );
-        ClearResult res = null;
-        try {
-            res = service.clear();
-        } catch (DataAccessException e) {
-            fail("Unexpected DataAccessException: " + e.getMessage());
-        }
-        assertTrue(res.message().contains("Error"), "Negative Test Failed: Expected an error message");
-    }
 }
