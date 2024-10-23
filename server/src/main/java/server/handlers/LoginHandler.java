@@ -1,6 +1,7 @@
 package server.handlers;
 
 import com.google.gson.Gson;
+import server.LoginService;
 import server.UserService;
 import server.requests.LoginRequest;
 import server.results.LoginResult;
@@ -9,10 +10,10 @@ import spark.Response;
 import spark.Route;
 
 public class LoginHandler implements Route {
-    private final UserService userService;
+    private final LoginService logService;
 
-    public LoginHandler(UserService userService) {
-        this.userService = userService;
+    public LoginHandler(LoginService logService) {
+        this.logService = logService;
     }
 
     @Override
@@ -21,7 +22,7 @@ public class LoginHandler implements Route {
 
         LoginRequest request = gson.fromJson(req.body(), LoginRequest.class);
 
-        LoginResult result = userService.login(request);
+        LoginResult result = logService.login(request);
 
         res.type("application/json");
         if (result.message().contains("Error")) {
