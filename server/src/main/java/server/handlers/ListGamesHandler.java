@@ -2,6 +2,7 @@ package server.handlers;
 
 import com.google.gson.Gson;
 import server.GameService;
+import server.ListGamesService;
 import server.requests.ListGamesRequest;
 import server.results.ListGamesResult;
 import dataaccess.AuthDAO;
@@ -11,11 +12,11 @@ import spark.Response;
 import spark.Route;
 
 public class ListGamesHandler implements Route {
-    private final GameService gameService;
+    private final ListGamesService listGamesService;
     private final AuthDAO authDAO;
 
-    public ListGamesHandler(GameService gameService, AuthDAO authDAO) {
-        this.gameService = gameService;
+    public ListGamesHandler(ListGamesService listGamesService, AuthDAO authDAO) {
+        this.listGamesService = listGamesService;
         this.authDAO = authDAO;
     }
 
@@ -32,7 +33,7 @@ public class ListGamesHandler implements Route {
         }
 
         ListGamesRequest request = new ListGamesRequest();
-        ListGamesResult result = gameService.listGames(request);
+        ListGamesResult result = listGamesService.listGames(request);
 
         res.type("application/json");
         return gson.toJson(result);
