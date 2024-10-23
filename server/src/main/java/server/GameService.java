@@ -5,12 +5,9 @@ import chess.ChessMove;
 import chess.InvalidMoveException;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
-import model.AuthData;
 import model.GameData;
-import server.requests.GameStateRequest;
 import server.requests.MoveRequest;
 import server.requests.*;
-import server.results.GameStateResult;
 import server.results.MoveResult;
 import server.results.*;
 

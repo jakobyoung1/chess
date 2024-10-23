@@ -21,25 +21,6 @@ public class UserService {
         this.authDAO = authDAO;
     }
 
-    public RegisterResult register(RegisterRequest request) throws DataAccessException {
-        if (request.username() == null || request.password() == null) {
-            return new RegisterResult("Error: Username and password must not be null");
-        }
-
-        if (userDAO.getUser(request.username()) != null) {
-            return new RegisterResult("Error: Username already taken");
-        }
-        System.out.println("inserting username: " + request.username());
-
-        UserData newUser = new UserData(request.username(), request.password(), request.email());
-        userDAO.insertUser(newUser);
-
-        AuthData authData = generateAuthToken(newUser.getUsername());
-        authDAO.createAuth(authData);
-
-        return new RegisterResult(authData.username(), authData.authToken(), "User registered successfully");
-    }
-
     public LoginResult login(LoginRequest request) throws DataAccessException {
         UserData existingUser = userDAO.getUser(request.username());
 

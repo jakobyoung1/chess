@@ -1,6 +1,7 @@
 package server.handlers;
 
 import com.google.gson.Gson;
+import server.RegistrationService;
 import server.UserService;
 import server.requests.RegisterRequest;
 import server.results.RegisterResult;
@@ -9,10 +10,10 @@ import spark.Response;
 import spark.Route;
 
 public class RegisterHandler implements Route {
-    private final UserService userService;
+    private final RegistrationService regService;
 
-    public RegisterHandler(UserService userService) {
-        this.userService = userService;
+    public RegisterHandler(RegistrationService regService) {
+        this.regService = regService;
     }
 
     @Override
@@ -21,7 +22,7 @@ public class RegisterHandler implements Route {
 
         RegisterRequest request = gson.fromJson(req.body(), RegisterRequest.class);
 
-        RegisterResult result = userService.register(request);
+        RegisterResult result = regService.register(request);
 
         res.type("application/json");
         if (result.message().contains("Error: Username and password must not be null")) {
