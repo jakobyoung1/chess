@@ -44,7 +44,10 @@ public class GameService {
     public JoinGameResult joinGame(JoinGameRequest request) throws DataAccessException {
         System.out.println("joinGameResult ID: " + request.gameID());
 
-        // Check if playerColor is valid
+        if (request.gameID() <= 0) {
+            return new JoinGameResult(request.gameID(), "Error: Invalid game ID");
+        }
+
         if (request.playerColor() == null ||
                 (!"WHITE".equals(request.playerColor()) && !"BLACK".equals(request.playerColor()))) {
             return new JoinGameResult(request.gameID(), "Error: Invalid player color");
@@ -58,11 +61,9 @@ public class GameService {
 
         if ("WHITE".equals(request.playerColor()) && game.getWhiteUsername() == null) {
             game.setWhiteUsername(request.username());
-        }
-        else if ("BLACK".equals(request.playerColor()) && game.getBlackUsername() == null) {
+        } else if ("BLACK".equals(request.playerColor()) && game.getBlackUsername() == null) {
             game.setBlackUsername(request.username());
-        }
-        else {
+        } else {
             return new JoinGameResult(request.gameID(), "Error: Player color already taken");
         }
 
@@ -70,6 +71,7 @@ public class GameService {
 
         return new JoinGameResult(request.gameID(), "Joined game successfully");
     }
+
 
 
 
