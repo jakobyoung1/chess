@@ -5,7 +5,7 @@ import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
 import org.junit.jupiter.api.Test;
-import server.Service.ClearService;
+import server.service.ClearService;
 import server.results.ClearResult;
 
 import java.util.HashMap;
@@ -16,7 +16,9 @@ public class ClearServiceTest {
 
     @Test
     public void testClearServicePositive() {
-        ClearService service = new ClearService(new UserDAO(new HashMap<>(), new HashMap<>()), new GameDAO(new HashMap<>()), new AuthDAO(new HashMap<>()));
+        ClearService service = new ClearService(new UserDAO(new HashMap<>(),
+                new HashMap<>()), new GameDAO(new HashMap<>()),
+                new AuthDAO(new HashMap<>()));
 
         try {
             ClearResult res = service.clear();
@@ -29,7 +31,9 @@ public class ClearServiceTest {
 
     @Test
     public void testClearServiceNegative() {
-        ClearService service = new ClearService(new UserDAO(new HashMap<>(), new HashMap<>()), new GameDAO(new HashMap<>()), new AuthDAO(new HashMap<>()));
+        ClearService service = new ClearService(new UserDAO(new HashMap<>(),
+                new HashMap<>()), new GameDAO(new HashMap<>()),
+                new AuthDAO(new HashMap<>()));
 
         try {
             ClearResult res = service.clear();

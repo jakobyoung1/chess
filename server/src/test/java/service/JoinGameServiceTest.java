@@ -3,7 +3,7 @@ package service;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import model.GameData;
-import server.Service.JoinGameService;
+import server.service.JoinGameService;
 import server.requests.JoinGameRequest;
 import server.results.JoinGameResult;
 

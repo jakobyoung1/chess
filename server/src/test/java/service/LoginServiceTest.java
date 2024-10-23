@@ -3,7 +3,7 @@ package service;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
-import server.Service.LoginService;
+import server.service.LoginService;
 import server.requests.LoginRequest;
 import server.results.LoginResult;
 

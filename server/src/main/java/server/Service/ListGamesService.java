@@ -1,4 +1,4 @@
-package server.Service;
+package server.service;
 
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
@@ -8,7 +8,6 @@ import server.results.ListGamesResult;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class ListGamesService {
     private final GameDAO gameDAO;

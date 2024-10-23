@@ -3,7 +3,7 @@ package server.handlers;
 import com.google.gson.Gson;
 import dataaccess.AuthDAO;
 import model.AuthData;
-import server.Service.JoinGameService;
+import server.service.JoinGameService;
 import server.results.JoinGameResult;
 import server.requests.JoinGameRequest;
 import spark.Request;

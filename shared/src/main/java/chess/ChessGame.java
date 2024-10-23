@@ -124,7 +124,11 @@ public class ChessGame {
         var kingPos = board.getKingPos(teamColor);
         TeamColor opColor = (teamColor == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
 
-        return knightThreatensKing(kingPos, opColor) || kingThreatensKing(kingPos, opColor) || rookOrQueenThreatensKing(kingPos, opColor) || bishopOrQueenThreatensKing(kingPos, opColor) || pawnThreatensKing(kingPos, opColor);
+        return knightThreatensKing(kingPos, opColor)
+                || kingThreatensKing(kingPos, opColor)
+                || rookOrQueenThreatensKing(kingPos, opColor)
+                || bishopOrQueenThreatensKing(kingPos, opColor)
+                || pawnThreatensKing(kingPos, opColor);
     }
 
     public static boolean wouldBeInCheck(TeamColor teamColor, ChessMove move, ChessBoard bord) {

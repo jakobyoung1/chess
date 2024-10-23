@@ -1,4 +1,4 @@
-package server.Service;
+package server.service;
 
 import dataaccess.DataAccessException;
 import dataaccess.UserDAO;

@@ -1,12 +1,10 @@
-package server.Service;
+package server.service;
 
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import model.GameData;
 import server.requests.JoinGameRequest;
 import server.results.JoinGameResult;
-
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class JoinGameService {
     private final GameDAO gameDAO;

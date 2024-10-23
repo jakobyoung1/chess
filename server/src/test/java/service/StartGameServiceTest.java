@@ -3,7 +3,7 @@ package service;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import model.GameData;
-import server.Service.StartGameService;
+import server.service.StartGameService;
 import server.requests.StartGameRequest;
 import server.results.StartGameResult;
 

@@ -3,7 +3,7 @@ package server.handlers;
 import com.google.gson.Gson;
 import dataaccess.AuthDAO;
 import model.AuthData;
-import server.Service.StartGameService;
+import server.service.StartGameService;
 import server.requests.StartGameRequest;
 import server.results.StartGameResult;
 import spark.Request;

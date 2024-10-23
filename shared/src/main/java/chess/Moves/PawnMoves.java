@@ -1,4 +1,4 @@
-package chess.Moves;
+package chess.moves;
 
 import chess.*;
 import java.util.HashSet;

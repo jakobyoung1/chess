@@ -3,7 +3,7 @@ package service;
 import dataaccess.GameDAO;
 import dataaccess.DataAccessException;
 import model.GameData;
-import server.Service.ListGamesService;
+import server.service.ListGamesService;
 import server.requests.ListGamesRequest;
 import server.results.ListGamesResult;
 
