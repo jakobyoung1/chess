@@ -1,15 +1,16 @@
 package server.results;
 
 import chess.ChessGame;
+import model.GameData;
 
 public class StartGameResult {
     private final int gameID;
-    private final ChessGame game;
+    private final GameData gameData;
     private final String message;
 
-    public StartGameResult(int gameID, ChessGame game, String message) {
+    public StartGameResult(int gameID, GameData gameData, String message) {
         this.gameID = gameID;
-        this.game = game;
+        this.gameData = gameData;
         this.message = message;
     }
 
@@ -17,8 +18,8 @@ public class StartGameResult {
         return gameID;
     }
 
-    public ChessGame getGame() {
-        return game;
+    public GameData getGameData() {
+        return gameData;
     }
 
     public String getMessage() {

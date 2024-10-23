@@ -28,6 +28,6 @@ public class StartGameService {
 
         System.out.println("just made this game: " + newGame.getGameId());
 
-        return new StartGameResult(newGame.getGameId(), game, "Game started successfully");
+        return new StartGameResult(newGame.getGameId(), newGame, "Game started successfully");
     }
 }

@@ -1,7 +1,6 @@
 package server.handlers;
 
 import com.google.gson.Gson;
-import server.GameService;
 import server.ListGamesService;
 import server.requests.ListGamesRequest;
 import server.results.ListGamesResult;

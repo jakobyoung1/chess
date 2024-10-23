@@ -3,7 +3,6 @@ package server.handlers;
 import com.google.gson.Gson;
 import dataaccess.AuthDAO;
 import model.AuthData;
-import server.GameService;
 import server.StartGameService;
 import server.requests.StartGameRequest;
 import server.results.StartGameResult;
@@ -58,7 +57,7 @@ public class StartGameHandler implements Route {
     private Map<String, Object> createCustomResponse(StartGameResult result) {
         Map<String, Object> response = new HashMap<>();
         response.put("gameID", result.getGameId());  // Map 'gameId' to 'id' for the test framework
-        response.put("game", result.getGame());
+        response.put("gameData", result.getGameData());
         response.put("message", result.getMessage());
         return response;
     }
@@ -66,7 +65,7 @@ public class StartGameHandler implements Route {
     private Map<String, Object> createErrorResponse(Integer gameId, String message) {
         Map<String, Object> response = new HashMap<>();
         response.put("gameID", gameId);
-        response.put("game", null);
+        response.put("gameData", null);
         response.put("message", message);
         return response;
     }
