@@ -280,26 +280,7 @@ public class ChessGame {
         return false;
     }
 
-    for (int row = 1; row <= board.getHeight(); row++) {
-        for (int col = 1; col <= board.getWidth(); col++) {
-            ChessPosition currentPosition = new ChessPosition(row, col);
-            ChessPiece piece = board.getPiece(currentPosition);
-
-            if (piece != null && piece.getTeamColor() == teamColor) {
-                Collection<ChessMove> validMoves = piece.pieceMoves(board, currentPosition);
-
-                for (ChessMove move : validMoves) {
-                    if (!ChessGame.wouldBeInCheck(teamColor, move, board)) {
-                        return false;
-                    }
-
-                }
-            }
-        }
-    }
-
-    // Step 5: If no valid move resolves the check, it is checkmate
-    return true;
+    return check(teamColor);
 }
 
 
@@ -314,26 +295,37 @@ public class ChessGame {
     if (isInCheck(teamColor)) {
         return false; // If in check, it cannot be stalemate
     }
+    return check(teamColor);
+}
 
-    for (int row = 1; row <= board.getHeight(); row++) {
+    public boolean check(TeamColor teamColor) {
+        for (int row = 1; row <= board.getHeight(); row++) {
+            if (isValidMoveFoundInRow(row, teamColor)) {
+                return false; // A valid move exists, so it's not a check
+            }
+        }
+        return true;
+    }
+
+    private boolean isValidMoveFoundInRow(int row, TeamColor teamColor) {
         for (int col = 1; col <= board.getWidth(); col++) {
             ChessPosition currentPosition = new ChessPosition(row, col);
             ChessPiece piece = board.getPiece(currentPosition);
 
             if (piece != null && piece.getTeamColor() == teamColor) {
-                Collection<ChessMove> validMoves = piece.pieceMoves(board, currentPosition);
-
-                for (ChessMove move : validMoves) {
-                    if (!ChessGame.wouldBeInCheck(teamColor, move, board)) {
-                        return false; // A valid move exists, so it's not stalemate
-                    }
+                if (hasValidMove(piece, currentPosition, teamColor)) {
+                    return true; // A valid move exists for this piece
                 }
             }
         }
+        return false;
     }
 
-    return true;
-}
+    private boolean hasValidMove(ChessPiece piece, ChessPosition currentPosition, TeamColor teamColor) {
+        Collection<ChessMove> validMoves = piece.pieceMoves(board, currentPosition);
+        return validMoves.stream().anyMatch(move -> !ChessGame.wouldBeInCheck(teamColor, move, board));
+    }
+
 
 
     /**

@@ -67,7 +67,7 @@ public class PawnMoves {
             if (isStartingPosition(myPosition)) {
                 handleDoubleMove(board, myPosition, newPosition, piece, moves);
             } else if (Math.abs(myPosition.getRow() - newPosition.getRow()) == 1) {
-                addMoveOrPromote(board, myPosition, newPosition, piece, moves);
+                handleDoubleMove(board, myPosition, newPosition, piece, moves);
             }
         }
     }
@@ -77,18 +77,6 @@ public class PawnMoves {
     }
 
     private static void handleDoubleMove(ChessBoard board,
-                                         ChessPosition myPosition,
-                                         ChessPosition newPosition,
-                                         ChessPiece piece,
-                                         HashSet<ChessMove> moves) {
-        if (newPosition.getRow() == 1 || newPosition.getRow() == 8) {
-            promotePawn(moves, myPosition, newPosition, piece, board);
-        } else {
-            moves.add(new ChessMove(myPosition, newPosition, null));
-        }
-    }
-
-    private static void addMoveOrPromote(ChessBoard board,
                                          ChessPosition myPosition,
                                          ChessPosition newPosition,
                                          ChessPiece piece,
