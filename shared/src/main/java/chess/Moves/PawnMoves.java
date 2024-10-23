@@ -34,7 +34,9 @@ public class PawnMoves {
         return new ChessPosition(nRow, nCol);
     }
 
-    private static void handleMove(ChessBoard board, ChessPosition myPosition, ChessPosition newPosition, ChessPiece piece, HashSet<ChessMove> moves) {
+    private static void handleMove(ChessBoard board, ChessPosition myPosition,
+                                   ChessPosition newPosition, ChessPiece piece,
+                                   HashSet<ChessMove> moves) {
         ChessPiece pieceAtNewPosition = board.getPiece(newPosition);
         ChessPiece pieceInFront = getPieceInFront(board, myPosition, piece);
 
@@ -55,7 +57,12 @@ public class PawnMoves {
         return board.getPiece(piece2pos);
     }
 
-    private static void handleForwardMove(ChessBoard board, ChessPosition myPosition, ChessPosition newPosition, ChessPiece piece, HashSet<ChessMove> moves, ChessPiece pieceInFront) {
+    private static void handleForwardMove(ChessBoard board,
+                                          ChessPosition myPosition,
+                                          ChessPosition newPosition,
+                                          ChessPiece piece,
+                                          HashSet<ChessMove> moves,
+                                          ChessPiece pieceInFront) {
         if (myPosition.getColumn() == newPosition.getColumn() && pieceInFront == null) {
             if (isStartingPosition(myPosition)) {
                 handleDoubleMove(board, myPosition, newPosition, piece, moves);
@@ -69,7 +76,11 @@ public class PawnMoves {
         return myPosition.getRow() == 2 || myPosition.getRow() == 7;
     }
 
-    private static void handleDoubleMove(ChessBoard board, ChessPosition myPosition, ChessPosition newPosition, ChessPiece piece, HashSet<ChessMove> moves) {
+    private static void handleDoubleMove(ChessBoard board,
+                                         ChessPosition myPosition,
+                                         ChessPosition newPosition,
+                                         ChessPiece piece,
+                                         HashSet<ChessMove> moves) {
         if (newPosition.getRow() == 1 || newPosition.getRow() == 8) {
             promotePawn(moves, myPosition, newPosition, piece, board);
         } else {
@@ -77,7 +88,11 @@ public class PawnMoves {
         }
     }
 
-    private static void addMoveOrPromote(ChessBoard board, ChessPosition myPosition, ChessPosition newPosition, ChessPiece piece, HashSet<ChessMove> moves) {
+    private static void addMoveOrPromote(ChessBoard board,
+                                         ChessPosition myPosition,
+                                         ChessPosition newPosition,
+                                         ChessPiece piece,
+                                         HashSet<ChessMove> moves) {
         if (newPosition.getRow() == 1 || newPosition.getRow() == 8) {
             promotePawn(moves, myPosition, newPosition, piece, board);
         } else {
@@ -85,7 +100,11 @@ public class PawnMoves {
         }
     }
 
-    private static void handleAttackMove(ChessBoard board, ChessPosition myPosition, ChessPosition newPosition, ChessPiece piece, HashSet<ChessMove> moves) {
+    private static void handleAttackMove(ChessBoard board,
+                                         ChessPosition myPosition,
+                                         ChessPosition newPosition,
+                                         ChessPiece piece,
+                                         HashSet<ChessMove> moves) {
         if (newPosition.getRow() == 1 || newPosition.getRow() == 8) {
             promotePawn(moves, myPosition, newPosition, piece, board);
         } else if (!ChessGame.wouldBeInCheck(piece.getTeamColor(), new ChessMove(myPosition, newPosition, null), board)) {
