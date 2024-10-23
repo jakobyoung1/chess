@@ -50,6 +50,7 @@ public class UserDAO implements UserDataAccess {
     @Override
     public void clear() throws DataAccessException {
         users.clear();
+        auths.clear();
         System.out.println("Users map cleared");
     }
 

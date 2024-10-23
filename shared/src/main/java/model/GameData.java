@@ -5,14 +5,14 @@ import chess.ChessMove;
 import chess.InvalidMoveException;
 
 public class GameData {
-    private final int gameId;
+    private final int gameID;
     private String whiteUsername;
     private String blackUsername;
     private ChessGame game;
     private final String gameName;
 
     public GameData(int gameId, String whiteUsername, String blackUsername, String gameName) {
-        this.gameId = gameId;
+        this.gameID = gameId;
         this.whiteUsername = whiteUsername;
         this.blackUsername = blackUsername;
         this.game = new ChessGame();
@@ -21,7 +21,7 @@ public class GameData {
     }
 
     public int getGameId() {
-        return gameId;
+        return gameID;
     }
 
     public void makeMove(ChessMove move) throws InvalidMoveException {
