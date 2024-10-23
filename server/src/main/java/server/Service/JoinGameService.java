@@ -10,7 +10,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class JoinGameService {
     private final GameDAO gameDAO;
-    private static final AtomicInteger nextGameId = new AtomicInteger(1);
 
     public JoinGameService(GameDAO gameDAO) {
         this.gameDAO = gameDAO;

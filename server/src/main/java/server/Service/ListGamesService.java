@@ -12,7 +12,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class ListGamesService {
     private final GameDAO gameDAO;
-    private static final AtomicInteger nextGameId = new AtomicInteger(1);
 
     public ListGamesService(GameDAO gameDAO) {
         this.gameDAO = gameDAO;

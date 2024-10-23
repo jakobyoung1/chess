@@ -25,7 +25,6 @@ public class UserDAO implements UserDataAccess {
 
         users.put(user.getUsername(), user);
 
-        // After inserting the user, print the map
         System.out.println("User inserted: " + user.getUsername());
         System.out.println("Users map after insert: " + users);
     }
@@ -42,7 +41,6 @@ public class UserDAO implements UserDataAccess {
             return null;
         }
 
-        // If user is found
         System.out.println("User found: " + user.getUsername());
         return user;
     }
@@ -52,13 +50,5 @@ public class UserDAO implements UserDataAccess {
         users.clear();
         auths.clear();
         System.out.println("Users map cleared");
-    }
-
-    public void invalidateSession(String authToken) throws DataAccessException {
-        if (auths.containsKey(authToken)) {
-            auths.remove(authToken);
-        } else {
-            throw new DataAccessException("Auth token not found");
-        }
     }
 }

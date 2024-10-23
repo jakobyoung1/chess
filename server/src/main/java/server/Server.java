@@ -28,16 +28,21 @@ public class Server {
         StartGameService startGameService = new StartGameService(gameDAO);
         JoinGameService joinGameService = new JoinGameService(gameDAO);
 
-        Spark.delete("/db", new ClearHandler(clearService));
-        Spark.post("/user", new RegisterHandler(regService));
-        Spark.post("/session", new LoginHandler(logService));
-        Spark.delete("/session", new LogoutHandler(outService));
-        Spark.get("/game", new ListGamesHandler(listGamesService, authDAO));
-        Spark.post("/game", new StartGameHandler(startGameService, authDAO));
-        Spark.put("/game", new JoinGameHandler(joinGameService, authDAO));
+        Spark.delete("/db", new ClearHandler(clearService));              // Clear the database
+        Spark.post("/user", new RegisterHandler(regService));             // Register a user
+        Spark.post("/session", new LoginHandler(logService));             // Login (create session)
+        Spark.delete("/session", new LogoutHandler(outService));          // Logout (remove session)
+        Spark.get("/game", new ListGamesHandler(listGamesService, authDAO)); // List games
+        Spark.post("/game", new StartGameHandler(startGameService, authDAO)); // Start a game
+        Spark.put("/game", new JoinGameHandler(joinGameService, authDAO)); // Join a game
 
+        Spark.get("/", (req, res) -> {
+            res.status(404);
+            return "Not Found";
+        });
 
         Spark.awaitInitialization();
+
         return Spark.port();
     }
 

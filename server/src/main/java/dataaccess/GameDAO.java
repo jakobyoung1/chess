@@ -49,13 +49,6 @@ public class GameDAO {
         games.put(gameId, gameData);
     }
 
-    public void deleteGame(int gameId) throws DataAccessException {
-        if (!games.containsKey(gameId)) {
-            throw new DataAccessException("Game not found");
-        }
-        games.remove(gameId);
-    }
-
     public void clear() throws DataAccessException {
         games.clear();
     }
