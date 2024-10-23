@@ -2,10 +2,8 @@ package service;
 
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
-import dataaccess.GameDAO;
 import dataaccess.UserDAO;
-import server.ClearService;
-import server.LogoutService;
+import server.Service.LogoutService;
 import server.requests.LogoutRequest;
 import server.results.LogoutResult;
 

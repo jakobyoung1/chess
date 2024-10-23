@@ -3,7 +3,7 @@ package service;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
-import server.RegistrationService;
+import server.Service.RegistrationService;
 import server.requests.RegisterRequest;
 import server.results.RegisterResult;
 

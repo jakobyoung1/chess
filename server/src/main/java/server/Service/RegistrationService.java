@@ -1,4 +1,4 @@
-package server;
+package server.Service;
 
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
@@ -21,11 +21,11 @@ public class RegistrationService {
 
     public RegisterResult register(RegisterRequest request) throws DataAccessException {
         if (request.username() == null || request.password() == null) {
-            return new RegisterResult("Error: Username and password must not be null");
+            return new RegisterResult("Error: null username or password");
         }
 
         if (userDAO.getUser(request.username()) != null) {
-            return new RegisterResult("Error: Username already taken");
+            return new RegisterResult("Error: Username taken");
         }
         System.out.println("inserting username: " + request.username());
 

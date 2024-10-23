@@ -1,7 +1,7 @@
 package server.handlers;
 
 import com.google.gson.Gson;
-import server.RegistrationService;
+import server.Service.RegistrationService;
 import server.requests.RegisterRequest;
 import server.results.RegisterResult;
 import spark.Request;
@@ -24,9 +24,9 @@ public class RegisterHandler implements Route {
         RegisterResult result = regService.register(request);
 
         res.type("application/json");
-        if (result.message().contains("Error: Username and password must not be null")) {
+        if (result.message().contains("Error: null username or password")) {
             res.status(400);
-        } else if (result.message().contains("Error: Username already taken")) {
+        } else if (result.message().contains("Error: Username taken")) {
             res.status(403);
         } else {
             res.status(200);

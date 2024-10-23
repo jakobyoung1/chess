@@ -1,4 +1,4 @@
-package server;
+package server.Service;
 
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
@@ -29,7 +29,7 @@ public class ListGamesService {
             System.out.println(games.get(0).getGameId());
             return new ListGamesResult(games);
         } catch (DataAccessException e) {
-            return new ListGamesResult("Error: Unable to retrieve game list - " + e.getMessage());
+            return new ListGamesResult("Error: game list - " + e.getMessage());
         }
     }
 

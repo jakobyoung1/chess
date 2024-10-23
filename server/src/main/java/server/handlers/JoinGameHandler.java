@@ -3,7 +3,7 @@ package server.handlers;
 import com.google.gson.Gson;
 import dataaccess.AuthDAO;
 import model.AuthData;
-import server.JoinGameService;
+import server.Service.JoinGameService;
 import server.results.JoinGameResult;
 import server.requests.JoinGameRequest;
 import spark.Request;
@@ -44,9 +44,9 @@ public class JoinGameHandler implements Route {
 
         res.type("application/json");
 
-        if (result.message().contains("Error: Invalid player color")) {
+        if (result.message().contains("Error: Invalid color")) {
             res.status(400);
-        } else if (result.message().contains("Error: Player color already taken")) {
+        } else if (result.message().contains("Error: Color taken")) {
             res.status(403);
         } else if (result.message().contains("Error")) {
             res.status(400);

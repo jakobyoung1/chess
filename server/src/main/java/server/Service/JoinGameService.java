@@ -1,4 +1,4 @@
-package server;
+package server.Service;
 
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
@@ -25,7 +25,7 @@ public class JoinGameService {
 
         if (request.playerColor() == null ||
                 (!"WHITE".equals(request.playerColor()) && !"BLACK".equals(request.playerColor()))) {
-            return new JoinGameResult(request.gameID(), "Error: Invalid player color");
+            return new JoinGameResult(request.gameID(), "Error: Invalid color");
         }
 
         GameData game = gameDAO.getGame(request.gameID());
@@ -39,7 +39,7 @@ public class JoinGameService {
         } else if ("BLACK".equals(request.playerColor()) && game.getBlackUsername() == null) {
             game.setBlackUsername(request.username());
         } else {
-            return new JoinGameResult(request.gameID(), "Error: Player color already taken");
+            return new JoinGameResult(request.gameID(), "Error: Color taken");
         }
 
         gameDAO.updateGame(game.getGameId(), game.getGame());

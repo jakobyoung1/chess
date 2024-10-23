@@ -1,4 +1,4 @@
-package server;
+package server.Service;
 
 import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
@@ -23,10 +23,10 @@ public class ClearService {
             gameDAO.clear();
             authDAO.clear();
 
-            return new ClearResult("Successfully cleared all data");
+            return new ClearResult("Cleared all data");
 
         } catch (DataAccessException e) {
-            return new ClearResult("Error: Failed to clear data - " + e.getMessage());
+            return new ClearResult("Error: Clear data - " + e.getMessage());
         }
     }
 }

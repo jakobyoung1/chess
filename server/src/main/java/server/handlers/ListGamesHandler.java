@@ -1,7 +1,7 @@
 package server.handlers;
 
 import com.google.gson.Gson;
-import server.ListGamesService;
+import server.Service.ListGamesService;
 import server.requests.ListGamesRequest;
 import server.results.ListGamesResult;
 import dataaccess.AuthDAO;

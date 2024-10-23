@@ -4,7 +4,7 @@ import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
-import server.ClearService;
+import server.Service.ClearService;
 import server.results.ClearResult;
 
 import java.util.HashMap;
@@ -15,19 +15,19 @@ public class ClearServiceTest {
         ClearService service = new ClearService(new UserDAO(new HashMap<>(), new HashMap<>()), new GameDAO(new HashMap<>()), new AuthDAO(new HashMap<>()));
 
         try {
-            ClearResult result = service.clear();
-            assert result.message().equals("Clear successful") : "Positive Test Failed: Expected success message";
+            ClearResult res = service.clear();
+            assert res.message().equals("Clear successful") : "Failed Positive Test";
             System.out.println("Positive Test Passed");
         } catch (DataAccessException e) {
-            System.out.println("Positive Test Exception: " + e.getMessage());
+            System.out.println("PT e: " + e.getMessage());
         }
 
         try {
-            ClearResult result = service.clear();
-            assert result.message().contains("Error") : "Negative Test Failed: Expected error message";
+            ClearResult res = service.clear();
+            assert res.message().contains("Error") : "Failed Negative Test";
             System.out.println("Negative Test Passed");
         } catch (DataAccessException e) {
-            System.out.println("Negative Test Exception: " + e.getMessage());
+            System.out.println("NT e: " + e.getMessage());
         }
     }
 }
