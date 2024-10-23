@@ -20,7 +20,12 @@ public class GameDAO {
             throw new DataAccessException("Game already exists");
         }
         games.put(game.getGameId(), game);
+        System.out.println("Game stored: " + game.getGameId() + ", " + games);
+
+
     }
+
+
 
     public GameData getGame(int gameId) throws DataAccessException {
         GameData game = games.get(gameId);

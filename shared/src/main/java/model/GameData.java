@@ -17,6 +17,7 @@ public class GameData {
         this.blackUsername = blackUsername;
         this.game = new ChessGame();
         this.gameName = gameName;
+        System.out.println("created new GameData with id: " + gameId);
     }
 
     public int getGameId() {

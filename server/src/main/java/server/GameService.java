@@ -5,6 +5,7 @@ import chess.ChessMove;
 import chess.InvalidMoveException;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
+import model.AuthData;
 import model.GameData;
 import server.requests.GameStateRequest;
 import server.requests.MoveRequest;
@@ -26,9 +27,12 @@ public class GameService {
     }
 
     public StartGameResult startGame(StartGameRequest request) throws DataAccessException {
+
         int gameId = nextGameId.getAndIncrement();
+        System.out.println("starting game: " + gameId);
+
         GameData newGame = new GameData(gameId, null, null, request.gameName());
-        ChessGame game = new ChessGame();  // Initialize the chess board or game logic
+        ChessGame game = new ChessGame();
         gameDAO.createGame(newGame);
 
         return new StartGameResult(newGame.getGameId(), game, "Game started successfully");

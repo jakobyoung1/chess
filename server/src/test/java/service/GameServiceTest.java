@@ -38,10 +38,10 @@ public class GameServiceTest {
         if (result == null) {
             throw new RuntimeException("StartGameResult is null");
         }
-        if (result.gameId() == 0) {
+        if (result.getGameId() == 0) {
             throw new RuntimeException("Game ID is invalid");
         }
-        if (!"Game started successfully".equals(result.message())) {
+        if (!"Game started successfully".equals(result.getMessage())) {
             throw new RuntimeException("Success message is incorrect");
         }
 
@@ -53,7 +53,7 @@ public class GameServiceTest {
         StartGameRequest startRequest = new StartGameRequest("player1", "player2", "Test Game");
         StartGameResult startResult = gameService.startGame(startRequest);
 
-        JoinGameRequest joinRequest = new JoinGameRequest( "BLACK", "player2", startResult.gameId());
+        JoinGameRequest joinRequest = new JoinGameRequest( "BLACK", "player2", startResult.getGameId());
         JoinGameResult joinResult = gameService.joinGame(joinRequest);
 
         if (joinResult == null) {
@@ -72,7 +72,7 @@ public class GameServiceTest {
         StartGameResult startResult = gameService.startGame(startRequest);
 
         ChessMove move = new ChessMove(new ChessPosition(2,1), new ChessPosition(3,1), null);
-        MoveRequest moveRequest = new MoveRequest(startResult.gameId(), move);
+        MoveRequest moveRequest = new MoveRequest(startResult.getGameId(), move);
         MoveResult moveResult = gameService.makeMove(moveRequest);
 
         if (moveResult == null) {
