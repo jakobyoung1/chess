@@ -24,19 +24,7 @@ public class GameService {
         this.gameDAO = gameDAO;
     }
 
-    public StartGameResult startGame(StartGameRequest request) throws DataAccessException {
 
-        int gameId = nextGameId.getAndIncrement();
-        System.out.println("starting game: " + gameId);
-
-        GameData newGame = new GameData(gameId, null, null, request.gameName());
-        ChessGame game = new ChessGame();
-        gameDAO.createGame(newGame);
-
-        System.out.println("just made this game: " + newGame.getGameId());
-
-        return new StartGameResult(newGame.getGameId(), game, "Game started successfully");
-    }
 
 
     public JoinGameResult joinGame(JoinGameRequest request) throws DataAccessException {

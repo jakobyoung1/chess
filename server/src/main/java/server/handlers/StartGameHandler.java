@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import dataaccess.AuthDAO;
 import model.AuthData;
 import server.GameService;
+import server.StartGameService;
 import server.requests.StartGameRequest;
 import server.results.StartGameResult;
 import spark.Request;
@@ -14,11 +15,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class StartGameHandler implements Route {
-    private final GameService gameService;
+    private final StartGameService startGameService;
     private final AuthDAO authDAO;
 
-    public StartGameHandler(GameService gameService, AuthDAO authDAO) {
-        this.gameService = gameService;
+    public StartGameHandler(StartGameService startGameService, AuthDAO authDAO) {
+        this.startGameService = startGameService;
         this.authDAO = authDAO;
     }
 
@@ -36,7 +37,7 @@ public class StartGameHandler implements Route {
 
         StartGameRequest request = gson.fromJson(req.body(), StartGameRequest.class);
 
-        StartGameResult result = gameService.startGame(request);
+        StartGameResult result = startGameService.startGame(request);
 
         res.type("application/json");
 
