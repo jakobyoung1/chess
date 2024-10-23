@@ -29,6 +29,9 @@ public class UserDAO implements UserDataAccess {
         System.out.println("Users map after insert: " + users);
     }
 
+    public Map<String, UserData> getUsers() {
+        return users;
+    }
 
     @Override
     public UserData getUser(String username) throws DataAccessException {

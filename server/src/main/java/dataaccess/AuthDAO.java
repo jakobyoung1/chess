@@ -26,6 +26,10 @@ public class AuthDAO {
         return auth;
     }
 
+    public Map<String, AuthData> getAuthTokens() {
+        return authTokens;
+    }
+
     public void deleteAuth(String authToken) throws DataAccessException {
         if (!authTokens.containsKey(authToken)) {
             throw new DataAccessException("Auth token not found");

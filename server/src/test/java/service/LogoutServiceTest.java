@@ -3,36 +3,56 @@ package service;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
+import model.AuthData;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import server.service.LogoutService;
 import server.requests.LogoutRequest;
 import server.results.LogoutResult;
 
 import java.util.HashMap;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 public class LogoutServiceTest {
-    public static void main(String[] args) {
-        LogoutService service = new LogoutService(new UserDAO(new HashMap<>(), new HashMap<>()), new AuthDAO(new HashMap<>()));
 
-        // positive test
+    private LogoutService service;
+    private AuthDAO authDAO;
+
+    @BeforeEach
+    public void setUp() throws DataAccessException {
+        authDAO = new AuthDAO(new HashMap<>());
+        service = new LogoutService(new UserDAO(new HashMap<>(), new HashMap<>()), authDAO);
+
+        authDAO.createAuth(new AuthData("validAuthToken", "validUser"));
+    }
+
+    @Test
+    public void testLogoutPositive() {
+        LogoutRequest req = new LogoutRequest("validAuthToken");
+        LogoutResult res = null;
         try {
-            LogoutRequest req = new LogoutRequest("validAuthToken");
-            LogoutResult res = service.logout(req);
-
-            assert res != null : "Positive Test Failed";
-            System.out.println("Positive Test Passed");
+            res = service.logout(req);
         } catch (DataAccessException e) {
-            System.out.println("Positive Test Exception: " + e.getMessage());
+            fail("Unexpected DataAccessException: " + e.getMessage());
         }
 
-        // negative test
-        try {
-            LogoutRequest req = new LogoutRequest("invalidAuthToken");
-            LogoutResult res = service.logout(req);
+        assertNotNull(res, "LogoutResult should not be null");
+        assertEquals(res.message(), "Logout successful", "Positive Test Passed");
+    }
 
-            assert res == null : "Negative Test Failed";
-            System.out.println("Negative Test Passed");
+    @Test
+    public void testLogoutNegative() {
+        LogoutRequest req = new LogoutRequest("invalidAuthToken");
+
+        LogoutResult res = null;
+        try {
+            res = service.logout(req);
         } catch (DataAccessException e) {
-            System.out.println("Negative Test Exception: " + e.getMessage());
+            fail("Unexpected DataAccessException: " + e.getMessage());
         }
+
+        assertNotNull(res, "LogoutResult should not be null");
+        assertNotEquals(res.message(), "Logout successful", "Negative Test Passed");
     }
 }

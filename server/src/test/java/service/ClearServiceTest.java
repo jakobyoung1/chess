@@ -4,6 +4,8 @@ import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
+import model.UserData;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import server.service.ClearService;
 import server.results.ClearResult;
@@ -14,33 +16,39 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ClearServiceTest {
 
-    @Test
-    public void testClearServicePositive() {
-        ClearService service = new ClearService(new UserDAO(new HashMap<>(),
-                new HashMap<>()), new GameDAO(new HashMap<>()),
-                new AuthDAO(new HashMap<>()));
+    private ClearService service;
 
+    @Test
+    public void testClearServicePositive() throws DataAccessException {
+        UserDAO userDAO = new UserDAO(new HashMap<>(), new HashMap<>());
+        userDAO.insertUser(new UserData("user","pass","email"));
+        service = new ClearService(
+                userDAO,
+                new GameDAO(new HashMap<>()),
+                new AuthDAO(new HashMap<>())
+        );
+        ClearResult res = null;
         try {
-            ClearResult res = service.clear();
-            assertEquals("Clear successful", res.message(), "Failed Positive Test");
-            System.out.println("Positive Test Passed");
+            res = service.clear();
         } catch (DataAccessException e) {
-            fail("PT e: " + e.getMessage());
+            fail("Unexpected DataAccessException: " + e.getMessage());
         }
+        assertEquals("Cleared all data", res.message(), "Positive Test Failed");
     }
 
     @Test
     public void testClearServiceNegative() {
-        ClearService service = new ClearService(new UserDAO(new HashMap<>(),
-                new HashMap<>()), new GameDAO(new HashMap<>()),
-                new AuthDAO(new HashMap<>()));
-
+        service = new ClearService(
+                new UserDAO(new HashMap<>(), new HashMap<>()),
+                new GameDAO(new HashMap<>()),
+                new AuthDAO(new HashMap<>())
+        );
+        ClearResult res = null;
         try {
-            ClearResult res = service.clear();
-            assertTrue(res.message().contains("Error"), "Failed Negative Test");
-            System.out.println("Negative Test Passed");
+            res = service.clear();
         } catch (DataAccessException e) {
-            fail("NT e: " + e.getMessage());
+            fail("Unexpected DataAccessException: " + e.getMessage());
         }
+        assertTrue(res.message().contains("Error"), "Negative Test Failed: Expected an error message");
     }
 }

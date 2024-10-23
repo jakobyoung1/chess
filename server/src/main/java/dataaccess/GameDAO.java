@@ -52,4 +52,8 @@ public class GameDAO {
     public void clear() throws DataAccessException {
         games.clear();
     }
+
+    public Map<Integer, GameData> getGames() {
+        return games;
+    }
 }

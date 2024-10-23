@@ -3,42 +3,60 @@ package service;
 import dataaccess.GameDAO;
 import dataaccess.DataAccessException;
 import model.GameData;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import server.service.ListGamesService;
 import server.requests.ListGamesRequest;
 import server.results.ListGamesResult;
 
 import java.util.HashMap;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 public class ListGamesServiceTest {
-    public static void main(String[] args) throws DataAccessException {
-        GameDAO gameDAO = new GameDAO(new HashMap<>());
+
+    private GameDAO gameDAO;
+    private ListGamesService service;
+
+    @BeforeEach
+    public void setUp() throws DataAccessException {
+        gameDAO = new GameDAO(new HashMap<>());
         gameDAO.createGame(new GameData(1, "player1", "player2", "Game 1"));
         gameDAO.createGame(new GameData(2, "player3", "player4", "Game 2"));
+        service = new ListGamesService(gameDAO);
+    }
 
-        ListGamesService service = new ListGamesService(gameDAO);
-
-        // trying a positive test
+    @Test
+    public void testListGamesPositive() {
+        ListGamesRequest req = new ListGamesRequest();
+        ListGamesResult res = null;
         try {
-            ListGamesRequest req = new ListGamesRequest();
-            ListGamesResult res = service.listGames(req);
-
-            assert res.getGames().size() == 2 : "Positive Test Failed";
-            System.out.println("Positive Test Passed");
+            res = service.listGames(req);
         } catch (DataAccessException e) {
-            System.out.println("Positive Test Exception: " + e.getMessage());
+            fail("Unexpected DataAccessException: " + e.getMessage());
         }
 
-        //negative test
+        assertNotNull(res, "Result should not be null");
+        assertEquals(2, res.getGames().size(), "Positive Test Failed: Expected 2 games");
+    }
+
+    @Test
+    public void testListGamesNegative() {
         try {
             gameDAO.clear();
-
-            ListGamesRequest req = new ListGamesRequest();
-            ListGamesResult res = service.listGames(req);
-
-            assert res.getGames().size() == 0 : "Negative Test Failed";
-            System.out.println("Negative Test Passed");
         } catch (DataAccessException e) {
-            System.out.println("Negative Test Exception: " + e.getMessage());
+            fail("Failed to clear GameDAO: " + e.getMessage());
         }
+
+        ListGamesRequest req = new ListGamesRequest();
+        ListGamesResult res = null;
+        try {
+            res = service.listGames(req);
+        } catch (DataAccessException e) {
+            fail("Unexpected DataAccessException: " + e.getMessage());
+        }
+
+        assertNotNull(res, "Result should not be null");
+        assertEquals(0, res.getGames().size(), "Negative Test Failed: Expected 0 games");
     }
 }

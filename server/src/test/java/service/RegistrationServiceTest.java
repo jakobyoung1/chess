@@ -3,35 +3,59 @@ package service;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
+import model.UserData;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import server.service.RegistrationService;
 import server.requests.RegisterRequest;
 import server.results.RegisterResult;
 
 import java.util.HashMap;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 public class RegistrationServiceTest {
-    public static void main(String[] args) {
-        RegistrationService service = new RegistrationService(new UserDAO(new HashMap<>(), new HashMap<>()), new AuthDAO(new HashMap<>()));
+
+    private RegistrationService service;
+    private UserDAO userDAO;
+
+    @BeforeEach
+    public void setUp() throws DataAccessException {
+        userDAO = new UserDAO(new HashMap<>(), new HashMap<>());
+        service = new RegistrationService(userDAO, new AuthDAO(new HashMap<>()));
+
+        // Insert an existing user for the negative test case
+        userDAO.insertUser(new UserData("existingUser", "existingPassword", "existingUser@mail.com"));
+    }
+
+    @Test
+    public void testRegisterNewUserPositive() {
+        RegisterRequest req = new RegisterRequest("newUser", "newPassword", "newUser@mail.com");
+        RegisterResult res = null;
 
         try {
-            RegisterRequest req = new RegisterRequest("newUser", "newPassword", "newUser@mail.com");
-            RegisterResult res = service.register(req);
-
-            assert res.authToken() != null : "Positive Test Failed";
-            assert "newUser".equals(res.username()) : "Positive Test Failed";
-            System.out.println("Positive Test Passed");
+            res = service.register(req);
         } catch (DataAccessException e) {
-            System.out.println("Positive Test Exception: " + e.getMessage());
+            fail("Unexpected DataAccessException: " + e.getMessage());
         }
+
+        assertNotNull(res, "RegisterResult should not be null");
+        assertNotNull(res.authToken(), "AuthToken should not be null for new user");
+        assertEquals("newUser", res.username(), "Username should match the new user's name");
+    }
+
+    @Test
+    public void testRegisterExistingUserNegative() {
+        RegisterRequest req = new RegisterRequest("existingUser", "existingPassword", "existingUser@mail.com");
+        RegisterResult res = null;
 
         try {
-            RegisterRequest req = new RegisterRequest("existingUser", "existingPassword", "existingUser@mail.com");
-            RegisterResult res = service.register(req);
-
-            assert res == null || res.message().contains("Error: already taken") : "Negative Test Failed";
-            System.out.println("Negative Test Passed");
+            res = service.register(req);
         } catch (DataAccessException e) {
-            System.out.println("Negative Test Exception: " + e.getMessage());
+            fail("Unexpected DataAccessException: " + e.getMessage());
         }
+
+        assertNotNull(res, "RegisterResult should not be null for existing user");
+        assertTrue(res.message().contains("Error: Username taken"), "Should return an error message for an existing user");
     }
 }

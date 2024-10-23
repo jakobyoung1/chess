@@ -1,6 +1,6 @@
 package server;
 
-import server.Service.*;
+import server.service.*;
 import server.handlers.*;
 import spark.Spark;
 import dataaccess.UserDAO;

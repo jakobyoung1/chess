@@ -22,6 +22,10 @@ public class StartGameService {
         int gameId = NEXTGAMEID.getAndIncrement();
         System.out.println("starting game: " + gameId);
 
+        if (request.gameName() == "") {
+            return new StartGameResult(null, null, "Error: no game name provided");
+        }
+
         GameData newGame = new GameData(gameId, null, null, request.gameName());
         ChessGame game = new ChessGame();
         gameDAO.createGame(newGame);
