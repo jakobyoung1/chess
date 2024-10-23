@@ -35,30 +35,37 @@ public class GameService {
         ChessGame game = new ChessGame();
         gameDAO.createGame(newGame);
 
+        System.out.println("just made this game: " + newGame.getGameId());
+
         return new StartGameResult(newGame.getGameId(), game, "Game started successfully");
     }
 
 
     public JoinGameResult joinGame(JoinGameRequest request) throws DataAccessException {
-        GameData game = gameDAO.getGame(request.gameId());
+        System.out.println("joinGameResult ID: " + request.gameID());
+
+        GameData game = gameDAO.getGame(request.gameID());
 
         if (game == null) {
-            return new JoinGameResult(request.gameId(), "Error: Game not found");
+            return new JoinGameResult(request.gameID(), "Error: Game not found");
         }
 
         if ("WHITE".equals(request.playerColor()) && game.getWhiteUsername() == null) {
-            game.setWhiteUsername(request.playerName());
+            System.out.println("Joining as WHITE: " + request.username());
+            game.setWhiteUsername(request.username());
         }
         else if ("BLACK".equals(request.playerColor()) && game.getBlackUsername() == null) {
-            game.setBlackUsername(request.playerName());
+            System.out.println("Joining as BLACK: " + request.username());
+            game.setBlackUsername(request.username());
         }
         else {
-            return new JoinGameResult(request.gameId(), "Error: Player color already taken");
+            return new JoinGameResult(request.gameID(), "Error: Player color already taken");
         }
+
 
         gameDAO.updateGame(game.getGameId(), game.getGame());
 
-        return new JoinGameResult(request.gameId(), "Joined game successfully");
+        return new JoinGameResult(request.gameID(), "Joined game successfully");
     }
 
 
@@ -81,6 +88,7 @@ public class GameService {
     public ListGamesResult listGames(ListGamesRequest request) throws DataAccessException {
         try {
             List<GameData> games = gameDAO.listGames();
+            System.out.println(games.get(0).getGameId());
             return new ListGamesResult(games);
         } catch (DataAccessException e) {
             return new ListGamesResult("Error: Unable to retrieve game list - " + e.getMessage());

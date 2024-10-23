@@ -29,6 +29,7 @@ public class GameDAO {
 
     public GameData getGame(int gameId) throws DataAccessException {
         GameData game = games.get(gameId);
+        System.out.println("Attempting to join game: " + gameId);
         if (game == null) {
             throw new DataAccessException("Game not found");
         }

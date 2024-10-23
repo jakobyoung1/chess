@@ -10,6 +10,9 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class StartGameHandler implements Route {
     private final GameService gameService;
     private final AuthDAO authDAO;
@@ -28,8 +31,9 @@ public class StartGameHandler implements Route {
         AuthData authData = authDAO.getAuth(authToken);
         if (authData == null) {
             res.status(401);
-            return gson.toJson(new StartGameResult(0, null, "Error: Unauthorized"));
+            return gson.toJson(createErrorResponse(0, "Error: Unauthorized"));
         }
+
         StartGameRequest request = gson.fromJson(req.body(), StartGameRequest.class);
 
         StartGameResult result = gameService.startGame(request);
@@ -44,6 +48,25 @@ public class StartGameHandler implements Route {
             res.status(200);
         }
 
-        return gson.toJson(result);
+        String jsonResponse = gson.toJson(createCustomResponse(result));
+        System.out.println("StartGameHandler response JSON: " + jsonResponse);
+
+        return jsonResponse;
+    }
+
+    private Map<String, Object> createCustomResponse(StartGameResult result) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("gameID", result.getGameId());  // Map 'gameId' to 'id' for the test framework
+        response.put("game", result.getGame());
+        response.put("message", result.getMessage());
+        return response;
+    }
+
+    private Map<String, Object> createErrorResponse(int gameId, String message) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("gameID", gameId);
+        response.put("game", null);
+        response.put("message", message);
+        return response;
     }
 }
