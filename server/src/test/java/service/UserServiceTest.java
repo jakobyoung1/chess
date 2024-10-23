@@ -1,17 +1,9 @@
 package service;
 
-import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
 import dataaccess.AuthDAO;
 import model.AuthData;
 import model.UserData;
-import server.UserService;
-import server.requests.LoginRequest;
-import server.requests.LogoutRequest;
-import server.requests.RegisterRequest;
-import server.results.LoginResult;
-import server.results.LogoutResult;
-import server.results.RegisterResult;
 
 import java.util.HashMap;
 
@@ -21,7 +13,7 @@ public class UserServiceTest {
     private static HashMap<String, AuthData> auths = new HashMap<>();
     private static UserDAO userDAO = new UserDAO(users, auths);
     private static AuthDAO authDAO = new AuthDAO(auths);
-    private static UserService userService = new UserService(userDAO, authDAO);
+    //private static UserService userService = new UserService(userDAO, authDAO);
 
 
     public static void main(String[] args) {

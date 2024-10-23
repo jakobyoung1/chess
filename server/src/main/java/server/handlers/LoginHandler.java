@@ -2,7 +2,6 @@ package server.handlers;
 
 import com.google.gson.Gson;
 import server.LoginService;
-import server.UserService;
 import server.requests.LoginRequest;
 import server.results.LoginResult;
 import spark.Request;

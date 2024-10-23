@@ -1,22 +1,16 @@
 package server;
 
-import dataaccess.UserDAO;
 import dataaccess.AuthDAO;
-import model.UserData;
-import model.AuthData;
 import dataaccess.DataAccessException;
-import server.requests.*;
-import server.requests.RegisterRequest;
-import server.results.*;
+import dataaccess.UserDAO;
+import server.requests.LogoutRequest;
 import server.results.LogoutResult;
 
-import java.util.UUID;
-
-public class UserService {
+public class LogoutService {
     private final UserDAO userDAO;
     private final AuthDAO authDAO;
 
-    public UserService(UserDAO userDAO, AuthDAO authDAO) {
+    public LogoutService(UserDAO userDAO, AuthDAO authDAO) {
         this.userDAO = userDAO;
         this.authDAO = authDAO;
     }

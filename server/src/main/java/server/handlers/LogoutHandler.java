@@ -1,7 +1,7 @@
 package server.handlers;
 
 import com.google.gson.Gson;
-import server.UserService;
+import server.LogoutService;
 import server.requests.LogoutRequest;
 import server.results.LogoutResult;
 import spark.Request;
@@ -9,10 +9,10 @@ import spark.Response;
 import spark.Route;
 
 public class LogoutHandler implements Route {
-    private final UserService userService;
+    private final LogoutService outService;
 
-    public LogoutHandler(UserService userService) {
-        this.userService = userService;
+    public LogoutHandler(LogoutService outService) {
+        this.outService = outService;
     }
 
     @Override
@@ -22,13 +22,13 @@ public class LogoutHandler implements Route {
         String authToken = req.headers("Authorization");
 
         if (authToken == null || authToken.isEmpty()) {
-            res.status(400);  // Bad Request
+            res.status(400);
             return gson.toJson(new LogoutResult("Error: Missing auth token"));
         }
 
         LogoutRequest request = new LogoutRequest(authToken);
 
-        LogoutResult result = userService.logout(request);
+        LogoutResult result = outService.logout(request);
 
         res.type("application/json");
 
