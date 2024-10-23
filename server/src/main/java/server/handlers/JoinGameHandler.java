@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import dataaccess.AuthDAO;
 import model.AuthData;
 import server.GameService;
+import server.JoinGameService;
 import server.results.JoinGameResult;
 import server.requests.JoinGameRequest;
 import spark.Request;
@@ -11,11 +12,11 @@ import spark.Response;
 import spark.Route;
 
 public class JoinGameHandler implements Route {
-    private final GameService gameService;
+    private final JoinGameService joinGameService;
     private final AuthDAO authDAO;
 
-    public JoinGameHandler(GameService gameService, AuthDAO authDAO) {
-        this.gameService = gameService;
+    public JoinGameHandler(JoinGameService joinGameService, AuthDAO authDAO) {
+        this.joinGameService = joinGameService;
         this.authDAO = authDAO;
     }
 
@@ -40,7 +41,7 @@ public class JoinGameHandler implements Route {
 
         JoinGameRequest updatedRequest = new JoinGameRequest(request.playerColor(), username, request.gameID());
 
-        JoinGameResult result = gameService.joinGame(updatedRequest);
+        JoinGameResult result = joinGameService.joinGame(updatedRequest);
 
         res.type("application/json");
 
