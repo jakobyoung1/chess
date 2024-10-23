@@ -69,7 +69,7 @@ public class UserService {
 
 
     private AuthData generateAuthToken(String username) {
-        String authToken = UUID.randomUUID().toString();  // Generate a unique token
+        String authToken = UUID.randomUUID().toString();
         return new AuthData(authToken, username);
     }
 }

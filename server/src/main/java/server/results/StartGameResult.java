@@ -3,18 +3,18 @@ package server.results;
 import chess.ChessGame;
 
 public class StartGameResult {
-    private final int gameId;
+    private final int gameID;
     private final ChessGame game;
     private final String message;
 
-    public StartGameResult(int gameId, ChessGame game, String message) {
-        this.gameId = gameId;
+    public StartGameResult(int gameID, ChessGame game, String message) {
+        this.gameID = gameID;
         this.game = game;
         this.message = message;
     }
 
     public int getGameId() {
-        return gameId;
+        return gameID;
     }
 
     public ChessGame getGame() {

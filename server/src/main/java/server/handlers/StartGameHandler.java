@@ -31,7 +31,7 @@ public class StartGameHandler implements Route {
         AuthData authData = authDAO.getAuth(authToken);
         if (authData == null) {
             res.status(401);
-            return gson.toJson(createErrorResponse(0, "Error: Unauthorized"));
+            return gson.toJson(createErrorResponse(null, "Error: Unauthorized"));
         }
 
         StartGameRequest request = gson.fromJson(req.body(), StartGameRequest.class);
@@ -62,7 +62,7 @@ public class StartGameHandler implements Route {
         return response;
     }
 
-    private Map<String, Object> createErrorResponse(int gameId, String message) {
+    private Map<String, Object> createErrorResponse(Integer gameId, String message) {
         Map<String, Object> response = new HashMap<>();
         response.put("gameID", gameId);
         response.put("game", null);
