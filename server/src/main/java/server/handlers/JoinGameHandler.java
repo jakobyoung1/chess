@@ -1,7 +1,7 @@
 package server.handlers;
 
 import com.google.gson.Gson;
-import dataaccess.AuthDAO;  // Make sure to import AuthDAO
+import dataaccess.AuthDAO;
 import model.AuthData;
 import server.GameService;
 import server.results.JoinGameResult;
@@ -46,6 +46,8 @@ public class JoinGameHandler implements Route {
 
         if (result.message().contains("Error: Invalid player color")) {
             res.status(400);
+        } else if (result.message().contains("Error: Player color already taken")) {
+            res.status(403);
         } else if (result.message().contains("Error")) {
             res.status(400);
         } else {
@@ -54,5 +56,4 @@ public class JoinGameHandler implements Route {
 
         return gson.toJson(result);
     }
-
 }
