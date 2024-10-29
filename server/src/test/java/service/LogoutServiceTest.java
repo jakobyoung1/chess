@@ -21,7 +21,7 @@ public class LogoutServiceTest {
 
     @BeforeEach
     public void setUp() throws DataAccessException {
-        authDAO = new AuthDAO(new HashMap<>());
+        authDAO = new AuthDAO();
         service = new LogoutService(new UserDAO(), authDAO);
 
         authDAO.createAuth(new AuthData("validAuthToken", "validUser"));

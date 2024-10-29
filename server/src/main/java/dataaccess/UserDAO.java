@@ -10,7 +10,6 @@ import java.sql.SQLException;
 public class UserDAO implements UserDataAccess {
 
     public UserDAO() {
-        // Constructor can be empty if not using in-memory maps
     }
 
     @Override
@@ -48,7 +47,7 @@ public class UserDAO implements UserDataAccess {
                 String passwordHash = rs.getString("password_hash");
                 String email = rs.getString("email");
                 System.out.println("User found in database: " + username);
-                return new UserData(username, passwordHash, email); // Updated to include email
+                return new UserData(username, passwordHash, email);
             }
 
             System.out.println("User not found in database: " + username);

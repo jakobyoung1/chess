@@ -22,7 +22,7 @@ public class RegistrationServiceTest {
     @BeforeEach
     public void setUp() throws DataAccessException {
         userDAO = new UserDAO();
-        service = new RegistrationService(userDAO, new AuthDAO(new HashMap<>()));
+        service = new RegistrationService(userDAO, new AuthDAO());
 
         // Insert an existing user for the negative test case
         userDAO.insertUser(new UserData("existingUser", "existingPassword", "existingUser@mail.com"));

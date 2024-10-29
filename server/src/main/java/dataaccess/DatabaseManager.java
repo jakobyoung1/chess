@@ -79,9 +79,9 @@ public class DatabaseManager {
                 String createAuthTable = """
                     CREATE TABLE IF NOT EXISTS Auth (
                         id INT AUTO_INCREMENT PRIMARY KEY,
-                        user_id INT NOT NULL,
                         auth_token VARCHAR(255) UNIQUE NOT NULL,
-                        FOREIGN KEY (user_id) REFERENCES User(id)
+                        username VARCHAR(50) NOT NULL,
+                        FOREIGN KEY (username) REFERENCES User(username)
                     );
                 """;
                 try (var preparedStatement = conn.prepareStatement(createAuthTable)) {

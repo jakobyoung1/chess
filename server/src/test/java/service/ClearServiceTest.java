@@ -25,7 +25,7 @@ public class ClearServiceTest {
         service = new ClearService(
                 userDAO,
                 new GameDAO(new HashMap<>()),
-                new AuthDAO(new HashMap<>())
+                new AuthDAO()
         );
         ClearResult res = null;
         try {

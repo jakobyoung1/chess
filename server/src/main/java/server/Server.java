@@ -27,7 +27,7 @@ public class Server {
 
         UserDAO userDAO = new UserDAO();
         GameDAO gameDAO = new GameDAO(new HashMap<>());
-        AuthDAO authDAO = new AuthDAO(new HashMap<>());
+        AuthDAO authDAO = new AuthDAO();
 
         ClearService clearService = new ClearService(userDAO, gameDAO, authDAO);
         LoginService logService = new LoginService(userDAO, authDAO);
