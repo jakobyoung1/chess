@@ -25,7 +25,7 @@ public class Server {
             return -1;
         }
 
-        UserDAO userDAO = new UserDAO(new HashMap<>(), new HashMap<>());
+        UserDAO userDAO = new UserDAO();
         GameDAO gameDAO = new GameDAO(new HashMap<>());
         AuthDAO authDAO = new AuthDAO(new HashMap<>());
 

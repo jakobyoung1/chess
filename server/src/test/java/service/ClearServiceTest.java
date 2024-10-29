@@ -20,7 +20,7 @@ public class ClearServiceTest {
 
     @Test
     public void testClearServicePositive() throws DataAccessException {
-        UserDAO userDAO = new UserDAO(new HashMap<>(), new HashMap<>());
+        UserDAO userDAO = new UserDAO();
         userDAO.insertUser(new UserData("user","pass","email"));
         service = new ClearService(
                 userDAO,

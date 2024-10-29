@@ -53,7 +53,8 @@ public class DatabaseManager {
                     CREATE TABLE IF NOT EXISTS User (
                         id INT AUTO_INCREMENT PRIMARY KEY,
                         username VARCHAR(50) UNIQUE NOT NULL,
-                        password_hash VARCHAR(60) NOT NULL
+                        password_hash VARCHAR(60) NOT NULL,
+                        email VARCHAR(50) NOT NULL
                     );
                 """;
                 try (var preparedStatement = conn.prepareStatement(createUserTable)) {
@@ -66,7 +67,6 @@ public class DatabaseManager {
                         id INT AUTO_INCREMENT PRIMARY KEY,
                         player1_id INT NOT NULL,
                         player2_id INT,
-                        game_state JSON NOT NULL,
                         FOREIGN KEY (player1_id) REFERENCES User(id),
                         FOREIGN KEY (player2_id) REFERENCES User(id)
                     );

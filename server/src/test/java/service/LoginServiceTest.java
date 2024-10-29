@@ -22,7 +22,7 @@ public class LoginServiceTest {
 
     @BeforeEach
     public void setUp() throws DataAccessException {
-        userDAO = new UserDAO(new HashMap<>(), new HashMap<>());
+        userDAO = new UserDAO();
         authDAO = new AuthDAO(new HashMap<>());
         service = new LoginService(userDAO, authDAO);
 

@@ -1,57 +1,77 @@
 package dataaccess;
 
-import model.AuthData;
 import model.UserData;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class UserDAO implements UserDataAccess {
-    private Map<String, UserData> users;
-    private Map<String, AuthData> auths;
 
-    public UserDAO(HashMap<String, UserData> users, HashMap<String, AuthData> auths) {
-        this.users = users;
-        this.auths = auths;
+    public UserDAO() {
+        // Constructor can be empty if not using in-memory maps
     }
 
     @Override
     public void insertUser(UserData user) throws DataAccessException {
         System.out.println("Attempting to insert user: " + user.getUsername());
 
-        if (users.containsKey(user.getUsername())) {
-            throw new DataAccessException("User already exists");
+        String sql = "INSERT INTO User (username, password_hash, email) VALUES (?, ?, ?)";
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, user.getUsername());
+            stmt.setString(2, user.getPassword());
+            stmt.setString(3, user.getEmail());
+            stmt.executeUpdate();
+
+            System.out.println("User inserted into database: " + user.getUsername());
+
+        } catch (SQLException e) {
+            throw new DataAccessException("Error inserting user: " + e.getMessage());
         }
-
-        users.put(user.getUsername(), user);
-
-        System.out.println("User inserted: " + user.getUsername());
-        System.out.println("Users map after insert: " + users);
-    }
-
-    public Map<String, UserData> getUsers() {
-        return users;
     }
 
     @Override
     public UserData getUser(String username) throws DataAccessException {
         System.out.println("Attempting to retrieve user: " + username);
-        System.out.println("Current users map before retrieval: " + users);
 
-        UserData user = users.get(username);
+        String sql = "SELECT * FROM User WHERE username = ?";
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-        if (user == null) {
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                String passwordHash = rs.getString("password_hash");
+                String email = rs.getString("email");
+                System.out.println("User found in database: " + username);
+                return new UserData(username, passwordHash, email); // Updated to include email
+            }
+
+            System.out.println("User not found in database: " + username);
             return null;
-        }
 
-        System.out.println("User found: " + user.getUsername());
-        return user;
+        } catch (SQLException e) {
+            throw new DataAccessException("Error retrieving user: " + e.getMessage());
+        }
     }
 
     @Override
     public void clear() throws DataAccessException {
-        users.clear();
-        auths.clear();
-        System.out.println("Users map cleared");
+        System.out.println("Clearing User data from database");
+
+        String sql = "DELETE FROM User";
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.executeUpdate();
+            System.out.println("User table cleared in database");
+
+        } catch (SQLException e) {
+            throw new DataAccessException("Error clearing User table: " + e.getMessage());
+        }
     }
 }
