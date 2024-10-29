@@ -39,9 +39,8 @@ public class JoinGameService {
             return new JoinGameResult(request.gameID(), "Error: Color taken");
         }
 
-        gameDAO.updateGame(game.getGameId(), game.getGame());
+        gameDAO.updateGame(game.getGameId(), game);
 
         return new JoinGameResult(request.gameID(), "Joined game successfully");
     }
-
 }

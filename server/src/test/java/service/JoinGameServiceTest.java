@@ -20,7 +20,7 @@ public class JoinGameServiceTest {
 
     @BeforeEach
     public void setUp() throws DataAccessException {
-        gameDAO = new GameDAO(new HashMap<>());
+        gameDAO = new GameDAO();
         service = new JoinGameService(gameDAO);
 
         GameData game1 = new GameData(1, null, null, "Test Game 1");

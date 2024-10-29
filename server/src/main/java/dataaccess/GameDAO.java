@@ -1,59 +1,127 @@
 package dataaccess;
 
 import chess.ChessGame;
+import com.google.gson.Gson;
 import model.GameData;
 
-import java.util.HashMap;
-import java.util.List;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.List;
 
 public class GameDAO {
-    private Map<Integer, GameData> games = new HashMap<>();
+    private static final Gson gson = new Gson();
 
-    public GameDAO(HashMap<Integer, GameData> games) {
-        this.games = games;
+    public GameDAO() {
     }
 
     public void createGame(GameData game) throws DataAccessException {
-        if (games.containsKey(game.getGameId())) {
-            throw new DataAccessException("Game already exists");
+        String sql = "INSERT INTO Game (game_id, white_username, black_username, game_name, game_state) VALUES (?, ?, ?, ?, ?)";
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, game.getGameId());
+            stmt.setString(2, game.getWhiteUsername());
+            stmt.setString(3, game.getBlackUsername());
+            stmt.setString(4, game.getGameName());
+            stmt.setString(5, gson.toJson(game.getGame()));
+            stmt.executeUpdate();
+
+            System.out.println("Game stored in database: " + game.getGameId());
+
+        } catch (SQLException e) {
+            throw new DataAccessException("Error inserting game: " + e.getMessage());
         }
-        games.put(game.getGameId(), game);
-        System.out.println("Game stored: " + game.getGameId() + ", " + games);
-
-
     }
 
-
-
     public GameData getGame(int gameId) throws DataAccessException {
-        GameData game = games.get(gameId);
-        System.out.println("Attempting to join game: " + gameId);
-        if (game == null) {
+        String sql = "SELECT * FROM Game WHERE game_id = ?";
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, gameId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                String whiteUsername = rs.getString("white_username");
+                String blackUsername = rs.getString("black_username");
+                String gameName = rs.getString("game_name");
+                String gameStateJson = rs.getString("game_state");
+
+                GameData game = new GameData(gameId, whiteUsername, blackUsername, gameName);
+                ChessGame deserializedGame = gson.fromJson(gameStateJson, ChessGame.class); // Deserialize here
+                game.setGame(deserializedGame);
+                return game;
+            }
+
             throw new DataAccessException("Game not found");
+
+        } catch (SQLException e) {
+            throw new DataAccessException("Error retrieving game: " + e.getMessage());
         }
-        return game;
     }
 
     public List<GameData> listGames() throws DataAccessException {
-        return new ArrayList<>(games.values());  // Return all games in the map as a list
+        String sql = "SELECT * FROM Game";
+        List<GameData> games = new ArrayList<>();
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                int gameId = rs.getInt("game_id");
+                String whiteUsername = rs.getString("white_username");
+                String blackUsername = rs.getString("black_username");
+                String gameName = rs.getString("game_name");
+                String gameStateJson = rs.getString("game_state");
+
+                GameData game = new GameData(gameId, whiteUsername, blackUsername, gameName);
+                ChessGame deserializedGame = gson.fromJson(gameStateJson, ChessGame.class);
+                game.setGame(deserializedGame);
+                games.add(game);
+            }
+
+        } catch (SQLException e) {
+            throw new DataAccessException("Error listing games: " + e.getMessage());
+        }
+        return games;
     }
 
-    public void updateGame(int gameId, ChessGame updatedGame) throws DataAccessException {
-        GameData gameData = games.get(gameId);
-        if (gameData == null) {
-            throw new DataAccessException("Game not found");
+    public void updateGame(int gameId, GameData game) throws DataAccessException {
+        String sql = "UPDATE Game SET white_username = ?, black_username = ?, game_name = ?, game_state = ? WHERE game_id = ?";
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, game.getWhiteUsername());
+            stmt.setString(2, game.getBlackUsername());
+            stmt.setString(3, game.getGameName());
+            stmt.setString(4, gson.toJson(game.getGame()));
+            stmt.setInt(5, gameId);
+            int rowsAffected = stmt.executeUpdate();
+
+            if (rowsAffected == 0) {
+                throw new DataAccessException("Game not found");
+            }
+
+            System.out.println("Game updated in database: " + gameId);
+
+        } catch (SQLException e) {
+            throw new DataAccessException("Error updating game: " + e.getMessage());
         }
-        gameData.setGame(updatedGame);
-        games.put(gameId, gameData);
     }
 
     public void clear() throws DataAccessException {
-        games.clear();
-    }
+        String sql = "DELETE FROM Game";
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-    public Map<Integer, GameData> getGames() {
-        return games;
+            stmt.executeUpdate();
+            System.out.println("Game table cleared in database");
+
+        } catch (SQLException e) {
+            throw new DataAccessException("Error clearing Game table: " + e.getMessage());
+        }
     }
 }

@@ -20,7 +20,7 @@ public class ListGamesServiceTest {
 
     @BeforeEach
     public void setUp() throws DataAccessException {
-        gameDAO = new GameDAO(new HashMap<>());
+        gameDAO = new GameDAO();
         gameDAO.createGame(new GameData(1, "player1", "player2", "Game 1"));
         gameDAO.createGame(new GameData(2, "player3", "player4", "Game 2"));
         service = new ListGamesService(gameDAO);

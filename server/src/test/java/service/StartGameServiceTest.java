@@ -20,7 +20,7 @@ public class StartGameServiceTest {
 
     @BeforeEach
     public void setUp() {
-        gameDAO = new GameDAO(new HashMap<>());
+        gameDAO = new GameDAO();
         service = new StartGameService(gameDAO);
     }
 

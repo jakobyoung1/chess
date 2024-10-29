@@ -24,7 +24,7 @@ public class ClearServiceTest {
         userDAO.insertUser(new UserData("user","pass","email"));
         service = new ClearService(
                 userDAO,
-                new GameDAO(new HashMap<>()),
+                new GameDAO(),
                 new AuthDAO()
         );
         ClearResult res = null;
