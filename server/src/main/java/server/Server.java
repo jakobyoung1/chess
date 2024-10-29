@@ -1,9 +1,10 @@
 package server;
 
+import dataaccess.DataAccessException;
 import server.service.*;
 import server.handlers.*;
 import spark.Spark;
-import dataaccess.UserDAO;
+import dataaccess.*;
 import dataaccess.GameDAO;
 import dataaccess.AuthDAO;
 
@@ -15,6 +16,14 @@ public class Server {
         Spark.staticFiles.location("/web");
 
         Spark.port(port);
+
+        try {
+            DatabaseManager.createDatabase();
+            System.out.println("Database initialized successfully.");
+        } catch (DataAccessException e) {
+            System.out.println("Database not initialized. " + e.getMessage());
+            return -1;
+        }
 
         UserDAO userDAO = new UserDAO(new HashMap<>(), new HashMap<>());
         GameDAO gameDAO = new GameDAO(new HashMap<>());

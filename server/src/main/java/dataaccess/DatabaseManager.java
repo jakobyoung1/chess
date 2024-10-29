@@ -36,17 +36,63 @@ public class DatabaseManager {
     /**
      * Creates the database if it does not already exist.
      */
-    static void createDatabase() throws DataAccessException {
+    public static void createDatabase() throws DataAccessException {
         try {
-            var statement = "CREATE DATABASE IF NOT EXISTS " + DATABASE_NAME;
-            var conn = DriverManager.getConnection(CONNECTION_URL, USER, PASSWORD);
-            try (var preparedStatement = conn.prepareStatement(statement)) {
-                preparedStatement.executeUpdate();
+            // Create the database if it doesn't exist
+            String createDatabaseStatement = "CREATE DATABASE IF NOT EXISTS " + DATABASE_NAME;
+            try (var conn = DriverManager.getConnection(CONNECTION_URL, USER, PASSWORD)) {
+                try (var preparedStatement = conn.prepareStatement(createDatabaseStatement)) {
+                    preparedStatement.executeUpdate();
+                }
+
+                // Switch to the created database
+                conn.setCatalog(DATABASE_NAME);
+
+                // user table
+                String createUserTable = """
+                    CREATE TABLE IF NOT EXISTS User (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        username VARCHAR(50) UNIQUE NOT NULL,
+                        password_hash VARCHAR(60) NOT NULL
+                    );
+                """;
+                try (var preparedStatement = conn.prepareStatement(createUserTable)) {
+                    preparedStatement.executeUpdate();
+                }
+
+                // game table
+                String createGameTable = """
+                    CREATE TABLE IF NOT EXISTS Game (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        player1_id INT NOT NULL,
+                        player2_id INT,
+                        game_state JSON NOT NULL,
+                        FOREIGN KEY (player1_id) REFERENCES User(id),
+                        FOREIGN KEY (player2_id) REFERENCES User(id)
+                    );
+                """;
+                try (var preparedStatement = conn.prepareStatement(createGameTable)) {
+                    preparedStatement.executeUpdate();
+                }
+
+                // auth table
+                String createAuthTable = """
+                    CREATE TABLE IF NOT EXISTS Auth (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        user_id INT NOT NULL,
+                        auth_token VARCHAR(255) UNIQUE NOT NULL,
+                        FOREIGN KEY (user_id) REFERENCES User(id)
+                    );
+                """;
+                try (var preparedStatement = conn.prepareStatement(createAuthTable)) {
+                    preparedStatement.executeUpdate();
+                }
             }
         } catch (SQLException e) {
             throw new DataAccessException(e.getMessage());
         }
     }
+
 
     /**
      * Create a connection to the database and sets the catalog based upon the
