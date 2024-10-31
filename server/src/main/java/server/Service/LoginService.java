@@ -27,7 +27,7 @@ public class LoginService {
             return new LoginResult("Error: User not found");
         }
 
-        if (!existingUser.getPassword().equals(request.password())) {
+        if (!BCrypt.checkpw(request.password(), existingUser.getPassword())) {
             return new LoginResult("Error: Invalid password");
         }
 
