@@ -38,17 +38,14 @@ public class DatabaseManager {
      */
     public static void createDatabase() throws DataAccessException {
         try {
-            // Create the database if it doesn't exist
             String createDatabaseStatement = "CREATE DATABASE IF NOT EXISTS " + DATABASE_NAME;
             try (var conn = DriverManager.getConnection(CONNECTION_URL, USER, PASSWORD)) {
-                try (var preparedStatement = conn.prepareStatement(createDatabaseStatement)) {
-                    preparedStatement.executeUpdate();
+                try (var pStatement = conn.prepareStatement(createDatabaseStatement)) {
+                    pStatement.executeUpdate();
                 }
 
-                // Switch to the created database
                 conn.setCatalog(DATABASE_NAME);
 
-                // user table
                 String createUserTable = """
                     CREATE TABLE IF NOT EXISTS User (
                         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -57,11 +54,10 @@ public class DatabaseManager {
                         email VARCHAR(100) NOT NULL
                     );
                 """;
-                try (var preparedStatement = conn.prepareStatement(createUserTable)) {
-                    preparedStatement.executeUpdate();
+                try (var pStatement = conn.prepareStatement(createUserTable)) {
+                    pStatement.executeUpdate();
                 }
 
-                // game table
                 String createGameTable = """
                     CREATE TABLE IF NOT EXISTS Game (
                         game_id INT PRIMARY KEY,
@@ -71,11 +67,10 @@ public class DatabaseManager {
                         game_state JSON NOT NULL
                     );
                 """;
-                try (var preparedStatement = conn.prepareStatement(createGameTable)) {
-                    preparedStatement.executeUpdate();
+                try (var p = conn.prepareStatement(createGameTable)) {
+                    p.executeUpdate();
                 }
 
-                // auth table
                 String createAuthTable = """
                     CREATE TABLE IF NOT EXISTS Auth (
                         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -84,8 +79,8 @@ public class DatabaseManager {
                     );
                 """;
 
-                try (var preparedStatement = conn.prepareStatement(createAuthTable)) {
-                    preparedStatement.executeUpdate();
+                try (var p = conn.prepareStatement(createAuthTable)) {
+                    p.executeUpdate();
                 }
             }
         } catch (SQLException e) {
