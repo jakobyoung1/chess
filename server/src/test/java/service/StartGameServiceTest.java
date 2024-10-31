@@ -21,6 +21,7 @@ public class StartGameServiceTest {
     @BeforeEach
     public void setUp() throws DataAccessException {
         gameDAO = new GameDAO();
+        gameDAO.clear();
         service = new StartGameService(gameDAO);
     }
 
