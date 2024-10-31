@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GameDAO {
-    private static final Gson gson = new Gson();
+    private static final Gson GSON = new Gson();
 
     public GameDAO() {
     }
@@ -26,7 +26,7 @@ public class GameDAO {
             stmt.setString(2, game.getWhiteUsername());
             stmt.setString(3, game.getBlackUsername());
             stmt.setString(4, game.getGameName());
-            stmt.setString(5, gson.toJson(game.getGame()));
+            stmt.setString(5, GSON.toJson(game.getGame()));
             stmt.executeUpdate();
 
             System.out.println("Game stored in database: " + game.getGameId());
@@ -51,7 +51,7 @@ public class GameDAO {
                 String gameStateJson = rs.getString("game_state");
 
                 GameData game = new GameData(gameId, whiteUsername, blackUsername, gameName);
-                ChessGame deserializedGame = gson.fromJson(gameStateJson, ChessGame.class); // Deserialize here
+                ChessGame deserializedGame = GSON.fromJson(gameStateJson, ChessGame.class); // Deserialize here
                 game.setGame(deserializedGame);
                 return game;
             }
@@ -78,7 +78,7 @@ public class GameDAO {
                 String gameStateJson = rs.getString("game_state");
 
                 GameData game = new GameData(gameId, whiteUsername, blackUsername, gameName);
-                ChessGame deserializedGame = gson.fromJson(gameStateJson, ChessGame.class);
+                ChessGame deserializedGame = GSON.fromJson(gameStateJson, ChessGame.class);
                 game.setGame(deserializedGame);
                 games.add(game);
             }
@@ -97,7 +97,7 @@ public class GameDAO {
             stmt.setString(1, game.getWhiteUsername());
             stmt.setString(2, game.getBlackUsername());
             stmt.setString(3, game.getGameName());
-            stmt.setString(4, gson.toJson(game.getGame()));
+            stmt.setString(4, GSON.toJson(game.getGame()));
             stmt.setInt(5, gameId);
             int rowsAffected = stmt.executeUpdate();
 
