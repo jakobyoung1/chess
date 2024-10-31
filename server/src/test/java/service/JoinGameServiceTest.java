@@ -22,7 +22,6 @@ public class JoinGameServiceTest {
     public void setUp() throws DataAccessException {
         gameDAO = new GameDAO();
         service = new JoinGameService(gameDAO);
-
         GameData game1 = new GameData(1, null, null, "Test Game 1");
         gameDAO.createGame(game1);
     }

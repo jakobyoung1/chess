@@ -1,6 +1,7 @@
 package dataaccess;
 
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -14,18 +15,16 @@ public class UserDAO implements UserDataAccess {
 
     @Override
     public void insertUser(UserData user) throws DataAccessException {
-        System.out.println("Attempting to insert user: " + user.getUsername());
+        String hashedPassword = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
 
         String sql = "INSERT INTO User (username, password_hash, email) VALUES (?, ?, ?)";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, user.getUsername());
-            stmt.setString(2, user.getPassword());
+            stmt.setString(2, hashedPassword);
             stmt.setString(3, user.getEmail());
             stmt.executeUpdate();
-
-            System.out.println("User inserted into database: " + user.getUsername());
 
         } catch (SQLException e) {
             throw new DataAccessException("Error inserting user: " + e.getMessage());
@@ -73,5 +72,25 @@ public class UserDAO implements UserDataAccess {
             throw new DataAccessException("Error clearing User table: " + e.getMessage());
         }
     }
+
+    public UserData validateLogin(String username, String password) throws DataAccessException {
+        String sql = "SELECT * FROM User WHERE username = ?";
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                String storedHash = rs.getString("password_hash");
+
+            }
+            return null;
+
+        } catch (SQLException e) {
+            throw new DataAccessException("Error validating login: " + e.getMessage());
+        }
+    }
+
 }
 

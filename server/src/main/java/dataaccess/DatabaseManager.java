@@ -54,7 +54,7 @@ public class DatabaseManager {
                         id INT AUTO_INCREMENT PRIMARY KEY,
                         username VARCHAR(50) UNIQUE NOT NULL,
                         password_hash VARCHAR(60) NOT NULL,
-                        email VARCHAR(50) NOT NULL
+                        email VARCHAR(100) NOT NULL
                     );
                 """;
                 try (var preparedStatement = conn.prepareStatement(createUserTable)) {
@@ -65,8 +65,8 @@ public class DatabaseManager {
                 String createGameTable = """
                     CREATE TABLE IF NOT EXISTS Game (
                         game_id INT PRIMARY KEY,
-                        white_username VARCHAR(50) NOT NULL,
-                        black_username VARCHAR(50) NOT NULL,
+                        white_username VARCHAR(50) NULL,
+                        black_username VARCHAR(50) NULL,
                         game_name VARCHAR(100) NOT NULL,
                         game_state JSON NOT NULL
                     );
@@ -80,10 +80,10 @@ public class DatabaseManager {
                     CREATE TABLE IF NOT EXISTS Auth (
                         id INT AUTO_INCREMENT PRIMARY KEY,
                         auth_token VARCHAR(255) UNIQUE NOT NULL,
-                        username VARCHAR(50) NOT NULL,
-                        FOREIGN KEY (username) REFERENCES User(username)
+                        username VARCHAR(50) NOT NULL
                     );
                 """;
+
                 try (var preparedStatement = conn.prepareStatement(createAuthTable)) {
                     preparedStatement.executeUpdate();
                 }

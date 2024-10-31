@@ -4,6 +4,7 @@ import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
 import model.UserData;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import server.service.LoginService;
@@ -16,12 +17,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class LoginServiceTest {
 
-    private LoginService service;
-    private UserDAO userDAO;
-    private AuthDAO authDAO;
+    private static LoginService service;
+    private static UserDAO userDAO;
+    private static AuthDAO authDAO;
 
-    @BeforeEach
-    public void setUp() throws DataAccessException {
+    @BeforeAll
+    public static void setUp() throws DataAccessException {
         userDAO = new UserDAO();
         authDAO = new AuthDAO();
         service = new LoginService(userDAO, authDAO);

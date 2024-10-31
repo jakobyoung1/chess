@@ -56,13 +56,14 @@ public class AuthDAO {
             int rowsAffected = stmt.executeUpdate();
 
             if (rowsAffected == 0) {
-                throw new DataAccessException("Auth token not found");
+                throw new DataAccessException("Error: Auth token not found");
             }
 
         } catch (SQLException e) {
             throw new DataAccessException("Error deleting auth token: " + e.getMessage());
         }
     }
+
 
     public void clear() throws DataAccessException {
         String sql = "DELETE FROM Auth";

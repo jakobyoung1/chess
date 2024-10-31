@@ -6,6 +6,7 @@ import model.UserData;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mindrot.jbcrypt.BCrypt;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -31,7 +32,7 @@ public class UserDAOTest {
 
         assertNotNull(retrievedUser);
         assertEquals("testUser", retrievedUser.getUsername());
-        assertEquals("password", retrievedUser.getPassword());
+        assertTrue(BCrypt.checkpw("password", retrievedUser.getPassword()));
     }
 
     @Test

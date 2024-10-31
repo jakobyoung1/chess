@@ -19,7 +19,7 @@ public class StartGameServiceTest {
     private GameDAO gameDAO;
 
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws DataAccessException {
         gameDAO = new GameDAO();
         service = new StartGameService(gameDAO);
     }

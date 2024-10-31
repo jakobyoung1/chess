@@ -28,14 +28,10 @@ public class LogoutServiceTest {
     }
 
     @Test
-    public void testLogoutPositive() {
+    public void testLogoutPositive() throws DataAccessException {
         LogoutRequest req = new LogoutRequest("validAuthToken");
         LogoutResult res = null;
-        try {
-            res = service.logout(req);
-        } catch (DataAccessException e) {
-            fail("Unexpected DataAccessException: " + e.getMessage());
-        }
+        res = service.logout(req);
 
         assertNotNull(res, "LogoutResult should not be null");
         assertEquals(res.message(), "Logout successful", "Positive Test Passed");

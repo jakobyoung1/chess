@@ -1,5 +1,5 @@
 import chess.*;
-import dataaccess.*;
+import dataaccess.UserDataAccess;
 import server.Server;
 
 public class Main {
