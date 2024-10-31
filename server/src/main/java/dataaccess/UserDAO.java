@@ -73,26 +73,5 @@ public class UserDAO implements UserDataAccess {
         }
     }
 
-    public UserData validateLogin(String username, String password) throws DataAccessException {
-        String sql = "SELECT * FROM User WHERE username = ?";
-        try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, username);
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                String storedHash = rs.getString("password_hash");
-                if (BCrypt.checkpw(password, storedHash)) {
-                    return new UserData(rs.getString("username"), storedHash, rs.getString("email"));
-                }
-            }
-            return null;
-
-        } catch (SQLException e) {
-            throw new DataAccessException("Error validating login: " + e.getMessage());
-        }
-    }
-
 }
 
