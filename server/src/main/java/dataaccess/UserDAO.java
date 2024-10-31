@@ -83,7 +83,9 @@ public class UserDAO implements UserDataAccess {
 
             if (rs.next()) {
                 String storedHash = rs.getString("password_hash");
-
+                if (BCrypt.checkpw(password, storedHash)) {
+                    return new UserData(rs.getString("username"), storedHash, rs.getString("email"));
+                }
             }
             return null;
 
