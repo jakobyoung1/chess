@@ -58,6 +58,20 @@ public class GameDAOTest {
         assertEquals("Error inserting game: Duplicate entry '1' for key 'game.PRIMARY'", exception.getMessage());
     }
 
+    @Test
+    public void testGetGameSuccess() {
+        GameData game = new GameData(1, "whitePlayer", "blackPlayer", "Test Game");
+        assertDoesNotThrow(() -> gameDAO.createGame(game));
+
+        GameData retrievedGame = assertDoesNotThrow(() -> gameDAO.getGame(1));
+        assertNotNull(retrievedGame, "Expected to retrieve a game, but got null");
+
+        assertEquals("whitePlayer", retrievedGame.getWhiteUsername(), "White username does not match");
+        assertEquals("blackPlayer", retrievedGame.getBlackUsername(), "Black username does not match");
+        assertEquals("Test Game", retrievedGame.getGameName(), "Game name does not match");
+        assertNotNull(retrievedGame.getGame(), "Expected a ChessGame object, but got null");
+    }
+
 
     @Test
     public void testGetGameNotFound() {
