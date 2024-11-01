@@ -99,6 +99,18 @@ public class GameDAOTest {
     }
 
     @Test
+    public void testUpdateGameFailure() {
+        GameData nonExistentGame = new GameData(99, "noWhite", "noBlack", "No Game");
+        ChessGame updatedChessGame = new ChessGame();
+        nonExistentGame.setGame(updatedChessGame);
+
+        DataAccessException exception = assertThrows(DataAccessException.class, () -> gameDAO.updateGame(99, nonExistentGame));
+
+        assertEquals("Game not found", exception.getMessage());
+    }
+
+
+    @Test
     public void testListGames() {
         GameData game1 = new GameData(1, "whitePlayer1", "blackPlayer1", "Game 1");
         GameData game2 = new GameData(2, "whitePlayer2", "blackPlayer2", "Game 2");
