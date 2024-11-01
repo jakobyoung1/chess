@@ -48,6 +48,18 @@ public class GameDAOTest {
     }
 
     @Test
+    public void testCreateGameFailure() {
+        GameData game1 = new GameData(1, "whitePlayer", "blackPlayer", "Test Game");
+        assertDoesNotThrow(() -> gameDAO.createGame(game1));
+
+        GameData game2 = new GameData(1, "anotherWhitePlayer", "anotherBlackPlayer", "Another Test Game");
+        DataAccessException exception = assertThrows(DataAccessException.class, () -> gameDAO.createGame(game2));
+
+        assertEquals("Error inserting game: Duplicate entry '1' for key 'game.PRIMARY'", exception.getMessage());
+    }
+
+
+    @Test
     public void testGetGameNotFound() {
         DataAccessException exception = assertThrows(DataAccessException.class, () -> gameDAO.getGame(99));
         assertEquals("Game not found", exception.getMessage());
