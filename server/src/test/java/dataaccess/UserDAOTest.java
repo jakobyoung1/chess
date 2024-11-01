@@ -45,6 +45,20 @@ public class UserDAOTest {
     }
 
     @Test
+    public void testGetUserSuccess() throws DataAccessException {
+        UserData user = new UserData("existingUser", "password123", "existingUser@example.com");
+        assertDoesNotThrow(() -> userDAO.insertUser(user));
+
+        UserData retrievedUser = assertDoesNotThrow(() -> userDAO.getUser("existingUser"));
+        assertNotNull(retrievedUser, "Expected to retrieve a user, but got null");
+
+        assertEquals("existingUser", retrievedUser.getUsername(), "Username does not match");
+        assertEquals("existingUser@example.com", retrievedUser.getEmail(), "Email does not match");
+        assertNotNull(retrievedUser.getPassword(), "Password hash should not be null");
+    }
+
+
+    @Test
     public void testGetUserNotFound() throws DataAccessException {
         UserData retrievedUser = userDAO.getUser("nonExistentUser");
         assertNull(retrievedUser);
