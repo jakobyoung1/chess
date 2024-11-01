@@ -129,6 +129,16 @@ public class GameDAOTest {
     }
 
     @Test
+    public void testListGamesEmpty() {
+        assertDoesNotThrow(() -> gameDAO.clear());
+
+        List<GameData> games = assertDoesNotThrow(() -> gameDAO.listGames());
+        assertNotNull(games, "Expected an empty list, but got null");
+        assertTrue(games.isEmpty(), "Expected an empty list of games, but found some games");
+    }
+
+
+    @Test
     public void testClear() {
         GameData game1 = new GameData(1, "whitePlayer1", "blackPlayer1", "Game 1");
         GameData game2 = new GameData(2, "whitePlayer2", "blackPlayer2", "Game 2");
