@@ -62,6 +62,18 @@ public class AuthDAOTest {
     }
 
     @Test
+    public void testGetAuthSuccess() {
+        AuthData authData = new AuthData("validAuthToken", "testUser");
+        assertDoesNotThrow(() -> authDAO.createAuth(authData));
+
+        AuthData retrievedAuth = assertDoesNotThrow(() -> authDAO.getAuth("validAuthToken"));
+
+        assertNotNull(retrievedAuth, "Expected to retrieve auth data, but got null");
+        assertEquals("validAuthToken", retrievedAuth.authToken(), "Auth token mismatch");
+        assertEquals("testUser", retrievedAuth.username(), "Username mismatch");
+    }
+
+    @Test
     public void testGetAuthNotFound() {
         AuthData retrievedAuth = assertDoesNotThrow(() -> authDAO.getAuth("nonExistentToken"));
         assertNull(retrievedAuth);
