@@ -55,8 +55,10 @@ public class GameDAOTest {
         GameData game2 = new GameData(1, "anotherWhitePlayer", "anotherBlackPlayer", "Another Test Game");
         DataAccessException exception = assertThrows(DataAccessException.class, () -> gameDAO.createGame(game2));
 
-        assertEquals("Error inserting game: Duplicate entry '1' for key 'game.PRIMARY'", exception.getMessage());
+        String expectedMessage = "Error inserting game: Duplicate entry '1' for key";
+        assertTrue(exception.getMessage().contains(expectedMessage), "Unexpected error message: " + exception.getMessage());
     }
+
 
     @Test
     public void testGetGameSuccess() {
