@@ -113,5 +113,23 @@ public class PostLoginUI {
         }
     }
 
+    private void listGames() {
+        try {
+            ListGamesRequest request = new ListGamesRequest();
+            ListGamesResult result = listGamesService.listGames(request);
+
+            if (result != null && !result.getGames().isEmpty()) {
+                int index = 1;
+                for (var game : result.getGames()) {
+                    System.out.printf("%d. %s - White: %s, Black: %s%n", index++, game.getGameName(), game.getWhiteUsername(), game.getBlackUsername());
+                }
+            } else {
+                System.out.println("No games available.");
+            }
+        } catch (Exception e) {
+            System.out.println("Error listing games: " + e.getMessage());
+        }
+    }
+
 
 }
