@@ -131,5 +131,22 @@ public class PostLoginUI {
         }
     }
 
+    private void playGame() {
+        System.out.print("Enter game number to play: ");
+        int gameNumber = Integer.parseInt(scanner.nextLine());
+        System.out.print("Enter color (WHITE/BLACK): ");
+        String color = scanner.nextLine().toUpperCase();
+
+        try {
+            JoinGameRequest request = new JoinGameRequest(color, authToken, gameNumber);
+
+            JoinGameResult result = joinGameService.joinGame(request);
+
+            System.out.println(Objects.equals(result.getMessage(), "Joined game successfully") ? "Joined game successfully." : "Error joining game: " + result.getMessage());
+        } catch (Exception e) {
+            System.out.println("Error joining game: " + e.getMessage());
+        }
+    }
+
 
 }
