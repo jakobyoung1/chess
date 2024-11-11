@@ -95,5 +95,23 @@ public class PostLoginUI {
         }
     }
 
+    private void createGame() {
+        System.out.print("Enter game name: ");
+        String gameName = scanner.nextLine();
+
+        try {
+            StartGameRequest request = new StartGameRequest(null, null, gameName);
+            StartGameResult result = startGameService.startGame(request);
+
+            if (result != null && result.getMessage().equals("Game created successfully")) {
+                System.out.println(result.getMessage());
+            } else {
+                System.out.println("Error creating game: " + (result != null ? result.getMessage() : "Unknown error"));
+            }
+        } catch (Exception e) {
+            System.out.println("Error during game creation: " + e.getMessage());
+        }
+    }
+
 
 }
