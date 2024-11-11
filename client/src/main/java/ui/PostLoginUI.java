@@ -149,4 +149,11 @@ public class PostLoginUI {
     }
 
 
+    private void observeGame() {
+        System.out.print("Enter game number to observe: ");
+        int gameNumber = Integer.parseInt(scanner.nextLine());
+        System.out.println("Observation functionality will be implemented in Phase 6.");
+    }
+
+
 }
