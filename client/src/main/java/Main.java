@@ -4,6 +4,7 @@ import dataaccess.GameDAO;
 import dataaccess.UserDAO;
 import server.Server;
 import server.service.*;
+import ui.PostLoginUI;
 import ui.PreLoginUI;
 
 public class Main {
@@ -17,13 +18,26 @@ public class Main {
 
         LoginService loginService = new LoginService(userDAO, authDAO);
         RegistrationService registrationService = new RegistrationService(userDAO, authDAO);
-//        LogoutService logoutService = new LogoutService(userDAO, authDAO);
-//        ListGamesService listGamesService = new ListGamesService(gameDAO);
-//        StartGameService startGameService = new StartGameService(gameDAO);
-//        JoinGameService joinGameService = new JoinGameService(gameDAO);
+        LogoutService logoutService = new LogoutService(userDAO, authDAO);
+        ListGamesService listGamesService = new ListGamesService(gameDAO);
+        StartGameService startGameService = new StartGameService(gameDAO);
+        JoinGameService joinGameService = new JoinGameService(gameDAO);
 
         PreLoginUI preLoginUI = new PreLoginUI(loginService, registrationService);
         preLoginUI.display();
+
+        String authToken = preLoginUI.getAuthToken();
+        if (authToken != null) {
+            PostLoginUI postLoginUI = new PostLoginUI(
+                    server,
+                    authToken,
+                    logoutService,
+                    startGameService,
+                    listGamesService,
+                    joinGameService
+            );
+            postLoginUI.display();
+        }
 
         server.stop();
     }
