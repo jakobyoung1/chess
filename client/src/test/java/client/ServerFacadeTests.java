@@ -3,6 +3,8 @@ package java.client;
 import org.junit.jupiter.api.*;
 import server.Server;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 
 public class ServerFacadeTests {
 
@@ -22,8 +24,11 @@ public class ServerFacadeTests {
 
 
     @Test
-    public void sampleTest() {
-        Assertions.assertTrue(true);
+    public void testRegisterSuccess() throws Exception {
+        var authData = server.register("player1", "password", "p1@email.com");
+        assertNotNull(authData);
+        assertNotNull(authData.getAuthToken());
+        assertTrue(authData.getAuthToken().length() > 10, "Auth token should be longer than 10 characters");
     }
 
 }
