@@ -22,6 +22,7 @@ public class PostLoginUI {
     private final JoinGameService joinGameService;
     private final String authToken;
     private final Scanner scanner;
+    private final ChessBoardUI chessBoardUI;
 
     public PostLoginUI(Server server, String authToken, LogoutService logoutService,
                        StartGameService startGameService, ListGamesService listGamesService,
@@ -33,6 +34,7 @@ public class PostLoginUI {
         this.listGamesService = listGamesService;
         this.joinGameService = joinGameService;
         this.scanner = new Scanner(System.in);
+        this.chessBoardUI = new ChessBoardUI();  // Initialize ChessBoardUI for displaying the board
     }
 
     public void display() {
@@ -142,18 +144,20 @@ public class PostLoginUI {
 
             JoinGameResult result = joinGameService.joinGame(request);
 
-            System.out.println(Objects.equals(result.getMessage(), "Joined game successfully") ? "Joined game successfully." : "Error joining game: " + result.getMessage());
+            if (Objects.equals(result.getMessage(), "Joined game successfully")) {
+                System.out.println("Joined game successfully.");
+                chessBoardUI.displayBoard();
+            } else {
+                System.out.println("Error joining game: " + result.getMessage());
+            }
         } catch (Exception e) {
             System.out.println("Error joining game: " + e.getMessage());
         }
     }
 
-
     private void observeGame() {
         System.out.print("Enter game number to observe: ");
         int gameNumber = Integer.parseInt(scanner.nextLine());
-        System.out.println("Observation functionality will be implemented in Phase 6.");
+        chessBoardUI.displayBoard();
     }
-
-
 }

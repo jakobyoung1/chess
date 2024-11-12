@@ -20,10 +20,7 @@ public class ChessBoardUI {
     };
 
     public void displayBoard() {
-        System.out.println("White's perspective:");
         printBoard(INITIAL_BOARD, true);
-
-        System.out.println("\nBlack's perspective:");
         printBoard(INITIAL_BOARD, false);
     }
 
@@ -33,18 +30,18 @@ public class ChessBoardUI {
         }
 
         for (int i = 0; i < 8; i++) {
-            System.out.print((whitePerspective ? 8 - i : i + 1) + " "); // Row numbers
+            System.out.print((whitePerspective ? 8 - i : i + 1) + " ");
             for (int j = 0; j < 8; j++) {
                 boolean isLightSquare = (i + j) % 2 == 0;
                 System.out.print((isLightSquare ? LIGHT_SQUARE : DARK_SQUARE));
 
                 char piece = board[i][j];
                 if (piece == ' ') {
-                    System.out.print("   "); // Empty square
+                    System.out.print("   ");
                 } else if (Character.isUpperCase(piece)) {
-                    System.out.print(" " + WHITE_PIECE + piece + RESET + " ");
+                    System.out.print(" " + WHITE_PIECE + piece + " ");
                 } else {
-                    System.out.print(" " + BLACK_PIECE + Character.toUpperCase(piece) + RESET + " ");
+                    System.out.print(" " + BLACK_PIECE + Character.toUpperCase(piece) + " ");
                 }
 
                 System.out.print(RESET);
@@ -67,4 +64,3 @@ public class ChessBoardUI {
         }
     }
 }
-
