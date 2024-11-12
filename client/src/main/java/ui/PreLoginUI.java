@@ -1,25 +1,19 @@
-
 package ui;
 
-import dataaccess.DataAccessException;
-import server.requests.LoginRequest;
-import server.requests.RegisterRequest;
+import client.ServerFacade;
 import server.results.LoginResult;
 import server.results.RegisterResult;
-import server.service.*;
 
 import java.util.Objects;
 import java.util.Scanner;
 
 public class PreLoginUI {
-    private final LoginService loginService;
-    private final RegistrationService registrationService;
+    private final ServerFacade serverFacade;
     private final Scanner scanner;
     private String authToken;
 
-    public PreLoginUI(LoginService loginService, RegistrationService registrationService) {
-        this.loginService = loginService;
-        this.registrationService = registrationService;
+    public PreLoginUI(ServerFacade serverFacade) {
+        this.serverFacade = serverFacade;
         this.scanner = new Scanner(System.in);
         this.authToken = null;
     }
@@ -68,8 +62,7 @@ public class PreLoginUI {
         String password = scanner.nextLine();
 
         try {
-            LoginRequest request = new LoginRequest(username, password);
-            LoginResult result = loginService.login(request);
+            LoginResult result = serverFacade.login(username, password);
 
             if (Objects.equals(result.message(), "Login successful")) {
                 System.out.println("Login successful.");
@@ -91,10 +84,9 @@ public class PreLoginUI {
         String email = scanner.nextLine();
 
         try {
-            RegisterRequest request = new RegisterRequest(username, password, email);
-            RegisterResult result = registrationService.register(request);
+            RegisterResult result = serverFacade.register(username, password, email);
 
-            if (Objects.equals(result.message(), "User registered successfully"))  {
+            if (Objects.equals(result.message(), "User registered successfully")) {
                 System.out.println("Registration successful.");
                 authToken = result.authToken();
             } else {

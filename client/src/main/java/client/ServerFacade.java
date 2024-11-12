@@ -1,3 +1,5 @@
+package client;
+
 import com.google.gson.Gson;
 import server.requests.*;
 import server.results.*;

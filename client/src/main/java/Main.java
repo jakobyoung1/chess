@@ -1,41 +1,23 @@
-import dataaccess.AuthDAO;
-import dataaccess.DataAccessException;
-import dataaccess.GameDAO;
-import dataaccess.UserDAO;
+import client.ServerFacade;
 import server.Server;
-import server.service.*;
 import ui.PostLoginUI;
 import ui.PreLoginUI;
 
 public class Main {
-    public static void main(String[] args) throws DataAccessException {
+    public static void main(String[] args) {
         Server server = new Server();
         int port = server.run(8080);
+        System.out.println("Server started on port " + port);
 
-        UserDAO userDAO = new UserDAO();
-        AuthDAO authDAO = new AuthDAO();
-        GameDAO gameDAO = new GameDAO();
+        String serverURL = "http://localhost:" + port;
+        ServerFacade serverFacade = new ServerFacade(serverURL);
 
-        LoginService loginService = new LoginService(userDAO, authDAO);
-        RegistrationService registrationService = new RegistrationService(userDAO, authDAO);
-        LogoutService logoutService = new LogoutService(userDAO, authDAO);
-        ListGamesService listGamesService = new ListGamesService(gameDAO);
-        StartGameService startGameService = new StartGameService(gameDAO);
-        JoinGameService joinGameService = new JoinGameService(gameDAO);
-
-        PreLoginUI preLoginUI = new PreLoginUI(loginService, registrationService);
+        PreLoginUI preLoginUI = new PreLoginUI(serverFacade);
         preLoginUI.display();
 
         String authToken = preLoginUI.getAuthToken();
         if (authToken != null) {
-            PostLoginUI postLoginUI = new PostLoginUI(
-                    server,
-                    authToken,
-                    logoutService,
-                    startGameService,
-                    listGamesService,
-                    joinGameService
-            );
+            PostLoginUI postLoginUI = new PostLoginUI(serverFacade, authToken);
             postLoginUI.display();
         }
 
