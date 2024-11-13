@@ -53,4 +53,13 @@ public class ServerFacadeTests {
         assertNotNull(result.authToken());
     }
 
+    @Test
+    void testLoginFailureWrongPassword() throws Exception {
+        facade.register("testUser", "testPassword", "test@example.com");
+        Exception exception = assertThrows(Exception.class, () -> {
+            facade.logIn("testUser", "wrongPassword");
+        });
+        assertEquals("Error: Not successful", exception.getMessage());
+    }
+
 }
