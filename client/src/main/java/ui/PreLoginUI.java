@@ -11,11 +11,13 @@ public class PreLoginUI {
     private final ServerFacade serverFacade;
     private final Scanner scanner;
     private String authToken;
+    private String user;
 
     public PreLoginUI(ServerFacade serverFacade) {
         this.serverFacade = serverFacade;
         this.scanner = new Scanner(System.in);
         this.authToken = null;
+        this.user = null;
     }
 
     public void display() {
@@ -25,27 +27,21 @@ public class PreLoginUI {
             String command = scanner.nextLine().trim().toLowerCase();
 
             switch (command) {
-                case "help":
-                    showHelp();
-                    break;
-                case "quit":
-                    System.exit(0);
-                    break;
-                case "login":
-                    login();
-                    break;
-                case "register":
-                    register();
-                    break;
-                default:
-                    System.out.println("Invalid command. Type 'Help' for options.");
-                    break;
+                case "help" -> showHelp();
+                case "quit" -> System.exit(0);
+                case "login" -> login();
+                case "register" -> register();
+                default -> System.out.println("Invalid command. Type 'Help' for options.");
             }
         }
     }
 
     public String getAuthToken() {
         return authToken;
+    }
+
+    public String getUsername() {
+        return user;
     }
 
     private void showHelp() {
@@ -62,10 +58,11 @@ public class PreLoginUI {
         String password = scanner.nextLine();
 
         try {
-            LoginResult result = serverFacade.login(username, password);
+            LoginResult result = serverFacade.logIn(username, password);
 
             if (Objects.equals(result.message(), "Login successful")) {
                 System.out.println("Login successful.");
+                user = username;
                 authToken = result.authToken(); // Set auth token upon success
             } else {
                 System.out.println("Login failed: " + result.message());

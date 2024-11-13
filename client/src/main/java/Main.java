@@ -7,17 +7,16 @@ public class Main {
     public static void main(String[] args) {
         Server server = new Server();
         int port = server.run(8080);
-        System.out.println("Server started on port " + port);
 
-        String serverURL = "http://localhost:" + port;
-        ServerFacade serverFacade = new ServerFacade(serverURL);
+        ServerFacade serverFacade = new ServerFacade(port);
 
         PreLoginUI preLoginUI = new PreLoginUI(serverFacade);
         preLoginUI.display();
 
         String authToken = preLoginUI.getAuthToken();
+        String username = preLoginUI.getUsername();
         if (authToken != null) {
-            PostLoginUI postLoginUI = new PostLoginUI(serverFacade, authToken);
+            PostLoginUI postLoginUI = new PostLoginUI(serverFacade, authToken, username);
             postLoginUI.display();
         }
 

@@ -1,6 +1,8 @@
 package server.results;
 
 import model.GameData;
+
+import java.util.Collection;
 import java.util.List;
 
 public class ListGamesResult {
@@ -24,4 +26,5 @@ public class ListGamesResult {
     public String getMessage() {
         return message;
     }
+
 }

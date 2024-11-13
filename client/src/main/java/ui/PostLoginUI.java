@@ -1,40 +1,27 @@
 package ui;
 
-import server.requests.JoinGameRequest;
-import server.requests.ListGamesRequest;
-import server.requests.LogoutRequest;
-import server.requests.StartGameRequest;
-import server.results.StartGameResult;
-import server.service.*;
-import server.Server;
-import server.results.ListGamesResult;
+import client.ServerFacade;
 import server.results.JoinGameResult;
+import server.results.ListGamesResult;
 import server.results.LogoutResult;
+import server.results.StartGameResult;
 
 import java.util.Objects;
 import java.util.Scanner;
 
 public class PostLoginUI {
-    private final Server server;
-    private final LogoutService logoutService;
-    private final StartGameService startGameService;
-    private final ListGamesService listGamesService;
-    private final JoinGameService joinGameService;
+    private final ServerFacade serverFacade;
     private final String authToken;
     private final Scanner scanner;
     private final ChessBoardUI chessBoardUI;
+    private final String username;
 
-    public PostLoginUI(Server server, String authToken, LogoutService logoutService,
-                       StartGameService startGameService, ListGamesService listGamesService,
-                       JoinGameService joinGameService) {
-        this.server = server;
+    public PostLoginUI(ServerFacade serverFacade, String authToken, String username) {
+        this.serverFacade = serverFacade;
         this.authToken = authToken;
-        this.logoutService = logoutService;
-        this.startGameService = startGameService;
-        this.listGamesService = listGamesService;
-        this.joinGameService = joinGameService;
         this.scanner = new Scanner(System.in);
-        this.chessBoardUI = new ChessBoardUI();  // Initialize ChessBoardUI for displaying the board
+        this.chessBoardUI = new ChessBoardUI();
+        this.username = username;
     }
 
     public void display() {
@@ -82,8 +69,7 @@ public class PostLoginUI {
 
     private boolean logout() {
         try {
-            LogoutRequest request = new LogoutRequest(authToken);
-            LogoutResult result = logoutService.logout(request);
+            LogoutResult result = serverFacade.logout();
             if (Objects.equals(result.message(), "Logout successful")) {
                 System.out.println("Successfully logged out.");
                 return true;
@@ -102,8 +88,7 @@ public class PostLoginUI {
         String gameName = scanner.nextLine();
 
         try {
-            StartGameRequest request = new StartGameRequest(null, null, gameName);
-            StartGameResult result = startGameService.startGame(request);
+            StartGameResult result = serverFacade.createGame(gameName);
 
             if (result != null && result.getMessage().equals("Game created successfully")) {
                 System.out.println(result.getMessage());
@@ -116,9 +101,9 @@ public class PostLoginUI {
     }
 
     private void listGames() {
+        System.out.println("listing games\n");
         try {
-            ListGamesRequest request = new ListGamesRequest();
-            ListGamesResult result = listGamesService.listGames(request);
+            ListGamesResult result = serverFacade.listGames();
 
             if (result != null && !result.getGames().isEmpty()) {
                 int index = 1;
@@ -140,9 +125,7 @@ public class PostLoginUI {
         String color = scanner.nextLine().toUpperCase();
 
         try {
-            JoinGameRequest request = new JoinGameRequest(color, authToken, gameNumber);
-
-            JoinGameResult result = joinGameService.joinGame(request);
+            JoinGameResult result = serverFacade.joinGame(gameNumber, username, color);
 
             if (Objects.equals(result.getMessage(), "Joined game successfully")) {
                 System.out.println("Joined game successfully.");
@@ -158,6 +141,6 @@ public class PostLoginUI {
     private void observeGame() {
         System.out.print("Enter game number to observe: ");
         int gameNumber = Integer.parseInt(scanner.nextLine());
-        chessBoardUI.displayBoard();
+        chessBoardUI.displayBoard();  // Display the initial state of the board
     }
 }

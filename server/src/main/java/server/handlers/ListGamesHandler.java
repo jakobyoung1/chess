@@ -31,7 +31,7 @@ public class ListGamesHandler implements Route {
             return gson.toJson(new ListGamesResult("Error: Unauthorized"));
         }
 
-        ListGamesRequest request = new ListGamesRequest();
+        ListGamesRequest request = new ListGamesRequest(authToken);
         ListGamesResult result = listGamesService.listGames(request);
 
         res.type("application/json");
