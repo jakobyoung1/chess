@@ -45,4 +45,12 @@ public class ServerFacadeTests {
         assertEquals("Error: Not successful", exception.getMessage());
     }
 
+    @Test
+    void testLoginSuccess() throws Exception {
+        facade.register("testUser", "testPassword", "test@example.com");
+        var result = facade.logIn("testUser", "testPassword");
+        assertNotNull(result);
+        assertNotNull(result.authToken());
+    }
+
 }
