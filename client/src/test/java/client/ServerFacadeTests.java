@@ -3,7 +3,7 @@ package client;
 import org.junit.jupiter.api.*;
 import server.Server;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 public class ServerFacadeTests {
@@ -34,6 +34,15 @@ public class ServerFacadeTests {
         var result = facade.register("testUser", "testPassword", "test@example.com");
         assertNotNull(result);
         assertNotNull(result.authToken());
+    }
+
+    @Test
+    void testRegisterFailureDuplicateUser() throws Exception {
+        facade.register("testUser", "testPassword", "test@example.com");
+        Exception exception = assertThrows(Exception.class, () -> {
+            facade.register("testUser", "testPassword", "test@example.com");
+        });
+        assertEquals("Error: Not successful", exception.getMessage());
     }
 
 }
