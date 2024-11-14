@@ -91,7 +91,7 @@ public class ServerFacadeTests {
         facade.createGame("Test Game 2");
         var result = facade.listGames();
         assertNotNull(result);
-        assertTrue(result.getGames().size() >= 2);
+        assertTrue(result.size() >= 2);
     }
 
     @Test

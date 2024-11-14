@@ -1,10 +1,6 @@
 package ui;
 
 import client.ServerFacade;
-import server.results.LoginResult;
-import server.results.RegisterResult;
-
-import java.util.Objects;
 import java.util.Scanner;
 
 public class PreLoginUI {
@@ -58,15 +54,7 @@ public class PreLoginUI {
         String password = scanner.nextLine();
 
         try {
-            LoginResult result = serverFacade.logIn(username, password);
-
-            if (Objects.equals(result.message(), "Login successful")) {
-                System.out.println("Login successful.");
-                user = username;
-                authToken = result.authToken(); // Set auth token upon success
-            } else {
-                System.out.println("Login failed: " + result.message());
-            }
+            serverFacade.logIn(username, password);
         } catch (Exception e) {
             System.out.println("Error logging in: " + e.getMessage());
         }
@@ -81,14 +69,7 @@ public class PreLoginUI {
         String email = scanner.nextLine();
 
         try {
-            RegisterResult result = serverFacade.register(username, password, email);
-
-            if (Objects.equals(result.message(), "User registered successfully")) {
-                System.out.println("Registration successful.");
-                authToken = result.authToken();
-            } else {
-                System.out.println("Registration failed: " + result.message());
-            }
+            serverFacade.register(username, password, email);
         } catch (Exception e) {
             System.out.println("Error registering: " + e.getMessage());
         }

@@ -1,12 +1,8 @@
 package ui;
 
 import client.ServerFacade;
-import server.results.JoinGameResult;
-import server.results.ListGamesResult;
-import server.results.LogoutResult;
-import server.results.StartGameResult;
-
-import java.util.Objects;
+import model.GameData;
+import java.util.List;
 import java.util.Scanner;
 
 public class PostLoginUI {
@@ -69,14 +65,8 @@ public class PostLoginUI {
 
     private boolean logout() {
         try {
-            LogoutResult result = serverFacade.logout();
-            if (Objects.equals(result.message(), "Logout successful")) {
-                System.out.println("Successfully logged out.");
-                return true;
-            } else {
-                System.out.println("Logout failed: " + result.message());
-                return false;
-            }
+            serverFacade.logout();
+            return true;
         } catch (Exception e) {
             System.out.println("Error during logout: " + e.getMessage());
             return false;
@@ -88,13 +78,8 @@ public class PostLoginUI {
         String gameName = scanner.nextLine();
 
         try {
-            StartGameResult result = serverFacade.createGame(gameName);
+            serverFacade.createGame(gameName);
 
-            if (result != null && result.getMessage().equals("Game created successfully")) {
-                System.out.println(result.getMessage());
-            } else {
-                System.out.println("Error creating game: " + (result != null ? result.getMessage() : "Unknown error"));
-            }
         } catch (Exception e) {
             System.out.println("Error during game creation: " + e.getMessage());
         }
@@ -103,15 +88,11 @@ public class PostLoginUI {
     private void listGames() {
         System.out.println("listing games\n");
         try {
-            ListGamesResult result = serverFacade.listGames();
+            List<GameData> games = serverFacade.listGames();
 
-            if (result != null && !result.getGames().isEmpty()) {
-                int index = 1;
-                for (var game : result.getGames()) {
-                    System.out.printf("%d. %s - White: %s, Black: %s%n", index++, game.getGameName(), game.getWhiteUsername(), game.getBlackUsername());
-                }
-            } else {
-                System.out.println("No games available.");
+            int index = 1;
+            for (var game : games) {
+                System.out.printf("%d. %s - White: %s, Black: %s%n", index++, game.getGameName(), game.getWhiteUsername(), game.getBlackUsername());
             }
         } catch (Exception e) {
             System.out.println("Error listing games: " + e.getMessage());
@@ -125,14 +106,9 @@ public class PostLoginUI {
         String color = scanner.nextLine().toUpperCase();
 
         try {
-            JoinGameResult result = serverFacade.joinGame(gameNumber, username, color);
+            serverFacade.joinGame(gameNumber, username, color);
+            chessBoardUI.displayBoard();
 
-            if (Objects.equals(result.getMessage(), "Joined game successfully")) {
-                System.out.println("Joined game successfully.");
-                chessBoardUI.displayBoard();
-            } else {
-                System.out.println("Error joining game: " + result.getMessage());
-            }
         } catch (Exception e) {
             System.out.println("Error joining game: " + e.getMessage());
         }

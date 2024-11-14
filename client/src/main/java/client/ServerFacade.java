@@ -8,6 +8,7 @@ import server.results.*;
 
 import java.io.*;
 import java.net.*;
+import java.util.List;
 
 public class ServerFacade {
 
@@ -59,10 +60,10 @@ public class ServerFacade {
         return res;
     }
 
-    public ListGamesResult listGames() throws Exception {
+    public List<GameData> listGames() throws Exception {
         var path = "/game";
         ListGamesResult res = this.makeRequest("GET", path, null, ListGamesResult.class);
-        return res;
+        return res.getGames();
     }
 
     public void clearDB() throws Exception {
