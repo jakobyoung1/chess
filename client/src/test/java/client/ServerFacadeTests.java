@@ -62,4 +62,19 @@ public class ServerFacadeTests {
         assertEquals("Error: Not successful", exception.getMessage());
     }
 
+    @Test
+    void testLogoutSuccess() throws Exception {
+        facade.register("testUser", "testPassword", "test@example.com");
+        var result = facade.logout();
+        assertNotNull(result);
+    }
+
+    @Test
+    void testLogoutFailureNoAuthToken() {
+        Exception exception = assertThrows(Exception.class, () -> {
+            facade.logout();
+        });
+        assertEquals("Error: Not successful", exception.getMessage());
+    }
+
 }
