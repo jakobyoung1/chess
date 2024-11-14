@@ -94,4 +94,16 @@ public class ServerFacadeTests {
         assertTrue(result.getGames().size() >= 2);
     }
 
+    @Test
+    void testJoinGameSuccess() throws Exception {
+        facade.register("testUser", "testPassword", "test@example.com");
+        var game = facade.createGame("Test Game");
+        System.out.println(game.getGameId());
+        assertNotNull(game);
+
+        var result = facade.joinGame(game.getGameId(), "testUser", "WHITE");
+        assertNotNull(result);
+        assertNotNull(result.message());
+    }
+
 }
