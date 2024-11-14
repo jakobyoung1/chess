@@ -3,9 +3,10 @@ package client;
 import com.google.gson.Gson;
 import model.GameData;
 import model.UserData;
+import requests.JoinGameRequest;
+import requests.LogoutRequest;
+import results.*;
 import server.Server;
-import server.requests.*;
-import server.results.*;
 
 import java.io.*;
 import java.net.*;

@@ -5,13 +5,10 @@ import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
 import model.UserData;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import server.service.LoginService;
-import server.requests.LoginRequest;
-import server.results.LoginResult;
-
-import java.util.HashMap;
+import requests.LoginRequest;
+import results.LoginResult;
 
 import static org.junit.jupiter.api.Assertions.*;
 

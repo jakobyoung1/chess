@@ -1,4 +1,4 @@
-package server.results;
+package results;
 
 public record JoinGameResult(int gameId, String message) {
     public String getMessage() {

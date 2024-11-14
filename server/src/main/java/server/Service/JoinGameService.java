@@ -3,8 +3,8 @@ package server.service;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import model.GameData;
-import server.requests.JoinGameRequest;
-import server.results.JoinGameResult;
+import requests.JoinGameRequest;
+import results.JoinGameResult;
 
 public class JoinGameService {
     private final GameDAO gameDAO;

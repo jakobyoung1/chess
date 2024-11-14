@@ -6,10 +6,8 @@ import model.GameData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import server.service.ListGamesService;
-import server.requests.ListGamesRequest;
-import server.results.ListGamesResult;
-
-import java.util.HashMap;
+import requests.ListGamesRequest;
+import results.ListGamesResult;
 
 import static org.junit.jupiter.api.Assertions.*;
 

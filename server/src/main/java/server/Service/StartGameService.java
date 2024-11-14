@@ -4,8 +4,8 @@ import chess.ChessGame;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import model.GameData;
-import server.requests.StartGameRequest;
-import server.results.StartGameResult;
+import requests.StartGameRequest;
+import results.StartGameResult;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

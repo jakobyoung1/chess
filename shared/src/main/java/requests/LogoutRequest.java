@@ -1,4 +1,4 @@
-package server.requests;
+package requests;
 
 public class LogoutRequest {
     private final String authToken;

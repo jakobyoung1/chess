@@ -3,8 +3,8 @@ package server.service;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
-import server.requests.LogoutRequest;
-import server.results.LogoutResult;
+import requests.LogoutRequest;
+import results.LogoutResult;
 
 public class LogoutService {
     private final UserDAO userDAO;

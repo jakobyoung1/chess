@@ -5,12 +5,9 @@ import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
 import model.UserData;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import server.service.ClearService;
-import server.results.ClearResult;
-
-import java.util.HashMap;
+import results.ClearResult;
 
 import static org.junit.jupiter.api.Assertions.*;
 

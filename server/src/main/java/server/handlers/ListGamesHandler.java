@@ -2,8 +2,8 @@ package server.handlers;
 
 import com.google.gson.Gson;
 import server.service.ListGamesService;
-import server.requests.ListGamesRequest;
-import server.results.ListGamesResult;
+import requests.ListGamesRequest;
+import results.ListGamesResult;
 import dataaccess.AuthDAO;
 import model.AuthData;
 import spark.Request;

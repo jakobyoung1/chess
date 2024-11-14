@@ -7,10 +7,8 @@ import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import server.service.RegistrationService;
-import server.requests.RegisterRequest;
-import server.results.RegisterResult;
-
-import java.util.HashMap;
+import requests.RegisterRequest;
+import results.RegisterResult;
 
 import static org.junit.jupiter.api.Assertions.*;
 

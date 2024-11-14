@@ -1,4 +1,4 @@
-package server.results;
+package results;
 
 public record LogoutResult(String username, String authToken, String message) {
     public LogoutResult(String username, String authToken) {

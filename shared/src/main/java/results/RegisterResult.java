@@ -1,4 +1,4 @@
-package server.results;
+package results;
 
 public record RegisterResult(String username, String authToken, String message) {
     public RegisterResult(String username, String authToken) {

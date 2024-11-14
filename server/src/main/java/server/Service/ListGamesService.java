@@ -3,8 +3,8 @@ package server.service;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import model.GameData;
-import server.requests.ListGamesRequest;
-import server.results.ListGamesResult;
+import requests.ListGamesRequest;
+import results.ListGamesResult;
 
 import java.util.ArrayList;
 import java.util.List;
