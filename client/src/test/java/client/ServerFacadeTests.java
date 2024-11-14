@@ -77,4 +77,11 @@ public class ServerFacadeTests {
         assertEquals("Error: Not successful", exception.getMessage());
     }
 
+    @Test
+    void testCreateGameSuccess() throws Exception {
+        facade.register("testUser", "testPassword", "test@example.com");
+        var result = facade.createGame("Test Game");
+        assertNotNull(result);
+    }
+
 }
