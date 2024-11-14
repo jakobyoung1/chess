@@ -104,6 +104,14 @@ public class ServerFacadeTests {
     }
 
     @Test
+    void testListGamesFailureNoAuthToken() {
+        Exception exception = assertThrows(Exception.class, () -> {
+            facade.listGames();
+        });
+        assertEquals("Error: Not successful", exception.getMessage());
+    }
+
+    @Test
     void testJoinGameSuccess() throws Exception {
         facade.register("testUser", "testPassword", "test@example.com");
         var game = facade.createGame("Test Game");
