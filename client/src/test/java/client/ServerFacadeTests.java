@@ -106,4 +106,13 @@ public class ServerFacadeTests {
         assertNotNull(result.message());
     }
 
+    @Test
+    void testJoinGameFailureInvalidGameID() throws Exception {
+        facade.register("testUser", "testPassword", "test@example.com");
+        Exception exception = assertThrows(Exception.class, () -> {
+            facade.joinGame(9999, "testUser", "white");
+        });
+        assertEquals("Error: Not successful", exception.getMessage());
+    }
+
 }
