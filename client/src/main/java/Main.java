@@ -15,6 +15,5 @@ public class Main {
             PostLoginUI postLoginUI = new PostLoginUI(serverFacade, authToken, username);
             postLoginUI.display();
         }
-        serverFacade.stop();
     }
 }
