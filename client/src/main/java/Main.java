@@ -1,14 +1,10 @@
 import client.ServerFacade;
-import server.Server;
 import ui.PostLoginUI;
 import ui.PreLoginUI;
 
 public class Main {
     public static void main(String[] args) {
-        Server server = new Server();
-        int port = server.run(8080);
-
-        ServerFacade serverFacade = new ServerFacade(port);
+        ServerFacade serverFacade = new ServerFacade(8080);
 
         PreLoginUI preLoginUI = new PreLoginUI(serverFacade);
         preLoginUI.display();
@@ -19,7 +15,6 @@ public class Main {
             PostLoginUI postLoginUI = new PostLoginUI(serverFacade, authToken, username);
             postLoginUI.display();
         }
-
-        server.stop();
+        serverFacade.stop();
     }
 }

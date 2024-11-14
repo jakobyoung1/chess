@@ -3,6 +3,7 @@ package client;
 import com.google.gson.Gson;
 import model.GameData;
 import model.UserData;
+import server.Server;
 import server.requests.*;
 import server.results.*;
 
@@ -14,8 +15,11 @@ public class ServerFacade {
 
     private final String serverUrl;
     private String authToken;
+    Server server;
 
     public ServerFacade(int urlPort) {
+        server = new Server();
+        server.run(urlPort);
         String url = "http://localhost:";
         url += String.valueOf(urlPort);
         serverUrl = url;
@@ -130,6 +134,10 @@ public class ServerFacade {
 
     private boolean isSuccessful(int status) {
         return status / 100 == 2;
+    }
+
+    public void stop() {
+        server.stop();
     }
 
 }
