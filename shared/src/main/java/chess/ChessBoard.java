@@ -211,6 +211,10 @@ public class ChessBoard {
         return width == that.width && height == that.height && Objects.deepEquals(squares, that.squares);
     }
 
+    public ChessPiece[][] getSquares() {
+        return squares;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(width, height, Arrays.deepHashCode(squares));

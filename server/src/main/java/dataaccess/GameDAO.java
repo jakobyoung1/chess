@@ -29,8 +29,6 @@ public class GameDAO {
             stmt.setString(5, GSON.toJson(game.getGame()));
             stmt.executeUpdate();
 
-            System.out.println("Game stored in database: " + game.getGameId());
-
         } catch (SQLException e) {
             throw new DataAccessException("Error inserting game: " + e.getMessage());
         }

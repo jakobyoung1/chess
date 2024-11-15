@@ -40,10 +40,8 @@ public class ServerFacade {
 
     public LogoutResult logout() throws Exception {
         var path = "/session";
-        System.out.println("about to make a request");
         LogoutRequest req = new LogoutRequest(authToken);
         LogoutResult res = this.makeRequest("DELETE", path, req, LogoutResult.class);
-        System.out.println("made a request");
         return res;
     }
 
@@ -79,7 +77,6 @@ public class ServerFacade {
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
             if (authToken != null) {
-                System.out.println("Authorization header: " + authToken);
                 http.addRequestProperty("Authorization", authToken);
             }
             if (request != null){

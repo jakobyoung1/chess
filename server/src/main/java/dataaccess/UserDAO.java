@@ -33,8 +33,6 @@ public class UserDAO implements UserDataAccess {
 
     @Override
     public UserData getUser(String username) throws DataAccessException {
-        System.out.println("Attempting to retrieve user: " + username);
-
         String sql = "SELECT * FROM User WHERE username = ?";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -45,11 +43,8 @@ public class UserDAO implements UserDataAccess {
             if (rs.next()) {
                 String passwordHash = rs.getString("password_hash");
                 String email = rs.getString("email");
-                System.out.println("User found in database: " + username);
                 return new UserData(username, passwordHash, email);
             }
-
-            System.out.println("User not found in database: " + username);
             return null;
 
         } catch (SQLException e) {
@@ -59,8 +54,6 @@ public class UserDAO implements UserDataAccess {
 
     @Override
     public void clear() throws DataAccessException {
-        System.out.println("Clearing User data from database");
-
         String sql = "DELETE FROM User";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {

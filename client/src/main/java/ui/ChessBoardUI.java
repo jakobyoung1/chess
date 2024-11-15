@@ -1,5 +1,8 @@
 package ui;
 
+import chess.ChessPiece;
+import model.GameData;
+
 public class ChessBoardUI {
 
     private static final String RESET = "\u001B[0m";
@@ -8,40 +11,35 @@ public class ChessBoardUI {
     private static final String LIGHT_SQUARE = "\u001B[47m";
     private static final String DARK_SQUARE = "\u001B[100m";
 
-    private static final char[][] INITIAL_BOARD = {
-            {'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'},
-            {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'},
-            {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-            {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-            {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-            {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-            {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'},
-            {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'}
-    };
+    public void displayBoard(GameData gameData) {
+        ChessPiece[][] board = gameData.getGame().getBoard().getSquares();
 
-    public void displayBoard() {
-        printBoard(INITIAL_BOARD, true);
-        printBoard(INITIAL_BOARD, false);
+        System.out.println("White's perspective:");
+        printBoard(board, true);
+
+        System.out.println("Black's perspective:");
+        printBoard(board, false);
     }
 
-    private void printBoard(char[][] board, boolean whitePerspective) {
-        if (!whitePerspective) {
-            reverseBoard(board);
-        }
-
+    private void printBoard(ChessPiece[][] board, boolean whitePerspective) {
         for (int i = 0; i < 8; i++) {
-            System.out.print((whitePerspective ? 8 - i : i + 1) + " ");
-            for (int j = 0; j < 8; j++) {
-                boolean isLightSquare = (i + j) % 2 == 0;
-                System.out.print((isLightSquare ? LIGHT_SQUARE : DARK_SQUARE));
+            int row = whitePerspective ? 8 - i : i + 1;
+            System.out.print(row + " ");
 
-                char piece = board[i][j];
-                if (piece == ' ') {
+            for (int j = 0; j < 8; j++) {
+                int rowIndex = whitePerspective ? i : 7 - i;
+                int colIndex = whitePerspective ? j : 7 - j;
+                boolean isLightSquare = (rowIndex + colIndex) % 2 == 0;
+
+                System.out.print(isLightSquare ? LIGHT_SQUARE : DARK_SQUARE);
+
+                ChessPiece piece = board[rowIndex][colIndex];
+                if (piece == null) {
                     System.out.print("   ");
-                } else if (Character.isUpperCase(piece)) {
-                    System.out.print(" " + WHITE_PIECE + piece + " ");
+                } else if (piece.getTeamColor() == chess.ChessGame.TeamColor.WHITE) {
+                    System.out.print(" " + WHITE_PIECE + piece.toString() + " ");
                 } else {
-                    System.out.print(" " + BLACK_PIECE + Character.toUpperCase(piece) + " ");
+                    System.out.print(" " + BLACK_PIECE + piece.toString() + " ");
                 }
 
                 System.out.print(RESET);
@@ -51,16 +49,10 @@ public class ChessBoardUI {
 
         System.out.print("  ");
         for (int j = 0; j < 8; j++) {
-            System.out.print(" " + (whitePerspective ? (char) ('a' + j) : (char) ('h' - j)) + " ");
+            char col = whitePerspective ? (char) ('a' + j) : (char) ('h' - j);
+            System.out.print(" " + col + " ");
         }
         System.out.println(RESET);
     }
 
-    private void reverseBoard(char[][] board) {
-        for (int i = 0; i < 4; i++) {
-            char[] temp = board[i];
-            board[i] = board[7 - i];
-            board[7 - i] = temp;
-        }
-    }
 }

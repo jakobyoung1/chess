@@ -1,6 +1,8 @@
 package ui;
 
 import client.ServerFacade;
+import results.RegisterResult;
+
 import java.util.Scanner;
 
 public class PreLoginUI {
@@ -16,8 +18,12 @@ public class PreLoginUI {
         this.user = null;
     }
 
+    public void setAuthToken() {
+        authToken = null;
+    }
+
     public void display() {
-        while (authToken == null) { // Continue until successfully logged in
+        while (authToken == null) {
             System.out.println("\nAvailable commands: Help, Quit, Login, Register");
             System.out.print("Enter command: ");
             String command = scanner.nextLine().trim().toLowerCase();
@@ -54,11 +60,15 @@ public class PreLoginUI {
         String password = scanner.nextLine();
 
         try {
-            serverFacade.logIn(username, password);
+            var loginResult = serverFacade.logIn(username, password);
+            authToken = loginResult.authToken();
+            username = loginResult.username();
+            System.out.println("Login successful!");
         } catch (Exception e) {
             System.out.println("Error logging in: " + e.getMessage());
         }
     }
+
 
     private void register() {
         System.out.print("Enter username: ");
@@ -69,7 +79,8 @@ public class PreLoginUI {
         String email = scanner.nextLine();
 
         try {
-            serverFacade.register(username, password, email);
+            RegisterResult res = serverFacade.register(username, password, email);
+            authToken = res.authToken();
         } catch (Exception e) {
             System.out.println("Error registering: " + e.getMessage());
         }

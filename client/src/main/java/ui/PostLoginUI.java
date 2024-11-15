@@ -20,8 +20,10 @@ public class PostLoginUI {
         this.username = username;
     }
 
+
     public void display() {
         boolean isLoggedIn = true;
+
 
         while (isLoggedIn) {
             System.out.println("\nAvailable commands: Help, Logout, Create Game, List Games, Play Game, Observe Game");
@@ -50,6 +52,7 @@ public class PostLoginUI {
                 default:
                     System.out.println("Invalid command. Type 'Help' for options.");
             }
+
         }
     }
 
@@ -79,7 +82,7 @@ public class PostLoginUI {
 
         try {
             serverFacade.createGame(gameName);
-
+            System.out.println("Successfully created game.");
         } catch (Exception e) {
             System.out.println("Error during game creation: " + e.getMessage());
         }
@@ -100,23 +103,60 @@ public class PostLoginUI {
     }
 
     private void playGame() {
-        System.out.print("Enter game number to play: ");
-        int gameNumber = Integer.parseInt(scanner.nextLine());
-        System.out.print("Enter color (WHITE/BLACK): ");
-        String color = scanner.nextLine().toUpperCase();
-
         try {
-            serverFacade.joinGame(gameNumber, username, color);
-            chessBoardUI.displayBoard();
+            System.out.print("Enter game number to play: ");
+            int gameNumber = Integer.parseInt(scanner.nextLine());
 
+            var games = serverFacade.listGames();
+
+            if (gameNumber <= 0 || gameNumber > games.size()) {
+                System.out.println("Invalid game number. Please try again.");
+                return;
+            }
+
+            System.out.print("Enter color (WHITE/BLACK): ");
+            String color = scanner.nextLine().toUpperCase();
+
+            if (!color.equals("WHITE") && !color.equals("BLACK")) {
+                System.out.println("Invalid color. Please enter WHITE or BLACK.");
+                return;
+            }
+
+            var gameData = games.get(gameNumber - 1);
+            serverFacade.joinGame(gameData.getGameId(), username, color);
+            System.out.println("Joined game: " + gameData.getGameName() + " as " + color);
+
+            chessBoardUI.displayBoard(gameData);
+
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input. Please enter a valid number.");
         } catch (Exception e) {
             System.out.println("Error joining game: " + e.getMessage());
         }
     }
 
+
     private void observeGame() {
-        System.out.print("Enter game number to observe: ");
-        int gameNumber = Integer.parseInt(scanner.nextLine());
-        chessBoardUI.displayBoard();  // Display the initial state of the board
+        try {
+            System.out.print("Enter game number to observe: ");
+            int gameNumber = Integer.parseInt(scanner.nextLine());
+
+            var games = serverFacade.listGames();
+
+            if (gameNumber <= 0 || gameNumber > games.size()) {
+                System.out.println("Invalid game number. Please try again.");
+                return;
+            }
+
+            var gameData = games.get(gameNumber - 1);
+            System.out.println("Observing game: " + gameData.getGameName());
+
+            chessBoardUI.displayBoard(gameData);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input. Please enter a valid number.");
+        } catch (Exception e) {
+            System.out.println("Error observing game: " + e.getMessage());
+        }
     }
+
 }
