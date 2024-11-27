@@ -13,11 +13,7 @@ public class ChessBoardUI {
 
     public void displayBoard(GameData gameData) {
         ChessPiece[][] board = gameData.getGame().getBoard().getSquares();
-
-        System.out.println("White's perspective:");
         printBoard(board, true);
-
-        System.out.println("Black's perspective:");
         printBoard(board, false);
     }
 
@@ -25,7 +21,6 @@ public class ChessBoardUI {
         for (int i = 0; i < 8; i++) {
             int row = whitePerspective ? 8 - i : i + 1;
             System.out.print(row + " ");
-
             for (int j = 0; j < 8; j++) {
                 int rowIndex = whitePerspective ? i : 7 - i;
                 int colIndex = whitePerspective ? j : 7 - j;
@@ -41,12 +36,10 @@ public class ChessBoardUI {
                 } else {
                     System.out.print(" " + BLACK_PIECE + piece.toString() + " ");
                 }
-
                 System.out.print(RESET);
             }
             System.out.println(RESET);
         }
-
         System.out.print("  ");
         for (int j = 0; j < 8; j++) {
             char col = whitePerspective ? (char) ('a' + j) : (char) ('h' - j);
@@ -54,5 +47,4 @@ public class ChessBoardUI {
         }
         System.out.println(RESET);
     }
-
 }
