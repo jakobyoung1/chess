@@ -10,6 +10,7 @@ public class GameData {
     private String blackUsername;
     private ChessGame game;
     private final String gameName;
+    private boolean gameOver; // Added game over status
 
     public GameData(int gameId, String whiteUsername, String blackUsername, String gameName) {
         this.gameID = gameId;
@@ -17,14 +18,12 @@ public class GameData {
         this.blackUsername = blackUsername;
         this.game = new ChessGame();
         this.gameName = gameName;
+        this.gameOver = false; // Default to false
     }
 
+    // Getters
     public int getGameId() {
         return gameID;
-    }
-
-    public void makeMove(ChessMove move) throws InvalidMoveException {
-        game.makeMove(move);
     }
 
     public ChessGame getGame() {
@@ -35,6 +34,19 @@ public class GameData {
         return gameName;
     }
 
+    public String getWhiteUsername() {
+        return whiteUsername;
+    }
+
+    public String getBlackUsername() {
+        return blackUsername;
+    }
+
+    public boolean isGameOver() {
+        return gameOver;
+    }
+
+    // Setters
     public void setGame(ChessGame game) {
         this.game = game;
     }
@@ -47,11 +59,15 @@ public class GameData {
         blackUsername = user;
     }
 
-    public String getWhiteUsername() {
-        return whiteUsername;
+    public void setGameOver(boolean gameOver) {
+        this.gameOver = gameOver;
     }
 
-    public String getBlackUsername() {
-        return blackUsername;
+    // Methods
+    public void makeMove(ChessMove move) throws InvalidMoveException {
+        if (gameOver) {
+            throw new InvalidMoveException("Cannot make a move. The game is already over.");
+        }
+        game.makeMove(move);
     }
 }

@@ -2,6 +2,10 @@ package ui;
 
 import client.ServerFacade;
 import model.GameData;
+import websocket.WebSocketClient;
+import websocket.commands.UserGameCommand;
+import websocket.messages.ServerMessage;
+
 import java.util.List;
 import java.util.Scanner;
 
@@ -11,6 +15,7 @@ public class PostLoginUI {
     private final Scanner scanner;
     private final ChessBoardUI chessBoardUI;
     private final String username;
+    private WebSocketClient webSocketClient;
 
     public PostLoginUI(ServerFacade serverFacade, String authToken, String username) {
         this.serverFacade = serverFacade;
@@ -20,10 +25,8 @@ public class PostLoginUI {
         this.username = username;
     }
 
-
     public void display() {
         boolean isLoggedIn = true;
-
 
         while (isLoggedIn) {
             System.out.println("\nAvailable commands: Help, Logout, Create Game, List Games, Play Game, Observe Game");
@@ -52,7 +55,6 @@ public class PostLoginUI {
                 default:
                     System.out.println("Invalid command. Type 'Help' for options.");
             }
-
         }
     }
 
@@ -69,6 +71,7 @@ public class PostLoginUI {
     private boolean logout() {
         try {
             serverFacade.logout();
+            disconnectWebSocket();
             return true;
         } catch (Exception e) {
             System.out.println("Error during logout: " + e.getMessage());
@@ -89,7 +92,6 @@ public class PostLoginUI {
     }
 
     private void listGames() {
-        System.out.println("listing games\n");
         try {
             List<GameData> games = serverFacade.listGames();
 
@@ -126,7 +128,8 @@ public class PostLoginUI {
             serverFacade.joinGame(gameData.getGameId(), username, color);
             System.out.println("Joined game: " + gameData.getGameName() + " as " + color);
 
-            chessBoardUI.displayBoard(gameData);
+            setupWebSocketConnection(gameData.getGameId());
+            startGameplay(gameData);
 
         } catch (NumberFormatException e) {
             System.out.println("Invalid input. Please enter a valid number.");
@@ -134,7 +137,6 @@ public class PostLoginUI {
             System.out.println("Error joining game: " + e.getMessage());
         }
     }
-
 
     private void observeGame() {
         try {
@@ -151,7 +153,8 @@ public class PostLoginUI {
             var gameData = games.get(gameNumber - 1);
             System.out.println("Observing game: " + gameData.getGameName());
 
-            chessBoardUI.displayBoard(gameData);
+            setupWebSocketConnection(gameData.getGameId());
+
         } catch (NumberFormatException e) {
             System.out.println("Invalid input. Please enter a valid number.");
         } catch (Exception e) {
@@ -159,4 +162,33 @@ public class PostLoginUI {
         }
     }
 
+    private void setupWebSocketConnection(int gameId) throws Exception {
+        if (webSocketClient == null) {
+            webSocketClient = new WebSocketClient();
+        }
+
+        webSocketClient.connect("ws://localhost:8080/ws");
+        UserGameCommand connectCommand = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameId);
+        webSocketClient.sendCommand(connectCommand);
+
+        webSocketClient.setGameUpdateHandler(message -> {
+            if (message.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME) {
+                chessBoardUI.displayBoard((GameData) message.getGame());
+            } else if (message.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION) {
+                System.out.println(message.getNotificationMessage());
+            }
+        });
+    }
+
+    private void disconnectWebSocket() throws Exception {
+        if (webSocketClient != null) {
+            webSocketClient.disconnect();
+            webSocketClient = null;
+        }
+    }
+
+    private void startGameplay(GameData gameData) {
+        GamePlayUI gameplayUI = new GamePlayUI(webSocketClient);
+        gameplayUI.display(gameData);
+    }
 }

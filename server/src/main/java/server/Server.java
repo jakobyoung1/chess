@@ -8,18 +8,23 @@ import dataaccess.*;
 import dataaccess.GameDAO;
 import dataaccess.AuthDAO;
 
-import java.util.HashMap;
-
 public class Server {
 
     private static boolean initialized = false;
 
     public int run(int port) {
         if (!initialized) {
-            Spark.staticFiles.location("/web");
-
-
             Spark.port(port);
+
+            UserDAO userDAO = new UserDAO();
+            GameDAO gameDAO = new GameDAO();
+            AuthDAO authDAO = new AuthDAO();
+
+            ChessWebSocketHandler.initialize(gameDAO, authDAO, userDAO);
+            Spark.webSocket("/ws", ChessWebSocketHandler.class);
+
+            // Set static files location
+            Spark.staticFiles.location("/web");
 
             try {
                 DatabaseManager.createDatabase();
@@ -29,10 +34,7 @@ public class Server {
                 return -1;
             }
 
-            UserDAO userDAO = new UserDAO();
-            GameDAO gameDAO = new GameDAO();
-            AuthDAO authDAO = new AuthDAO();
-
+            // Initialize services
             ClearService clearService = new ClearService(userDAO, gameDAO, authDAO);
             LoginService logService = new LoginService(userDAO, authDAO);
             LogoutService outService = new LogoutService(userDAO, authDAO);
@@ -41,6 +43,7 @@ public class Server {
             StartGameService startGameService = new StartGameService(gameDAO);
             JoinGameService joinGameService = new JoinGameService(gameDAO);
 
+            // Register HTTP handlers
             Spark.delete("/db", new ClearHandler(clearService));              // Clear the database
             Spark.post("/user", new RegisterHandler(regService));             // Register a user
             Spark.post("/session", new LoginHandler(logService));             // Login (create session)
@@ -49,13 +52,13 @@ public class Server {
             Spark.post("/game", new StartGameHandler(startGameService, authDAO)); // Start a game
             Spark.put("/game", new JoinGameHandler(joinGameService, authDAO)); // Join a game
 
+            // Default route
             Spark.get("/", (req, res) -> {
                 res.status(404);
                 return "Not Found";
             });
 
             Spark.awaitInitialization();
-
             initialized = true;
         }
         return Spark.port();

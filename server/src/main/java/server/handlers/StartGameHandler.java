@@ -30,9 +30,11 @@ public class StartGameHandler implements Route {
 
         AuthData authData = authDAO.getAuth(authToken);
         if (authData == null) {
+            System.out.println("Authorization failed: invalid token.");
             res.status(401);
             return gson.toJson(createErrorResponse(null, "Error: Unauthorized"));
         }
+        System.out.println("Authorization successful for user");
 
         StartGameRequest request = gson.fromJson(req.body(), StartGameRequest.class);
 

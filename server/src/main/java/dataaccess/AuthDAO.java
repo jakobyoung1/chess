@@ -76,4 +76,21 @@ public class AuthDAO {
             throw new DataAccessException("Error clearing Auth table: " + e.getMessage());
         }
     }
+
+    public String getUsername(String authToken) throws DataAccessException {
+        String sql = "SELECT username FROM Auth WHERE authToken = ?;";
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, authToken);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("username");
+                }
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Error getting username for auth token.", e);
+        }
+        return null;
+    }
 }

@@ -1,15 +1,17 @@
 package websocket.messages;
 
-import chess.ChessGame;
-
 import java.util.Objects;
 
+/**
+ * Represents a Message the server can send through a WebSocket
+ *
+ * Note: You can add to this class, but you should not alter the existing
+ * methods.
+ */
 public class ServerMessage {
-    private final ServerMessageType serverMessageType;
-
-    private final String errorMessage;
-    private final String notificationMessage;
-    private final ChessGame game;
+    private ServerMessageType serverMessageType;
+    private String message; // For notifications
+    private Object game;    // For game state updates
 
     public enum ServerMessageType {
         LOAD_GAME,
@@ -17,41 +19,28 @@ public class ServerMessage {
         NOTIFICATION
     }
 
-    public ServerMessage(ServerMessageType type, ChessGame game) {
+    public ServerMessage(ServerMessageType type) {
         this.serverMessageType = type;
-        this.game = game;
-        this.errorMessage = null;
-        this.notificationMessage = null;
-    }
-
-    public ServerMessage(ServerMessageType type, String errorMessage) {
-        this.serverMessageType = type;
-        this.errorMessage = errorMessage;
-        this.game = null;
-        this.notificationMessage = null;
-    }
-
-    public ServerMessage(ServerMessageType type, String errorMessage, String notificationMessage) {
-        this.serverMessageType = type;
-        this.errorMessage = errorMessage;
-        this.notificationMessage = notificationMessage;
-        this.game = null;
     }
 
     public ServerMessageType getServerMessageType() {
         return this.serverMessageType;
     }
 
-    public String getErrorMessage() {
-        return errorMessage;
-    }
-
     public String getNotificationMessage() {
-        return notificationMessage;
+        return message;
     }
 
-    public ChessGame getGame() {
+    public void setNotificationMessage(String message) {
+        this.message = message;
+    }
+
+    public Object getGame() {
         return game;
+    }
+
+    public void setGame(Object game) {
+        this.game = game;
     }
 
     @Override
@@ -63,14 +52,11 @@ public class ServerMessage {
             return false;
         }
         ServerMessage that = (ServerMessage) o;
-        return getServerMessageType() == that.getServerMessageType() &&
-                Objects.equals(getErrorMessage(), that.getErrorMessage()) &&
-                Objects.equals(getNotificationMessage(), that.getNotificationMessage()) &&
-                Objects.equals(getGame(), that.getGame());
+        return getServerMessageType() == that.getServerMessageType();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getServerMessageType(), getErrorMessage(), getNotificationMessage(), getGame());
+        return Objects.hash(getServerMessageType());
     }
 }
