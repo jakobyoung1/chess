@@ -7,20 +7,32 @@ import chess.ChessMove;
  */
 public class MakeMoveCommand extends UserGameCommand {
 
+    private final int gameID;  // Add gameID to match requirements
     private final ChessMove move;
 
     /**
      * Constructs a MakeMoveCommand with the specified parameters.
      *
      * @param authToken The authentication token of the user.
+     * @param gameID    The ID of the game where the move is being made.
      * @param move      The move being made in the game.
      */
-    public MakeMoveCommand(String authToken, ChessMove move) {
+    public MakeMoveCommand(String authToken, int gameID, ChessMove move) {
         super(CommandType.MAKE_MOVE, authToken);
         if (move == null) {
             throw new IllegalArgumentException("Move cannot be null.");
         }
+        this.gameID = gameID;
         this.move = move;
+    }
+
+    /**
+     * Retrieves the game ID associated with this command.
+     *
+     * @return The game ID.
+     */
+    public int getGameID() {
+        return gameID;
     }
 
     /**
@@ -37,6 +49,7 @@ public class MakeMoveCommand extends UserGameCommand {
         return "MakeMoveCommand{" +
                 "commandType=" + getCommandType() +
                 ", authToken='" + getAuthToken() + '\'' +
+                ", gameID=" + gameID +
                 ", move=" + move +
                 '}';
     }

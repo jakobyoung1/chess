@@ -121,12 +121,12 @@ public class ChessWebSocketHandler {
     }
 
     private void handleLeave(Session session, String action) {
-        LeaveGameCommand command = new Gson().fromJson(action, LeaveGameCommand.class);
+        LeaveCommand command = new Gson().fromJson(action, LeaveCommand.class);
         String authToken = command.getAuthToken();
         int gameID = command.getGameID();
 
         try {
-            connections.remove(gameID, authToken, session);
+            connections.remove(gameID, authToken);
 
             String message = "A player has left the game.";
             NotificationMessage notification = new NotificationMessage(message);

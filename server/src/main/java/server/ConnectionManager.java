@@ -32,11 +32,11 @@ public class ConnectionManager {
      * @param authToken The user's auth token.
      */
     public void remove(int gameID, String authToken) {
-        Map<String, Session> sessionMap = connections.get(gameID);
-        if (sessionMap != null) {
-            sessionMap.remove(authToken);
-            // Clean up the game entry if no sessions remain
-            if (sessionMap.isEmpty()) {
+        Map<String, Session> sessionHashMap = connections.get(gameID);
+        if (sessionHashMap != null) {
+            sessionHashMap.remove(authToken);
+            // Optionally remove the entire gameID entry if no users are left
+            if (sessionHashMap.isEmpty()) {
                 connections.remove(gameID);
             }
         }
