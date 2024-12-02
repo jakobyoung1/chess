@@ -3,15 +3,12 @@ package websocket.messages;
 import java.util.Objects;
 
 /**
- * Represents a Message the server can send through a WebSocket
- *
- * Note: You can add to this class, but you should not alter the existing
- * methods.
+ * Represents a general server message that can be sent through a WebSocket.
  */
 public class ServerMessage {
-    private ServerMessageType serverMessageType;
-    private String message; // For notifications
-    private Object game;    // For game state updates
+
+    private final ServerMessageType serverMessageType;
+    private Object game; // For game state updates
 
     public enum ServerMessageType {
         LOAD_GAME,
@@ -20,19 +17,14 @@ public class ServerMessage {
     }
 
     public ServerMessage(ServerMessageType type) {
+        if (type == ServerMessageType.NOTIFICATION) {
+            throw new IllegalArgumentException("Use NotificationMessage for notifications.");
+        }
         this.serverMessageType = type;
     }
 
     public ServerMessageType getServerMessageType() {
         return this.serverMessageType;
-    }
-
-    public String getNotificationMessage() {
-        return message;
-    }
-
-    public void setNotificationMessage(String message) {
-        this.message = message;
     }
 
     public Object getGame() {
@@ -58,5 +50,13 @@ public class ServerMessage {
     @Override
     public int hashCode() {
         return Objects.hash(getServerMessageType());
+    }
+
+    @Override
+    public String toString() {
+        return "ServerMessage{" +
+                "serverMessageType=" + serverMessageType +
+                ", game=" + game +
+                '}';
     }
 }
