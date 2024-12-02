@@ -24,6 +24,7 @@ public class StartGameHandler implements Route {
 
     @Override
     public Object handle(Request req, Response res) throws Exception {
+        System.out.println("Handling POST /game request. AuthToken: " + req.headers("Authorization"));
         Gson gson = new Gson();
 
         String authToken = req.headers("Authorization");

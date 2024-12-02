@@ -1,67 +1,47 @@
 package websocket.commands;
 
-import chess.ChessMove;
+public abstract class UserGameCommand {
 
-import java.util.Objects;
+    private final CommandType commandType; // Represents the type of command
+    private final String authToken;        // Authentication token for the command
 
-public class UserGameCommand {
-
-    private final CommandType commandType;
-    private final String authToken;
-    private final Integer gameID;
-    private final ChessMove move;
-
-    public UserGameCommand(CommandType commandType, String authToken, Integer gameID) {
-        this(commandType, authToken, gameID, null);
-    }
-
-    public UserGameCommand(CommandType commandType, String authToken, Integer gameID, ChessMove move) {
+    // Constructor to initialize the command type and authentication token
+    protected UserGameCommand(CommandType commandType, String authToken) {
+        if (commandType == null) {
+            throw new IllegalArgumentException("CommandType cannot be null.");
+        }
+        if (authToken == null || authToken.isEmpty()) {
+            throw new IllegalArgumentException("AuthToken cannot be null or empty.");
+        }
         this.commandType = commandType;
         this.authToken = authToken;
-        this.gameID = gameID;
-        this.move = move;
     }
 
+    // Enum representing different types of commands
     public enum CommandType {
         CONNECT,
         MAKE_MOVE,
         LEAVE,
-        RESIGN
+        RESIGN,
+        JOIN_PLAYER,
+        JOIN_OBSERVER
     }
 
+    // Getter for the command type
     public CommandType getCommandType() {
         return commandType;
     }
 
+    // Getter for the authentication token
     public String getAuthToken() {
         return authToken;
     }
 
-    public Integer getGameID() {
-        return gameID;
-    }
-
-    public ChessMove getMove() {
-        return move;
-    }
-
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof UserGameCommand)) {
-            return false;
-        }
-        UserGameCommand that = (UserGameCommand) o;
-        return getCommandType() == that.getCommandType() &&
-                Objects.equals(getAuthToken(), that.getAuthToken()) &&
-                Objects.equals(getGameID(), that.getGameID()) &&
-                Objects.equals(getMove(), that.getMove());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getCommandType(), getAuthToken(), getGameID(), getMove());
+    public String toString() {
+        return "UserGameCommand{" +
+                "commandType=" + commandType +
+                ", authToken='" + authToken + '\'' +
+                '}';
     }
 }

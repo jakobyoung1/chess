@@ -17,6 +17,7 @@ public class LoginHandler implements Route {
 
     @Override
     public Object handle(Request req, Response res) throws Exception {
+        System.out.println("Logging in...");
         Gson gson = new Gson();
 
         LoginRequest request = gson.fromJson(req.body(), LoginRequest.class);

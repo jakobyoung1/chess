@@ -21,6 +21,7 @@ public class ListGamesHandler implements Route {
 
     @Override
     public Object handle(Request req, Response res) throws Exception {
+        System.out.println("Listing games: ");
         Gson gson = new Gson();
 
         String authToken = req.headers("Authorization");

@@ -18,6 +18,7 @@ public class GameDAO {
     }
 
     public void createGame(GameData game) throws DataAccessException {
+        System.out.println("GAMEDAO creating game: " + game.getGameName());
         String sql = "INSERT INTO Game (game_id, white_username, black_username, game_name, game_state) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -35,6 +36,7 @@ public class GameDAO {
     }
 
     public GameData getGame(int gameId) throws DataAccessException {
+        System.out.println("Fetching game data for gameID: " + gameId);
         String sql = "SELECT * FROM Game WHERE game_id = ?";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {

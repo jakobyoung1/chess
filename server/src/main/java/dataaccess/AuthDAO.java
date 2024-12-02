@@ -78,6 +78,7 @@ public class AuthDAO {
     }
 
     public String getUsername(String authToken) throws DataAccessException {
+        System.out.println("Fetching username for authToken: " + authToken);
         String sql = "SELECT username FROM Auth WHERE authToken = ?;";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {

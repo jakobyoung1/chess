@@ -23,8 +23,7 @@ public class Server {
             ChessWebSocketHandler.initialize(gameDAO, authDAO, userDAO);
             Spark.webSocket("/ws", ChessWebSocketHandler.class);
 
-            // Set static files location
-            Spark.staticFiles.location("/web");
+            //Spark.staticFiles.location("/web");
 
             try {
                 DatabaseManager.createDatabase();
@@ -34,7 +33,6 @@ public class Server {
                 return -1;
             }
 
-            // Initialize services
             ClearService clearService = new ClearService(userDAO, gameDAO, authDAO);
             LoginService logService = new LoginService(userDAO, authDAO);
             LogoutService outService = new LogoutService(userDAO, authDAO);
@@ -43,7 +41,6 @@ public class Server {
             StartGameService startGameService = new StartGameService(gameDAO);
             JoinGameService joinGameService = new JoinGameService(gameDAO);
 
-            // Register HTTP handlers
             Spark.delete("/db", new ClearHandler(clearService));              // Clear the database
             Spark.post("/user", new RegisterHandler(regService));             // Register a user
             Spark.post("/session", new LoginHandler(logService));             // Login (create session)
