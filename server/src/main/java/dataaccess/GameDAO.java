@@ -124,4 +124,19 @@ public class GameDAO {
             throw new DataAccessException("Error clearing Game table: " + e.getMessage());
         }
     }
+
+    public int getMaxGameId() throws DataAccessException {
+        String sql = "SELECT MAX(game_id) AS max_id FROM Game";
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            if (rs.next()) {
+                return rs.getInt("max_id");
+            }
+            return 0; // Return 0 if there are no games
+        } catch (SQLException e) {
+            throw new DataAccessException("Error fetching max game ID: " + e.getMessage());
+        }
+    }
 }

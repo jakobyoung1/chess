@@ -12,7 +12,7 @@ public class Server {
 
     private static boolean initialized = false;
 
-    public int run(int port) {
+    public int run(int port) throws DataAccessException {
         if (!initialized) {
             Spark.port(port);
 
@@ -22,7 +22,6 @@ public class Server {
 
             ChessWebSocketHandler webSocketHandler = new ChessWebSocketHandler(gameDAO, authDAO);
 
-            Spark.webSocket("/connect", webSocketHandler);
             Spark.webSocket("/ws", webSocketHandler);
 
             Spark.staticFiles.location("/web");
@@ -50,12 +49,6 @@ public class Server {
             Spark.get("/game", new ListGamesHandler(listGamesService, authDAO)); // List games
             Spark.post("/game", new StartGameHandler(startGameService, authDAO)); // Start a game
             Spark.put("/game", new JoinGameHandler(joinGameService, authDAO)); // Join a game
-
-            // Default route
-            Spark.get("/", (req, res) -> {
-                res.status(404);
-                return "Not Found";
-            });
 
             Spark.awaitInitialization();
             initialized = true;
