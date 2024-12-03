@@ -2,27 +2,29 @@ package ui;
 
 import chess.ChessMove;
 import chess.ChessPosition;
+import client.webSocketFacade;
 import model.GameData;
 import websocket.WebSocketClient;
 import websocket.commands.LeaveCommand;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.ResignCommand;
 
+import java.io.IOException;
 import java.util.Scanner;
 
 public class GamePlayUI {
 
-    private final WebSocketClient webSocketClient;
+    private final webSocketFacade webSocketClient;
     private final ChessBoardUI chessBoardUI;
     private final Scanner scanner;
 
-    public GamePlayUI(WebSocketClient webSocketClient) {
+    public GamePlayUI(webSocketFacade webSocketClient) {
         this.webSocketClient = webSocketClient;
         this.chessBoardUI = new ChessBoardUI();
         this.scanner = new Scanner(System.in);
     }
 
-    public void display(GameData gameData) {
+    public void display(GameData gameData) throws IOException {
         chessBoardUI.displayBoard(gameData);
         while (true) {
             System.out.print("Enter command (Make Move, Resign, Leave, Help): ");
@@ -67,16 +69,18 @@ public class GamePlayUI {
             webSocketClient.sendCommand(command);
         } catch (IllegalArgumentException e) {
             System.out.println("Invalid move format. Please try again.");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    private void resign(int gameId) {
+    private void resign(int gameId) throws IOException {
         ResignCommand command = new ResignCommand("authToken", gameId);
         webSocketClient.sendCommand(command);
         System.out.println("You have resigned from the game.");
     }
 
-    private void leaveGame(int gameId) {
+    private void leaveGame(int gameId) throws IOException {
         LeaveCommand command = new LeaveCommand("authToken", gameId);
         webSocketClient.sendCommand(command);
         System.out.println("You have left the game.");

@@ -21,7 +21,7 @@ import java.util.List;
 @ClientEndpoint
 public class webSocketFacade {
 
-    private Session session;
+    public Session session;
     private ChessGame.TeamColor playerColor;
     private final ChessBoardUI chessBoardUI = new ChessBoardUI();
     private final List<GameData> gameDataList = new ArrayList<>();
@@ -125,7 +125,7 @@ public class webSocketFacade {
         sendCommand(command);
     }
 
-    private void sendCommand(Object command) throws IOException {
+    public void sendCommand(Object command) throws IOException {
         if (session != null && session.isOpen()) {
             String commandJson = new Gson().toJson(command);
             System.out.println("Sending command: " + commandJson);

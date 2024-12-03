@@ -1,16 +1,17 @@
 package ui;
 
 import client.ServerFacade;
+import client.webSocketFacade;
 import com.google.gson.Gson;
 import model.GameData;
-import websocket.WebSocketClient;
 import websocket.commands.ConnectCommand;
-import websocket.commands.UserGameCommand;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
+import javax.websocket.MessageHandler;
+import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -20,7 +21,7 @@ public class PostLoginUI {
     private final Scanner scanner;
     private final ChessBoardUI chessBoardUI;
     private final String username;
-    private WebSocketClient webSocketClient;
+    private webSocketFacade webSocketClient;
 
     public PostLoginUI(ServerFacade serverFacade, String authToken, String username) {
         this.serverFacade = serverFacade;
@@ -39,38 +40,27 @@ public class PostLoginUI {
             String command = scanner.nextLine().trim().toLowerCase();
 
             switch (command) {
-                case "help":
-                    showHelp();
-                    break;
-                case "logout":
-                    isLoggedIn = !logout();
-                    break;
-                case "create game":
-                    createGame();
-                    break;
-                case "list games":
-                    listGames();
-                    break;
-                case "play game":
-                    playGame();
-                    break;
-                case "observe game":
-                    observeGame();
-                    break;
-                default:
-                    System.out.println("Invalid command. Type 'Help' for options.");
+                case "help" -> showHelp();
+                case "logout" -> isLoggedIn = !logout();
+                case "create game" -> createGame();
+                case "list games" -> listGames();
+                case "play game" -> playGame();
+                case "observe game" -> observeGame();
+                default -> System.out.println("Invalid command. Type 'Help' for options.");
             }
         }
     }
 
     private void showHelp() {
-        System.out.println("\nPost-login commands:");
-        System.out.println("  Help - Shows this help text.");
-        System.out.println("  Logout - Logs out of the system.");
-        System.out.println("  Create Game - Starts a new game.");
-        System.out.println("  List Games - Lists all available games.");
-        System.out.println("  Play Game - Allows you to join a game.");
-        System.out.println("  Observe Game - Allows you to watch a game in progress.");
+        System.out.println("""
+                Post-login commands:
+                  Help - Shows this help text.
+                  Logout - Logs out of the system.
+                  Create Game - Starts a new game.
+                  List Games - Lists all available games.
+                  Play Game - Allows you to join a game.
+                  Observe Game - Allows you to watch a game in progress.
+                """);
     }
 
     private boolean logout() {
@@ -168,52 +158,36 @@ public class PostLoginUI {
     }
 
     private void setupWebSocketConnection(int gameId) throws Exception {
-        // Check if the WebSocket client is already initialized
+        // Initialize the WebSocket client
         if (webSocketClient == null) {
-            webSocketClient = new WebSocketClient();
+            webSocketClient = new webSocketFacade("http://localhost:8080");
         }
 
-        // Connect to the WebSocket server
         System.out.println("Connecting to WebSocket server...");
-        webSocketClient.connect("ws://localhost:8080/ws");
+        webSocketClient.joinGame(authToken, gameId, null); // Adjust as per your logic for player color
 
-        // Send a ConnectCommand to the server
-        ConnectCommand connectCommand = new ConnectCommand(authToken, gameId);
-        String connectMessage = new Gson().toJson(connectCommand);
-        System.out.println("Sending ConnectCommand: " + connectMessage);
-        webSocketClient.sendMessage(connectMessage);
-
-        // Set up a handler for incoming messages
-        webSocketClient.setMessageHandler(rawMessage -> {
+        // Listen for incoming WebSocket messages
+        webSocketClient.session.addMessageHandler((MessageHandler.Whole<String>) rawMessage -> {
             System.out.println("Received message: " + rawMessage);
             try {
-                // Parse the raw message into a generic ServerMessage
                 ServerMessage serverMessage = new Gson().fromJson(rawMessage, ServerMessage.class);
 
                 switch (serverMessage.getServerMessageType()) {
                     case LOAD_GAME -> {
-                        // Parse and handle a LoadGameMessage
                         LoadGameMessage loadGameMessage = new Gson().fromJson(rawMessage, LoadGameMessage.class);
-                        System.out.println("Game loaded successfully.");
                         chessBoardUI.displayBoard(loadGameMessage.getGame());
                     }
                     case NOTIFICATION -> {
-                        // Parse and handle a NotificationMessage
                         NotificationMessage notificationMessage = new Gson().fromJson(rawMessage, NotificationMessage.class);
                         System.out.println("Notification: " + notificationMessage.getNotificationMessage());
                     }
                     case ERROR -> {
-                        // Parse and handle an ErrorMessage
                         ErrorMessage errorMessage = new Gson().fromJson(rawMessage, ErrorMessage.class);
                         System.err.println("Error: " + errorMessage.getMessage());
                     }
-                    default -> {
-                        // Handle unknown message types
-                        System.err.println("Unknown message type received: " + serverMessage.getServerMessageType());
-                    }
+                    default -> System.err.println("Unknown message type received.");
                 }
             } catch (Exception e) {
-                // Log any issues with message handling
                 System.err.println("Error processing WebSocket message: " + rawMessage);
                 e.printStackTrace();
             }
@@ -222,12 +196,12 @@ public class PostLoginUI {
 
     private void disconnectWebSocket() throws Exception {
         if (webSocketClient != null) {
-            webSocketClient.disconnect();
+            webSocketClient.session.close();
             webSocketClient = null;
         }
     }
 
-    private void startGameplay(GameData gameData) {
+    private void startGameplay(GameData gameData) throws IOException {
         GamePlayUI gameplayUI = new GamePlayUI(webSocketClient);
         gameplayUI.display(gameData);
     }

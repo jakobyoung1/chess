@@ -1,5 +1,7 @@
 package websocket.messages;
 
+import model.GameData;
+
 import java.util.Objects;
 
 /**
@@ -27,8 +29,8 @@ public class ServerMessage {
         return this.serverMessageType;
     }
 
-    public Object getGame() {
-        return game;
+    public GameData getGame() {
+        return (GameData) game;
     }
 
     public void setGame(Object game) {
