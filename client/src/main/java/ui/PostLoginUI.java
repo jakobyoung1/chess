@@ -1,5 +1,6 @@
 package ui;
 
+import chess.ChessGame;
 import client.ServerFacade;
 import client.webSocketFacade;
 import com.google.gson.Gson;
@@ -112,18 +113,23 @@ public class PostLoginUI {
             }
 
             System.out.print("Enter color (WHITE/BLACK): ");
-            String color = scanner.nextLine().toUpperCase();
+            String colorInput = scanner.nextLine().toUpperCase();
 
-            if (!color.equals("WHITE") && !color.equals("BLACK")) {
+            ChessGame.TeamColor color;
+            if (colorInput.equals("WHITE")) {
+                color = ChessGame.TeamColor.WHITE;
+            } else if (colorInput.equals("BLACK")) {
+                color = ChessGame.TeamColor.BLACK;
+            } else {
                 System.out.println("Invalid color. Please enter WHITE or BLACK.");
                 return;
             }
 
             var gameData = games.get(gameNumber - 1);
-            serverFacade.joinGame(gameData.getGameId(), username, color);
+            serverFacade.joinGame(gameData.getGameId(), username, color.name());
             System.out.println("Joined game: " + gameData.getGameName() + " as " + color);
 
-            setupWebSocketConnection(gameData.getGameId());
+            setupWebSocketConnection(gameData.getGameId(), color, false);
             startGameplay(gameData);
 
         } catch (NumberFormatException e) {
@@ -148,7 +154,7 @@ public class PostLoginUI {
             var gameData = games.get(gameNumber - 1);
             System.out.println("Observing game: " + gameData.getGameName());
 
-            setupWebSocketConnection(gameData.getGameId());
+            setupWebSocketConnection(gameData.getGameId(), null, true);
 
         } catch (NumberFormatException e) {
             System.out.println("Invalid input. Please enter a valid number.");
@@ -157,41 +163,53 @@ public class PostLoginUI {
         }
     }
 
-    private void setupWebSocketConnection(int gameId) throws Exception {
+    private void setupWebSocketConnection(int gameId, ChessGame.TeamColor color, boolean isObserver) throws Exception {
         // Initialize the WebSocket client
         if (webSocketClient == null) {
             webSocketClient = new webSocketFacade("http://localhost:8080");
         }
 
         System.out.println("Connecting to WebSocket server...");
-        webSocketClient.joinGame(authToken, gameId, null); // Adjust as per your logic for player color
 
-        // Listen for incoming WebSocket messages
-        webSocketClient.session.addMessageHandler((MessageHandler.Whole<String>) rawMessage -> {
-            System.out.println("Received message: " + rawMessage);
-            try {
-                ServerMessage serverMessage = new Gson().fromJson(rawMessage, ServerMessage.class);
+        // Ensure the WebSocket client is connected
+        if (!webSocketClient.isConnected()) {
+            webSocketClient.connect(); // Establish the WebSocket connection
+        }
 
-                switch (serverMessage.getServerMessageType()) {
-                    case LOAD_GAME -> {
-                        LoadGameMessage loadGameMessage = new Gson().fromJson(rawMessage, LoadGameMessage.class);
-                        chessBoardUI.displayBoard(loadGameMessage.getGame());
+        // Avoid re-registering the message handler
+        if (!webSocketClient.isMessageHandlerSet()) {
+            webSocketClient.setMessageHandler(rawMessage -> {
+                System.out.println("Received message: " + rawMessage);
+                try {
+                    ServerMessage serverMessage = new Gson().fromJson(rawMessage, ServerMessage.class);
+
+                    switch (serverMessage.getServerMessageType()) {
+                        case LOAD_GAME -> {
+                            LoadGameMessage loadGameMessage = new Gson().fromJson(rawMessage, LoadGameMessage.class);
+                            chessBoardUI.displayBoard(loadGameMessage.getGame());
+                        }
+                        case NOTIFICATION -> {
+                            NotificationMessage notificationMessage = new Gson().fromJson(rawMessage, NotificationMessage.class);
+                            System.out.println("Notification: " + notificationMessage.getNotificationMessage());
+                        }
+                        case ERROR -> {
+                            ErrorMessage errorMessage = new Gson().fromJson(rawMessage, ErrorMessage.class);
+                            System.err.println("Error: " + errorMessage.getMessage());
+                        }
+                        default -> System.err.println("Unknown message type received.");
                     }
-                    case NOTIFICATION -> {
-                        NotificationMessage notificationMessage = new Gson().fromJson(rawMessage, NotificationMessage.class);
-                        System.out.println("Notification: " + notificationMessage.getNotificationMessage());
-                    }
-                    case ERROR -> {
-                        ErrorMessage errorMessage = new Gson().fromJson(rawMessage, ErrorMessage.class);
-                        System.err.println("Error: " + errorMessage.getMessage());
-                    }
-                    default -> System.err.println("Unknown message type received.");
+                } catch (Exception e) {
+                    System.err.println("Error processing WebSocket message: " + rawMessage);
+                    e.printStackTrace();
                 }
-            } catch (Exception e) {
-                System.err.println("Error processing WebSocket message: " + rawMessage);
-                e.printStackTrace();
-            }
-        });
+            });
+        }
+
+        if (isObserver) {
+            webSocketClient.joinObserver(authToken, gameId);
+        } else {
+            webSocketClient.joinGame(authToken, gameId, color);
+        }
     }
 
     private void disconnectWebSocket() throws Exception {

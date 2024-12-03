@@ -1,5 +1,6 @@
 package websocket.messages;
 
+import com.google.gson.Gson;
 import model.GameData;
 
 import java.util.Objects;
