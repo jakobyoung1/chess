@@ -1,9 +1,14 @@
 package ui;
 
 import client.ServerFacade;
+import com.google.gson.Gson;
 import model.GameData;
 import websocket.WebSocketClient;
+import websocket.commands.ConnectCommand;
 import websocket.commands.UserGameCommand;
+import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
 import java.util.List;
@@ -163,19 +168,54 @@ public class PostLoginUI {
     }
 
     private void setupWebSocketConnection(int gameId) throws Exception {
+        // Check if the WebSocket client is already initialized
         if (webSocketClient == null) {
             webSocketClient = new WebSocketClient();
         }
 
+        // Connect to the WebSocket server
+        System.out.println("Connecting to WebSocket server...");
         webSocketClient.connect("ws://localhost:8080/ws");
-        UserGameCommand connectCommand = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameId);
-        webSocketClient.sendCommand(connectCommand);
 
-        webSocketClient.setGameUpdateHandler(message -> {
-            if (message.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME) {
-                chessBoardUI.displayBoard((GameData) message.getGame());
-            } else if (message.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION) {
-                System.out.println(message.getNotificationMessage());
+        // Send a ConnectCommand to the server
+        ConnectCommand connectCommand = new ConnectCommand(authToken, gameId);
+        String connectMessage = new Gson().toJson(connectCommand);
+        System.out.println("Sending ConnectCommand: " + connectMessage);
+        webSocketClient.sendMessage(connectMessage);
+
+        // Set up a handler for incoming messages
+        webSocketClient.setMessageHandler(rawMessage -> {
+            System.out.println("Received message: " + rawMessage);
+            try {
+                // Parse the raw message into a generic ServerMessage
+                ServerMessage serverMessage = new Gson().fromJson(rawMessage, ServerMessage.class);
+
+                switch (serverMessage.getServerMessageType()) {
+                    case LOAD_GAME -> {
+                        // Parse and handle a LoadGameMessage
+                        LoadGameMessage loadGameMessage = new Gson().fromJson(rawMessage, LoadGameMessage.class);
+                        System.out.println("Game loaded successfully.");
+                        chessBoardUI.displayBoard(loadGameMessage.getGame());
+                    }
+                    case NOTIFICATION -> {
+                        // Parse and handle a NotificationMessage
+                        NotificationMessage notificationMessage = new Gson().fromJson(rawMessage, NotificationMessage.class);
+                        System.out.println("Notification: " + notificationMessage.getNotificationMessage());
+                    }
+                    case ERROR -> {
+                        // Parse and handle an ErrorMessage
+                        ErrorMessage errorMessage = new Gson().fromJson(rawMessage, ErrorMessage.class);
+                        System.err.println("Error: " + errorMessage.getMessage());
+                    }
+                    default -> {
+                        // Handle unknown message types
+                        System.err.println("Unknown message type received: " + serverMessage.getServerMessageType());
+                    }
+                }
+            } catch (Exception e) {
+                // Log any issues with message handling
+                System.err.println("Error processing WebSocket message: " + rawMessage);
+                e.printStackTrace();
             }
         });
     }

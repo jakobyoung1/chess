@@ -20,10 +20,12 @@ public class Server {
             GameDAO gameDAO = new GameDAO();
             AuthDAO authDAO = new AuthDAO();
 
-            ChessWebSocketHandler.initialize(gameDAO, authDAO, userDAO);
-            Spark.webSocket("/ws", ChessWebSocketHandler.class);
+            ChessWebSocketHandler webSocketHandler = new ChessWebSocketHandler(gameDAO, authDAO);
 
-            //Spark.staticFiles.location("/web");
+            Spark.webSocket("/connect", webSocketHandler);
+            Spark.webSocket("/ws", webSocketHandler);
+
+            Spark.staticFiles.location("/web");
 
             try {
                 DatabaseManager.createDatabase();
