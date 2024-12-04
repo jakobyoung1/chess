@@ -6,6 +6,7 @@ import com.sun.nio.sctp.NotificationHandler;
 import model.GameData;
 import ui.ChessBoardUI;
 import ui.GamePlayUI;
+import ui.PostLoginUI;
 import websocket.commands.JoinObserverCommand;
 import websocket.commands.JoinPlayerCommand;
 import websocket.messages.ErrorMessage;
@@ -81,7 +82,7 @@ public class webSocketFacade {
         String bUsername = game.getBlackUsername();
         String wUsername = game.getWhiteUsername();
 
-        draw.displayGame(game, null, null);
+
     }
 
     /**
@@ -125,7 +126,7 @@ public class webSocketFacade {
 
     @OnClose
     public void onClose(Session session, CloseReason reason) {
-        System.out.println("WebSocket connection closed: " + reason.getReasonPhrase());
+        //System.out.println("WebSocket connection closed: " + reason.getReasonPhrase());
     }
 
     @OnError
@@ -141,6 +142,22 @@ public class webSocketFacade {
             session.getBasicRemote().sendText(commandJson);
         } else {
             throw new IllegalStateException("WebSocket session is not open.");
+        }
+    }
+
+    public void close() {
+        if (session != null && session.isOpen()) {
+            try {
+                session.close();
+                //System.out.println("WebSocket connection closed.");
+            } catch (IOException e) {
+                System.err.println("Error closing WebSocket connection: " + e.getMessage());
+                e.printStackTrace();
+            } finally {
+                session = null; // Ensure session is null after closing
+            }
+        } else {
+            System.out.println("WebSocket connection is already closed.");
         }
     }
 }

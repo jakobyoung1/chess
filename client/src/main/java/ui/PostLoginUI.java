@@ -27,6 +27,7 @@ public class PostLoginUI {
     private final String username;
     private webSocketFacade webSocketClient;
     private webSocketFacade ws;
+    boolean inGame = false;
 
     public PostLoginUI(ServerFacade serverFacade, String authToken, String username) {
         this.serverFacade = serverFacade;
@@ -39,7 +40,7 @@ public class PostLoginUI {
     public void display() {
         boolean isLoggedIn = true;
 
-        while (isLoggedIn) {
+        while (isLoggedIn && !inGame) {
             System.out.println("\nAvailable commands: Help, Logout, Create Game, List Games, Play Game, Observe Game");
             System.out.print("Enter command: ");
             String command = scanner.nextLine().trim().toLowerCase();
@@ -132,10 +133,14 @@ public class PostLoginUI {
             var gameData = games.get(gameNumber - 1);
             serverFacade.joinGame(gameData.getGameId(), username, color.name());
             System.out.println("Joined game: " + gameData.getGameName() + " as " + color);
-
+            inGame = true;
             ws = new webSocketFacade("http://localhost:8080");
             ws.joinGame(authToken, gameData.getGameId(), color);
-            startGameplay(gameData);
+            GamePlayUI gamePlayUI = new GamePlayUI(ws); // Pass webSocketFacade as the webSocketClient
+            gamePlayUI.display(gameData);
+            ws.close();
+            inGame = false;
+
 
         } catch (NumberFormatException e) {
             System.out.println("Invalid input. Please enter a valid number.");
@@ -159,8 +164,15 @@ public class PostLoginUI {
             var gameData = games.get(gameNumber - 1);
             System.out.println("Observing game: " + gameData.getGameName());
 
+            inGame = true;
             ws = new webSocketFacade("http://localhost:8080");
-            ws.joinObserver(authToken, gameData.getGameId());
+            ws.joinGame(authToken, gameData.getGameId(), null);
+            GamePlayUI gamePlayUI = new GamePlayUI(ws);
+            gamePlayUI.display(gameData);
+            ws.close();
+            inGame = false;
+
+
 
         } catch (NumberFormatException e) {
             System.out.println("Invalid input. Please enter a valid number.");
@@ -176,8 +188,8 @@ public class PostLoginUI {
         }
     }
 
-    private void startGameplay(GameData gameData) throws IOException {
-        GamePlayUI gameplayUI = new GamePlayUI(webSocketClient);
-        gameplayUI.display(gameData);
-    }
+//    private void startGameplay(GameData gameData) throws IOException {
+//        GamePlayUI gameplayUI = new GamePlayUI(webSocketClient);
+//        gameplayUI.display(gameData);
+//    }
 }

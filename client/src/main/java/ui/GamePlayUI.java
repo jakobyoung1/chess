@@ -26,14 +26,16 @@ public class GamePlayUI {
 
     public void display(GameData gameData) throws IOException {
         chessBoardUI.displayGame(gameData, null, null);
-        while (true) {
-            System.out.print("Enter command (Make Move, Resign, Leave, Help): ");
+        boolean inGame = true;
+        while (inGame) {
+            System.out.print("Enter command (Make Move, Resign, Leave, Help): \n");
             String command = scanner.nextLine();
             switch (command.toLowerCase()) {
                 case "make move" -> makeMove(gameData.getGameId());
                 case "resign" -> resign(gameData.getGameId());
                 case "leave" -> {
                     leaveGame(gameData.getGameId());
+                    inGame = false;
                     return;
                 }
                 case "help" -> showHelp();

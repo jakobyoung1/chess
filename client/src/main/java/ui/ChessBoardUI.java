@@ -23,7 +23,6 @@ public class ChessBoardUI {
 
     public void displayGame(GameData gameData, ChessGame.TeamColor playerColor, ChessPosition pos){
 
-
         if (pos != null) {
             this.pos = pos;
             validMoves = gameData.getGame().validMoves(pos);
@@ -115,12 +114,6 @@ public class ChessBoardUI {
         out.print(" A \n");
     }
 
-
-//    private void doMainPieceBlack(PrintStream out, ChessGame game, int j, int i) {
-//        setNeonYellow(out);
-//        evalBoard(out, game, j, i);
-//    }
-
     private void doMainPieceWhite(PrintStream out, ChessGame game, int j, int i) {
         setBlue(out);
         evalBoard(out, game, j, i);
@@ -146,30 +139,7 @@ public class ChessBoardUI {
             evalBoard(out, game, j, i);
         }
     }
-
-//    private void doHighlightBlack(PrintStream out, ChessGame game, int j, int i) {
-//        if ((j % 2) != 0){
-//            if ((i % 2) == 0){
-//                setGreen(out);
-//            }
-//            else {
-//                setDarkGreen(out);
-//            }
-//            evalBoard(out, game, 9-j, 9-i);
-//        }
-//        else {
-//            if ((i % 2) == 0) {
-//                setDarkGreen(out);
-//            } else {
-//                setGreen(out);
-//            }
-//            evalBoard(out, game, 9 - j, 9 - i);
-//        }
-//    }
-
-
-
-
+    
     private void drawBoardWhite(PrintStream out, ChessGame game) {
         out.print(RESET_BG_COLOR);
         out.print(SET_TEXT_COLOR_WHITE);
