@@ -11,13 +11,13 @@ public class ChessBoardUI {
     private static final String LIGHT_SQUARE = "\u001B[47m";
     private static final String DARK_SQUARE = "\u001B[100m";
 
-    public void displayBoard(GameData gameData) {
+    public static void displayBoard(GameData gameData) {
         ChessPiece[][] board = gameData.getGame().getBoard().getSquares();
         printBoard(board, true);
         printBoard(board, false);
     }
 
-    private void printBoard(ChessPiece[][] board, boolean whitePerspective) {
+    private static void printBoard(ChessPiece[][] board, boolean whitePerspective) {
         for (int i = 0; i < 8; i++) {
             int row = whitePerspective ? 8 - i : i + 1;
             System.out.print(row + " ");

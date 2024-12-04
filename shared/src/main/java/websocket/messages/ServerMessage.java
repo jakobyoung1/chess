@@ -11,7 +11,7 @@ import java.util.Objects;
 public class ServerMessage {
 
     private final ServerMessageType serverMessageType;
-    private Object game; // For game state updates
+    private Object game;
 
     public enum ServerMessageType {
         LOAD_GAME,

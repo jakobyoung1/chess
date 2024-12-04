@@ -2,6 +2,9 @@ package client;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
+import com.sun.nio.sctp.NotificationHandler;
+import model.GameData;
+import ui.ChessBoardUI;
 import websocket.commands.JoinObserverCommand;
 import websocket.commands.JoinPlayerCommand;
 import websocket.messages.ErrorMessage;
@@ -13,54 +16,66 @@ import javax.websocket.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 
 @ClientEndpoint
 public class webSocketFacade {
 
     public Session session;
-    private boolean messageHandlerSet = false;
+    notificationHandler notificationHandler;
+    private boolean messageHandlerSet = true;
+    private ChessGame.TeamColor playerColor;
+    private ChessBoardUI draw = new ChessBoardUI();
 
     public webSocketFacade(String url) throws Exception {
         try {
-            // Ensure the URL uses the WebSocket scheme
             url = url.replace("http://", "ws://").replace("https://", "wss://");
             URI socketURI = new URI(url + "/ws");
 
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             this.session = container.connectToServer(this, socketURI);
+            this.notificationHandler = new notificationHandler() {
+                @Override
+                public void notify(ServerMessage serverMessage, String message) {
+                    System.out.println("SERVER MESSAGE: " + serverMessage);
+                    switch (serverMessage.getServerMessageType()) {
+                        case NOTIFICATION -> notification(message);
+                        case ERROR -> error(message);
+                        case LOAD_GAME -> loadGame(message);
+                        case null -> System.out.println("NULL message type");
+                    }
+                }
+            };
 
-            this.session.addMessageHandler((MessageHandler.Whole<String>) this::handleMessage);
+            this.session.addMessageHandler(new MessageHandler.Whole<String>() {
+                @Override
+                public void onMessage(String message) {
+                    ServerMessage notification = new Gson().fromJson(message, ServerMessage.class);
+                    notificationHandler.notify(notification, message);
+                }
+            });
         } catch (DeploymentException | IOException | URISyntaxException ex) {
             throw new RuntimeException("Failed to connect to WebSocket server: " + ex.getMessage(), ex);
         }
     }
 
-    /**
-     * Checks if the WebSocket session is open.
-     */
-    public boolean isOpen() {
-        return session != null && session.isOpen();
+    public void error(String message) {
+        Error error  = new Gson().fromJson(message, Error.class);
+        System.out.print(error.getMessage());
     }
 
-    /**
-     * Connects to the WebSocket server if not already connected.
-     */
-    public void connect() throws IOException, DeploymentException, URISyntaxException {
-        if (session == null || !session.isOpen()) {
-            WebSocketContainer container = ContainerProvider.getWebSocketContainer();
-            session = container.connectToServer(this, new URI("ws://localhost:8080/ws"));
-        }
+    public void notification(String message) {
+        NotificationMessage notification  = new Gson().fromJson(message, NotificationMessage.class);
+        System.out.print(notification.getNotificationMessage());
     }
 
-    /**
-     * Adds a message handler for processing incoming WebSocket messages.
-     */
-    public void addMessageHandler(MessageHandler.Whole<String> handler) {
-        if (session != null) {
-            session.addMessageHandler(handler);
-        } else {
-            throw new IllegalStateException("WebSocket session is not initialized.");
-        }
+    public void loadGame(String message) {
+        LoadGameMessage loadGame  = new Gson().fromJson(message, LoadGameMessage.class);
+        GameData game = loadGame.getGame();
+        String bUsername = game.getBlackUsername();
+        String wUsername = game.getWhiteUsername();
+
+        ChessBoardUI.displayBoard(game);
     }
 
     /**
@@ -87,29 +102,15 @@ public class webSocketFacade {
         sendMessage(new Gson().toJson(command));
     }
 
-    /**
-     * Sends a message through the WebSocket connection.
-     */
     public void sendMessage(String message) throws IOException {
         if (session != null && session.isOpen()) {
+            System.out.println("Sending WS message: " + message);
             session.getBasicRemote().sendText(message);
         } else {
             throw new IllegalStateException("WebSocket session is not open.");
         }
     }
 
-    /**
-     * Closes the WebSocket connection.
-     */
-    public void disconnect() {
-        if (session != null) {
-            try {
-                session.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
     @OnOpen
     public void onOpen(Session session) {
@@ -127,65 +128,11 @@ public class webSocketFacade {
         throwable.printStackTrace();
     }
 
-    @OnMessage
-    public void onMessage(String message) {
-        System.out.println("Received WebSocket message: " + message);
-    }
-
     public void sendCommand(Object command) throws IOException {
         if (session != null && session.isOpen()) {
             String commandJson = new Gson().toJson(command);
             System.out.println("Sending command: " + commandJson);
             session.getBasicRemote().sendText(commandJson);
-        } else {
-            throw new IllegalStateException("WebSocket session is not open.");
-        }
-    }
-
-    private void handleMessage(String rawMessage) {
-        System.out.println("Received message: " + rawMessage);
-        try {
-            ServerMessage serverMessage = new Gson().fromJson(rawMessage, ServerMessage.class);
-
-            switch (serverMessage.getServerMessageType()) {
-                case LOAD_GAME -> {
-                    LoadGameMessage loadGameMessage = new Gson().fromJson(rawMessage, LoadGameMessage.class);
-                    // Process and display the game state
-                    System.out.println("Game state updated.");
-                }
-                case NOTIFICATION -> {
-                    NotificationMessage notificationMessage = new Gson().fromJson(rawMessage, NotificationMessage.class);
-                    // Display notifications
-                    System.out.println("Notification: " + notificationMessage.getNotificationMessage());
-                }
-                case ERROR -> {
-                    ErrorMessage errorMessage = new Gson().fromJson(rawMessage, ErrorMessage.class);
-                    // Display errors
-                    System.err.println("Error: " + errorMessage.getMessage());
-                }
-                default -> {
-                    // Handle unknown message types
-                    System.err.println("Unknown message type received: " + serverMessage.getServerMessageType());
-                }
-            }
-        } catch (Exception e) {
-            System.err.println("Error processing WebSocket message: " + rawMessage);
-            e.printStackTrace();
-        }
-    }
-
-    public boolean isConnected() {
-        return session != null && session.isOpen();
-    }
-
-    public boolean isMessageHandlerSet() {
-        return messageHandlerSet;
-    }
-
-    public void setMessageHandler(MessageHandler.Whole<String> handler) {
-        if (session != null && session.isOpen()) {
-            session.addMessageHandler(handler);
-            messageHandlerSet = true;
         } else {
             throw new IllegalStateException("WebSocket session is not open.");
         }

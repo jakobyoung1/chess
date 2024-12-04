@@ -2,7 +2,7 @@ package websocket.commands;
 
 public abstract class UserGameCommand {
 
-    private final CommandType commandType; // Represents the type of command
+    CommandType commandType; // Represents the type of command
     private final String authToken;        // Authentication token for the command
 
     // Constructor to initialize the command type and authentication token
@@ -24,7 +24,7 @@ public abstract class UserGameCommand {
         LEAVE,
         RESIGN,
         JOIN_PLAYER,
-        JOIN_OBSERVER
+        REDRAW, JOIN_OBSERVER
     }
 
     // Getter for the command type

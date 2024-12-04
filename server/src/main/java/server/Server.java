@@ -12,16 +12,18 @@ public class Server {
 
     private static boolean initialized = false;
 
+    ChessWebSocketHandler webSocketHandler;
+    UserDAO userDAO = new UserDAO();
+    GameDAO gameDAO = new GameDAO();
+    AuthDAO authDAO = new AuthDAO();
+
+    public Server() {
+        webSocketHandler = new ChessWebSocketHandler(gameDAO, authDAO);
+    }
+
     public int run(int port) throws DataAccessException {
         if (!initialized) {
             Spark.port(port);
-
-            UserDAO userDAO = new UserDAO();
-            GameDAO gameDAO = new GameDAO();
-            AuthDAO authDAO = new AuthDAO();
-
-            ChessWebSocketHandler webSocketHandler = new ChessWebSocketHandler(gameDAO, authDAO);
-
             Spark.webSocket("/ws", webSocketHandler);
 
             Spark.staticFiles.location("/web");

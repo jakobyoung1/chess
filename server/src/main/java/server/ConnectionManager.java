@@ -35,7 +35,6 @@ public class ConnectionManager {
         Map<String, Session> sessionHashMap = connections.get(gameID);
         if (sessionHashMap != null) {
             sessionHashMap.remove(authToken);
-            // Optionally remove the entire gameID entry if no users are left
             if (sessionHashMap.isEmpty()) {
                 connections.remove(gameID);
             }
@@ -82,6 +81,7 @@ public class ConnectionManager {
                     closedConnections.add(userAuth); // Mark closed sessions for removal
                 } else if (!Objects.equals(userAuth, excludeAuthToken)) {
                     try {
+                        System.out.println(message);
                         session.getRemote().sendString(new Gson().toJson(message));
                     } catch (IOException e) {
                         System.err.println("Error broadcasting message: " + e.getMessage());

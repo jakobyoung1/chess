@@ -4,6 +4,7 @@ import chess.ChessGame;
 import client.ServerFacade;
 import client.webSocketFacade;
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import model.GameData;
 import websocket.commands.ConnectCommand;
 import websocket.messages.ErrorMessage;
@@ -16,6 +17,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
 
+import static websocket.messages.ServerMessage.ServerMessageType.*;
+
 public class PostLoginUI {
     private final ServerFacade serverFacade;
     private final String authToken;
@@ -23,6 +26,7 @@ public class PostLoginUI {
     private final ChessBoardUI chessBoardUI;
     private final String username;
     private webSocketFacade webSocketClient;
+    private webSocketFacade ws;
 
     public PostLoginUI(ServerFacade serverFacade, String authToken, String username) {
         this.serverFacade = serverFacade;
@@ -129,7 +133,8 @@ public class PostLoginUI {
             serverFacade.joinGame(gameData.getGameId(), username, color.name());
             System.out.println("Joined game: " + gameData.getGameName() + " as " + color);
 
-            setupWebSocketConnection(gameData.getGameId(), color, false);
+            ws = new webSocketFacade("http://localhost:8080");
+            ws.joinGame(authToken, gameData.getGameId(), color);
             startGameplay(gameData);
 
         } catch (NumberFormatException e) {
@@ -154,61 +159,13 @@ public class PostLoginUI {
             var gameData = games.get(gameNumber - 1);
             System.out.println("Observing game: " + gameData.getGameName());
 
-            setupWebSocketConnection(gameData.getGameId(), null, true);
+            ws = new webSocketFacade("http://localhost:8080");
+            ws.joinObserver(authToken, gameData.getGameId());
 
         } catch (NumberFormatException e) {
             System.out.println("Invalid input. Please enter a valid number.");
         } catch (Exception e) {
             System.out.println("Error observing game: " + e.getMessage());
-        }
-    }
-
-    private void setupWebSocketConnection(int gameId, ChessGame.TeamColor color, boolean isObserver) throws Exception {
-        // Initialize the WebSocket client
-        if (webSocketClient == null) {
-            webSocketClient = new webSocketFacade("http://localhost:8080");
-        }
-
-        System.out.println("Connecting to WebSocket server...");
-
-        // Ensure the WebSocket client is connected
-        if (!webSocketClient.isConnected()) {
-            webSocketClient.connect(); // Establish the WebSocket connection
-        }
-
-        // Avoid re-registering the message handler
-        if (!webSocketClient.isMessageHandlerSet()) {
-            webSocketClient.setMessageHandler(rawMessage -> {
-                System.out.println("Received message: " + rawMessage);
-                try {
-                    ServerMessage serverMessage = new Gson().fromJson(rawMessage, ServerMessage.class);
-
-                    switch (serverMessage.getServerMessageType()) {
-                        case LOAD_GAME -> {
-                            LoadGameMessage loadGameMessage = new Gson().fromJson(rawMessage, LoadGameMessage.class);
-                            chessBoardUI.displayBoard(loadGameMessage.getGame());
-                        }
-                        case NOTIFICATION -> {
-                            NotificationMessage notificationMessage = new Gson().fromJson(rawMessage, NotificationMessage.class);
-                            System.out.println("Notification: " + notificationMessage.getNotificationMessage());
-                        }
-                        case ERROR -> {
-                            ErrorMessage errorMessage = new Gson().fromJson(rawMessage, ErrorMessage.class);
-                            System.err.println("Error: " + errorMessage.getMessage());
-                        }
-                        default -> System.err.println("Unknown message type received.");
-                    }
-                } catch (Exception e) {
-                    System.err.println("Error processing WebSocket message: " + rawMessage);
-                    e.printStackTrace();
-                }
-            });
-        }
-
-        if (isObserver) {
-            webSocketClient.joinObserver(authToken, gameId);
-        } else {
-            webSocketClient.joinGame(authToken, gameId, color);
         }
     }
 
