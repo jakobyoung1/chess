@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.sun.nio.sctp.NotificationHandler;
 import model.GameData;
 import ui.ChessBoardUI;
+import ui.GamePlayUI;
 import websocket.commands.JoinObserverCommand;
 import websocket.commands.JoinPlayerCommand;
 import websocket.messages.ErrorMessage;
@@ -36,7 +37,7 @@ public class webSocketFacade {
             this.session = container.connectToServer(this, socketURI);
             this.notificationHandler = new notificationHandler() {
                 @Override
-                public void notify(ServerMessage serverMessage, String message) {
+                public void notify(ServerMessage serverMessage, String message) throws IOException {
                     System.out.println("SERVER MESSAGE: " + serverMessage);
                     switch (serverMessage.getServerMessageType()) {
                         case NOTIFICATION -> notification(message);
@@ -51,7 +52,11 @@ public class webSocketFacade {
                 @Override
                 public void onMessage(String message) {
                     ServerMessage notification = new Gson().fromJson(message, ServerMessage.class);
-                    notificationHandler.notify(notification, message);
+                    try {
+                        notificationHandler.notify(notification, message);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             });
         } catch (DeploymentException | IOException | URISyntaxException ex) {
@@ -69,13 +74,14 @@ public class webSocketFacade {
         System.out.print(notification.getNotificationMessage());
     }
 
-    public void loadGame(String message) {
+    public void loadGame(String message) throws IOException {
         LoadGameMessage loadGame  = new Gson().fromJson(message, LoadGameMessage.class);
-        GameData game = loadGame.getGame();
+        System.out.println("LOADGAME MESSAGE: " + message);
+        GameData game = loadGame.getGameData();
         String bUsername = game.getBlackUsername();
         String wUsername = game.getWhiteUsername();
 
-        ChessBoardUI.displayBoard(game);
+        draw.displayGame(game, null, null);
     }
 
     /**

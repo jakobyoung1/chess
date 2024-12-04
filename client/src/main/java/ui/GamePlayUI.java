@@ -25,7 +25,7 @@ public class GamePlayUI {
     }
 
     public void display(GameData gameData) throws IOException {
-        chessBoardUI.displayBoard(gameData);
+        chessBoardUI.displayGame(gameData, null, null);
         while (true) {
             System.out.print("Enter command (Make Move, Resign, Leave, Help): ");
             String command = scanner.nextLine();

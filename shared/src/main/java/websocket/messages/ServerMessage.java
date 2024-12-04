@@ -11,7 +11,7 @@ import java.util.Objects;
 public class ServerMessage {
 
     private final ServerMessageType serverMessageType;
-    private Object game;
+    private GameData game;
 
     public enum ServerMessageType {
         LOAD_GAME,
@@ -20,9 +20,6 @@ public class ServerMessage {
     }
 
     public ServerMessage(ServerMessageType type) {
-        if (type == ServerMessageType.NOTIFICATION) {
-            throw new IllegalArgumentException("Use NotificationMessage for notifications.");
-        }
         this.serverMessageType = type;
     }
 
@@ -34,7 +31,7 @@ public class ServerMessage {
         return (GameData) game;
     }
 
-    public void setGame(Object game) {
+    public void setGame(GameData game) {
         this.game = game;
     }
 

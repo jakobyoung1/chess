@@ -32,7 +32,9 @@ public class ChessWebSocketHandler {
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws Exception {
-        UserGameCommand action = new Gson().fromJson(message, UserGameCommand.class);
+        System.out.println("MESSAGE RECIEVED BY HANDLER: " + message);
+        UserGameCommand action = UserGameCommand.fromJson(message);
+
         switch (action.getCommandType()) {
             case JOIN_PLAYER -> joinGame(message, session);
             case JOIN_OBSERVER -> joinObserver(message, session);
