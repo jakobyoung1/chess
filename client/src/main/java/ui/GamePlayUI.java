@@ -90,7 +90,7 @@ public class GamePlayUI {
     }
 
     private void leaveGame(int gameId) throws IOException {
-        LeaveCommand command = new LeaveCommand("authToken", gameId);
+        LeaveCommand command = new LeaveCommand(authToken, gameId);
         webSocketClient.sendCommand(command);
         System.out.println("You have left the game.");
     }

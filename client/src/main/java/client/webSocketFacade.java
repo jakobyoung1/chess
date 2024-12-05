@@ -4,12 +4,14 @@ import chess.ChessGame;
 import com.google.gson.Gson;
 import com.sun.nio.sctp.NotificationHandler;
 import model.GameData;
+import server.Server;
 import ui.ChessBoardUI;
 import ui.GamePlayUI;
 import ui.PostLoginUI;
 import websocket.commands.ConnectCommand;
 import websocket.commands.JoinObserverCommand;
 import websocket.commands.JoinPlayerCommand;
+import websocket.commands.UserGameCommand;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
@@ -20,6 +22,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+
+import static websocket.messages.ServerMessage.ServerMessageType.ERROR;
 
 @ClientEndpoint
 public class webSocketFacade {
@@ -67,8 +71,7 @@ public class webSocketFacade {
     }
 
     public void error(String message) {
-        Error error  = new Gson().fromJson(message, Error.class);
-        System.out.print(error.getMessage());
+        ServerMessage error  = ServerMessage.fromJson(message);
     }
 
     public void notification(String message) {

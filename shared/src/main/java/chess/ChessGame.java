@@ -70,6 +70,10 @@ public class ChessGame {
         gameOver = b;
     }
 
+    public void setGameOver(boolean b) {
+        gameOver = b;
+    }
+
     /**
      * Enum identifying the 2 possible teams in a chess game
      */

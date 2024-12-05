@@ -93,12 +93,45 @@ public class ChessWebSocketHandler {
         LeaveCommand leaveGame = new Gson().fromJson(action, LeaveCommand.class);
         String authToken = leaveGame.getAuthToken();
         int gameID = leaveGame.getGameID();
-        String username = getUsername(authToken);
 
-        connections.remove(gameID, authToken);
-        String leaveMessage = String.format("%s has left the game\n", username);
-        NotificationMessage notification = new NotificationMessage(leaveMessage);
-        connections.broadcast("", notification, gameID);
+        try {
+            // Get the username and game data
+            String username = getUsername(authToken);
+            GameData game = gameDAO.getGame(gameID);
+
+            if (game == null) {
+                throw new Exception("Game not found.");
+            }
+
+            // Remove the player from the appropriate team
+            if (username.equals(game.getWhiteUsername())) {
+                game.setWhiteUsername(null); // Free up the White team
+            } else if (username.equals(game.getBlackUsername())) {
+                game.setBlackUsername(null); // Free up the Black team
+            }
+
+            // Update the game in the database
+            gameDAO.updateGame(game.getGameId(), game);
+
+            // Remove the player's connection
+            connections.remove(gameID, authToken);
+
+            // Broadcast the leave message to other players and observers
+            String leaveMessage = String.format("%s has left the game\n", username);
+            NotificationMessage notification = new NotificationMessage(leaveMessage);
+            connections.broadcast("", notification, gameID);
+        } catch (Exception e) {
+            // Handle errors gracefully
+            ErrorMessage errorMessage = new ErrorMessage(
+                    e.getMessage() != null ? e.getMessage() : "An error occurred while leaving the game."
+            );
+            try {
+                session.getRemote().sendString(new Gson().toJson(errorMessage));
+            } catch (IOException ioException) {
+                System.err.println("Error sending message to session: " + ioException.getMessage());
+            }
+            System.err.println("Error in leaveGame: " + e.getMessage());
+        }
     }
 
     public void redraw(String action, Session session) {
@@ -121,9 +154,10 @@ public class ChessWebSocketHandler {
         String authToken = makeMove.getAuthToken();
 
         try {
+            // Validate the authentication token
             AuthData auth = authDAO.getAuth(authToken);
             if (auth == null) {
-                // Send the error message directly to the session
+                // Send an error message directly to the session
                 ErrorMessage errorMessage = new ErrorMessage("Invalid or expired authentication token.");
                 try {
                     session.getRemote().sendString(new Gson().toJson(errorMessage));
@@ -141,10 +175,14 @@ public class ChessWebSocketHandler {
                 return;
             }
 
-            // Check if the game is over
+            // Check if the game is already over
             if (game.getGame().isGameOver()) {
                 ErrorMessage errorMessage = new ErrorMessage("The game is already over. No further moves can be made.");
-                connections.sendMessage(gameID, authToken, new Gson().toJson(errorMessage));
+                try {
+                    session.getRemote().sendString(new Gson().toJson(errorMessage));
+                } catch (IOException e) {
+                    System.err.println("Error sending game over message: " + e.getMessage());
+                }
                 return;
             }
 
@@ -179,23 +217,30 @@ public class ChessWebSocketHandler {
             game.getGame().makeMove(move);
             gameDAO.updateGame(gameID, game);
 
-            // Notify other players and observers
+            // Notify all other players and observers about the move
             String moveMessage = String.format("%s (%s) has made a move: %s\n", username, color, move);
             NotificationMessage notification = new NotificationMessage(moveMessage);
-            connections.broadcast(authToken, notification, gameID);
+            connections.broadcast(authToken, notification, gameID); // Broadcast to all except the player who made the move
 
-            // Send updated game state to the player who made the move
+            // Send the updated game state to all players and observers
             LoadGameMessage loadGameMessage = new LoadGameMessage(game);
-            connections.sendMessage(gameID, authToken, new Gson().toJson(loadGameMessage));
+            connections.broadcast("", loadGameMessage, gameID); // Broadcast the updated game state to everyone
 
             // Check for game-ending conditions
-            if (game.getGame().isInCheckmate(color)) {
-                String gameOverMessage = color + " is in checkmate. GAME OVER\n";
+            ChessGame.TeamColor opponentColor = (color == ChessGame.TeamColor.BLACK) ?
+                    ChessGame.TeamColor.WHITE :
+                    ChessGame.TeamColor.BLACK;
+
+            if (game.getGame().isInCheckmate(opponentColor)) {
+                // Opponent is in checkmate
+                String gameOverMessage = opponentColor + " is in checkmate. GAME OVER\n";
                 NotificationMessage gameOverNotification = new NotificationMessage(gameOverMessage);
                 connections.broadcast("", gameOverNotification, gameID);
-            }
 
-            gameDAO.updateGame(game.getGameId(),game);
+                // Mark the game as over and persist the state
+                game.getGame().setGameOver(true);
+                gameDAO.updateGame(gameID, game);
+            }
         } catch (InvalidMoveException e) {
             // Handle invalid moves
             ErrorMessage errorMessage = new ErrorMessage("Invalid move: " + e.getMessage());
@@ -222,6 +267,11 @@ public class ChessWebSocketHandler {
                 throw new Exception("Observers cannot resign the game.");
             }
 
+            // Check if the game is already over due to a previous resignation
+            if (game.getGame().isBlackResigned() || game.getGame().isWhiteResigned()) {
+                throw new Exception("The game is already over due to a previous resignation.");
+            }
+
             // Set resign status based on the player color
             if (Objects.equals(username, game.getBlackUsername())) {
                 game.getGame().setBlackResigned(true); // Mark Black as resigned
@@ -229,14 +279,16 @@ public class ChessWebSocketHandler {
                 game.getGame().setWhiteResigned(true); // Mark White as resigned
             }
 
-            gameDAO.updateGame(game.getGameId(),game);
+            gameDAO.updateGame(game.getGameId(), game);
 
             String resignMessage = String.format("%s has resigned. GAME OVER\n", username);
             NotificationMessage notification = new NotificationMessage(resignMessage);
             connections.broadcast("", notification, gameID);
         } catch (Exception e) {
             // Handle errors gracefully
-            ErrorMessage errorMessage = new ErrorMessage("An error occurred while processing the resignation.");
+            ErrorMessage errorMessage = new ErrorMessage(
+                    e.getMessage() != null ? e.getMessage() : "An error occurred while processing the resignation."
+            );
             try {
                 session.getRemote().sendString(new Gson().toJson(errorMessage));
             } catch (IOException ioException) {
