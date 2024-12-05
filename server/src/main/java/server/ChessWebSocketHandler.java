@@ -76,9 +76,15 @@ public class ChessWebSocketHandler {
 
             LoadGameMessage loadGame = new LoadGameMessage(game);
             connections.sendMessage(gameID, authToken, new Gson().toJson(loadGame));
+        } catch (DataAccessException e) {
+            // Send an error message if there is an issue accessing the database
+            ErrorMessage errorMessage = new ErrorMessage("Error accessing game data: " + e.getMessage());
+            connections.sendMessage(gameID, authToken, new Gson().toJson(errorMessage));
+            System.out.println(e);
         } catch (Exception e) {
-            ErrorMessage message = new ErrorMessage("Error connecting to the game: " + e.getMessage());
-            connections.sendMessage(gameID, authToken, new Gson().toJson(message));
+            // Send a generic error message for any other exceptions
+            ErrorMessage errorMessage = new ErrorMessage("Error connecting to the game: " + e.getMessage());
+            connections.sendMessage(gameID, authToken, new Gson().toJson(errorMessage));
             System.out.println(e);
         }
     }

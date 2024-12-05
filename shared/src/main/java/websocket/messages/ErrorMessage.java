@@ -7,7 +7,7 @@ import static websocket.messages.ServerMessage.ServerMessageType.ERROR;
  */
 public class ErrorMessage  extends ServerMessage {
 
-    private final String message;
+    private final String errorMessage;
 
     /**
      * Constructs an ErrorMessage with the specified message.
@@ -16,10 +16,7 @@ public class ErrorMessage  extends ServerMessage {
      */
     public ErrorMessage(String message) {
         super(ServerMessageType.ERROR);
-        if (message == null || message.isEmpty()) {
-            throw new IllegalArgumentException("Message cannot be null or empty.");
-        }
-        this.message = message;
+        this.errorMessage = message;
     }
 
     /**
@@ -28,13 +25,13 @@ public class ErrorMessage  extends ServerMessage {
      * @return The error message.
      */
     public String getMessage() {
-        return message;
+        return errorMessage;
     }
 
     @Override
     public String toString() {
         return "ErrorMessage{" +
-                "message='" + message + '\'' +
+                "message='" + errorMessage + '\'' +
                 '}';
     }
 }
