@@ -4,7 +4,6 @@ import chess.ChessGame;
 import com.google.gson.Gson;
 import com.sun.nio.sctp.NotificationHandler;
 import model.GameData;
-import server.Server;
 import ui.ChessBoardUI;
 import ui.GamePlayUI;
 import ui.PostLoginUI;
