@@ -5,25 +5,25 @@ package websocket.messages;
  */
 public class NotificationMessage extends ServerMessage {
 
-    private final String notificationMessage;
+    private final String message;
 
     public NotificationMessage(String message) {
         super(ServerMessageType.NOTIFICATION);
         if (message == null || message.isEmpty()) {
             throw new IllegalArgumentException("Notification message cannot be null or empty.");
         }
-        this.notificationMessage = message;
+        this.message = message;
     }
 
     public String getNotificationMessage() {
-        return notificationMessage;
+        return message;
     }
 
     @Override
     public String toString() {
         return "NotificationMessage{" +
                 "serverMessageType=" + getServerMessageType() +
-                ", notificationMessage='" + notificationMessage + '\'' +
+                ", notificationMessage='" + message + '\'' +
                 '}';
     }
 }

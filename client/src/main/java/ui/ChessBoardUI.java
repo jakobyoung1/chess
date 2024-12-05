@@ -1,6 +1,7 @@
 package ui;
 
 import chess.*;
+import client.ServerFacade;
 import model.GameData;
 
 import java.io.PrintStream;
@@ -21,8 +22,10 @@ public class ChessBoardUI {
 
     }
 
-    public void displayGame(GameData gameData, ChessGame.TeamColor playerColor, ChessPosition pos){
-
+    public void displayGame(GameData gameData, ChessGame.TeamColor playerColor, ChessPosition pos, ServerFacade server) throws Exception {
+        var gameID = gameData.getGameId();
+        var games = server.listGames();
+        gameData = games.get(gameID-1);
         if (pos != null) {
             this.pos = pos;
             validMoves = gameData.getGame().validMoves(pos);

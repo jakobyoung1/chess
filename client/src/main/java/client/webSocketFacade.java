@@ -7,6 +7,7 @@ import model.GameData;
 import ui.ChessBoardUI;
 import ui.GamePlayUI;
 import ui.PostLoginUI;
+import websocket.commands.ConnectCommand;
 import websocket.commands.JoinObserverCommand;
 import websocket.commands.JoinPlayerCommand;
 import websocket.messages.ErrorMessage;
@@ -39,7 +40,7 @@ public class webSocketFacade {
             this.notificationHandler = new notificationHandler() {
                 @Override
                 public void notify(ServerMessage serverMessage, String message) throws IOException {
-                    System.out.println("SERVER MESSAGE: " + serverMessage);
+                    //System.out.println("SERVER MESSAGE: " + serverMessage);
                     switch (serverMessage.getServerMessageType()) {
                         case NOTIFICATION -> notification(message);
                         case ERROR -> error(message);
@@ -81,8 +82,6 @@ public class webSocketFacade {
         GameData game = loadGame.getGameData();
         String bUsername = game.getBlackUsername();
         String wUsername = game.getWhiteUsername();
-
-
     }
 
     /**
@@ -92,8 +91,8 @@ public class webSocketFacade {
         if (session == null || !session.isOpen()) {
             throw new IllegalStateException("WebSocket is not connected.");
         }
-
-        JoinPlayerCommand command = new JoinPlayerCommand(authToken, gameId, color);
+        playerColor = color;
+        ConnectCommand command = new ConnectCommand(authToken, gameId, color);
         sendMessage(new Gson().toJson(command));
     }
 

@@ -1,7 +1,9 @@
 package ui;
 
+import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPosition;
+import client.ServerFacade;
 import client.webSocketFacade;
 import model.GameData;
 import websocket.WebSocketClient;
@@ -17,25 +19,31 @@ public class GamePlayUI {
     private final webSocketFacade webSocketClient;
     private final ChessBoardUI chessBoardUI;
     private final Scanner scanner;
+    private final String authToken;
+    private final ServerFacade server;
 
-    public GamePlayUI(webSocketFacade webSocketClient) {
+    public GamePlayUI(webSocketFacade webSocketClient, String authToken, ServerFacade server) {
         this.webSocketClient = webSocketClient;
         this.chessBoardUI = new ChessBoardUI();
         this.scanner = new Scanner(System.in);
+        this.authToken = authToken;
+        this.server = server;
     }
 
-    public void display(GameData gameData) throws IOException {
-        chessBoardUI.displayGame(gameData, null, null);
+    public void display(GameData gameData, ChessGame.TeamColor color) throws Exception {
         boolean inGame = true;
         while (inGame) {
+            chessBoardUI.displayGame(gameData, color, null, server);
             System.out.print("Enter command (Make Move, Resign, Leave, Help): \n");
             String command = scanner.nextLine();
             switch (command.toLowerCase()) {
                 case "make move" -> makeMove(gameData.getGameId());
-                case "resign" -> resign(gameData.getGameId());
+                case "resign" -> {
+                    resign(gameData.getGameId());
+                    return;
+                }
                 case "leave" -> {
                     leaveGame(gameData.getGameId());
-                    inGame = false;
                     return;
                 }
                 case "help" -> showHelp();
@@ -51,7 +59,7 @@ public class GamePlayUI {
         int srow = -1;
         int ecol = -1;
         int erow = -1;
-        if (start.length() == 2 && Character.isLetter(start.charAt(0)) && Character.isDigit(start.charAt(1))) {
+        if (start.length() == 2 && Character.isDigit(start.charAt(0)) && Character.isDigit(start.charAt(1))) {
             scol = Character.getNumericValue(start.charAt(0));
             srow = Character.getNumericValue(start.charAt(1));
         } else {
@@ -59,7 +67,7 @@ public class GamePlayUI {
         }
         System.out.print("Enter end position (e.g., e4): ");
         String end = scanner.nextLine();
-        if (end.length() == 2 && Character.isLetter(end.charAt(0)) && Character.isDigit(end.charAt(1))) {
+        if (end.length() == 2 && Character.isDigit(end.charAt(0)) && Character.isDigit(end.charAt(1))) {
             ecol = Character.getNumericValue(end.charAt(0));
             erow = Character.getNumericValue(end.charAt(1));
         } else {
@@ -67,7 +75,7 @@ public class GamePlayUI {
         }
         try {
             var move = new ChessMove(new ChessPosition(srow, scol), new ChessPosition(erow, ecol), null);
-            MakeMoveCommand command = new MakeMoveCommand("authToken", gameId, move);
+            MakeMoveCommand command = new MakeMoveCommand(authToken, gameId, move);
             webSocketClient.sendCommand(command);
         } catch (IllegalArgumentException e) {
             System.out.println("Invalid move format. Please try again.");

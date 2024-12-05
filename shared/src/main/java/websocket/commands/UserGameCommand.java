@@ -1,8 +1,10 @@
 package websocket.commands;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import model.AuthData;
 
 public abstract class UserGameCommand {
 
@@ -33,6 +35,8 @@ public abstract class UserGameCommand {
 
         // Use the commandType to decide the subclass
         switch (commandType) {
+            case CONNECT:
+                return new Gson().fromJson(json, ConnectCommand.class);
             case MAKE_MOVE:
                 return new Gson().fromJson(json, MakeMoveCommand.class);
             case LEAVE:

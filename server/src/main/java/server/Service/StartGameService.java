@@ -28,9 +28,8 @@ public class StartGameService {
         if (request.gameName() == null || request.gameName().isEmpty()) {
             return new StartGameResult(null, null, "Error: no game name provided");
         }
-
         GameData newGame = new GameData(gameId, null, null, request.gameName());
-        ChessGame game = new ChessGame();
+
         gameDAO.createGame(newGame);
 
         System.out.println("just made this game: " + newGame.getGameId());

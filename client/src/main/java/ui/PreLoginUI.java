@@ -64,6 +64,8 @@ public class PreLoginUI {
             authToken = loginResult.authToken();
             username = loginResult.username();
             System.out.println("Login successful!");
+            PostLoginUI plUI = new PostLoginUI(serverFacade, authToken, username);
+            plUI.display();
         } catch (Exception e) {
             System.out.println("Error logging in: " + e.getMessage());
         }

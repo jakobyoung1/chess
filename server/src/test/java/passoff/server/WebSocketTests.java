@@ -1,6 +1,7 @@
 package passoff.server;
 
 import chess.*;
+import dataaccess.DataAccessException;
 import org.junit.jupiter.api.*;
 import passoff.model.*;
 import passoff.websocket.*;
@@ -31,7 +32,7 @@ public class WebSocketTests {
     }
 
     @BeforeAll
-    public static void init() throws URISyntaxException {
+    public static void init() throws URISyntaxException, DataAccessException {
         server = new Server();
         var port = Integer.toString(server.run(0));
         System.out.println("Started test HTTP server on " + port);
@@ -271,8 +272,11 @@ public class WebSocketTests {
 
     private void setupNormalGame() {
         connectToGame(white, gameID, true, Set.of(), Set.of()); //connect white player
+        System.out.println("WHITE CONNECTED");
         connectToGame(black, gameID, true, Set.of(white), Set.of()); //connect black player
+        System.out.println("BLACK CONNECTED");
         connectToGame(observer, gameID, true,  Set.of(white, black), Set.of()); //connect observer
+        System.out.println("OBSERVER CONNECTED");
     }
 
     private WebsocketUser registerUser(String name, String password, String email) {

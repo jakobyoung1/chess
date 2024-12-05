@@ -1,9 +1,11 @@
 package websocket.messages;
 
+import static websocket.messages.ServerMessage.ServerMessageType.ERROR;
+
 /**
  * Represents an error message sent from the server through WebSocket.
  */
-public class ErrorMessage {
+public class ErrorMessage  extends ServerMessage {
 
     private final String message;
 
@@ -13,6 +15,7 @@ public class ErrorMessage {
      * @param message A detailed message describing the error.
      */
     public ErrorMessage(String message) {
+        super(ServerMessageType.ERROR);
         if (message == null || message.isEmpty()) {
             throw new IllegalArgumentException("Message cannot be null or empty.");
         }

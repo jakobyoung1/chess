@@ -7,7 +7,7 @@ import model.GameData;
  */
 public class LoadGameMessage extends ServerMessage {
 
-    private final GameData gameData;
+    private final GameData game;
 
     /**
      * Constructs a LoadGameMessage with the specified game data.
@@ -16,10 +16,7 @@ public class LoadGameMessage extends ServerMessage {
      */
     public LoadGameMessage(GameData gameData) {
         super(ServerMessageType.LOAD_GAME);
-        if (gameData == null) {
-            throw new IllegalArgumentException("Game data cannot be null.");
-        }
-        this.gameData = gameData;
+        game = gameData;
     }
 
     /**
@@ -28,14 +25,14 @@ public class LoadGameMessage extends ServerMessage {
      * @return The game data.
      */
     public GameData getGameData() {
-        return gameData;
+        return game;
     }
 
     @Override
     public String toString() {
         return "LoadGameMessage{" +
                 "serverMessageType=" + getServerMessageType() +
-                ", gameData=" + gameData +
+                ", gameData=" + game.getGameName() +
                 '}';
     }
 }

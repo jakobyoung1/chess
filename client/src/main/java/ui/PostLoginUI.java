@@ -132,13 +132,14 @@ public class PostLoginUI {
 
             var gameData = games.get(gameNumber - 1);
             serverFacade.joinGame(gameData.getGameId(), username, color.name());
+            games = serverFacade.listGames();
+            gameData = games.get(gameNumber - 1);
             System.out.println("Joined game: " + gameData.getGameName() + " as " + color);
-            inGame = true;
             ws = new webSocketFacade("http://localhost:8080");
             ws.joinGame(authToken, gameData.getGameId(), color);
-            GamePlayUI gamePlayUI = new GamePlayUI(ws); // Pass webSocketFacade as the webSocketClient
-            gamePlayUI.display(gameData);
-            ws.close();
+            GamePlayUI gamePlayUI = new GamePlayUI(ws, authToken, serverFacade);
+            inGame = true;
+            gamePlayUI.display(gameData, color);
             inGame = false;
 
 
@@ -164,12 +165,11 @@ public class PostLoginUI {
             var gameData = games.get(gameNumber - 1);
             System.out.println("Observing game: " + gameData.getGameName());
 
-            inGame = true;
             ws = new webSocketFacade("http://localhost:8080");
             ws.joinGame(authToken, gameData.getGameId(), null);
-            GamePlayUI gamePlayUI = new GamePlayUI(ws);
-            gamePlayUI.display(gameData);
-            ws.close();
+            GamePlayUI gamePlayUI = new GamePlayUI(ws, authToken, serverFacade);
+            inGame = true;
+            gamePlayUI.display(gameData, null);
             inGame = false;
 
 

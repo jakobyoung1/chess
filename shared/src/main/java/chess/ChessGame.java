@@ -16,8 +16,8 @@ import static chess.ChessPiece.PieceType.KNIGHT;
  */
 public class ChessGame {
 
-    private static ChessBoard board;
-    private static TeamColor turn;
+    private ChessBoard board;
+    private TeamColor turn;
 
 
     public ChessGame() {
@@ -84,7 +84,7 @@ public class ChessGame {
         if (pc != null && pc.getTeamColor() == turn) {
             Collection<ChessMove> validMoves = pc.pieceMoves(board, move.getStartPosition());
 
-            if (validMoves.contains(move) && !ChessGame.wouldBeInCheck(pc.getTeamColor(), move, board)) {
+            if (validMoves.contains(move) && !this.wouldBeInCheck(pc.getTeamColor(), move, board)) {
                 if (move.getPromotionPiece()==null) {
                     board.addPiece(move.getEndPosition(), pc);
                     board.addPiece(move.getStartPosition(), null);
@@ -124,15 +124,15 @@ public class ChessGame {
         var kingPos = board.getKingPos(teamColor);
         TeamColor opColor = (teamColor == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
 
-        return knightThreatensKing(kingPos, opColor)
-                || kingThreatensKing(kingPos, opColor)
-                || rookOrQueenThreatensKing(kingPos, opColor)
-                || bishopOrQueenThreatensKing(kingPos, opColor)
-                || pawnThreatensKing(kingPos, opColor);
+        return knightThreatensKing(kingPos, opColor, board)
+                || kingThreatensKing(kingPos, opColor, board)
+                || rookOrQueenThreatensKing(kingPos, opColor, board)
+                || bishopOrQueenThreatensKing(kingPos, opColor, board)
+                || pawnThreatensKing(kingPos, opColor, board);
     }
 
-    public static boolean wouldBeInCheck(TeamColor teamColor, ChessMove move, ChessBoard bord) {
-        board = bord;
+    public static boolean wouldBeInCheck(TeamColor teamColor, ChessMove move, ChessBoard board) {
+
         ChessPiece movingPiece = board.getPiece(move.getStartPosition());
         ChessPiece targetPiece = board.getPiece(move.getEndPosition());
         board.updateKingPosition(teamColor);
@@ -147,7 +147,7 @@ public class ChessGame {
         boolean inCheck = false;
 
         if (kingPos != null) {
-            inCheck = isInCheckAfterMove(teamColor, kingPos);
+            inCheck = isInCheckAfterMove(teamColor, kingPos, board);
         }
 
         board.addPiece(move.getStartPosition(), movingPiece);
@@ -156,18 +156,18 @@ public class ChessGame {
         return inCheck;
     }
 
-    private static boolean isInCheckAfterMove(TeamColor teamColor, ChessPosition kingPos) {
+    private static boolean isInCheckAfterMove(TeamColor teamColor, ChessPosition kingPos, ChessBoard board) {
         TeamColor opColor = (teamColor == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
 
         // Check all possible threats to the king's position
-        return knightThreatensKing(kingPos, opColor) ||
-                kingThreatensKing(kingPos, opColor) ||
-                rookOrQueenThreatensKing(kingPos, opColor) ||
-                bishopOrQueenThreatensKing(kingPos, opColor) ||
-                pawnThreatensKing(kingPos, opColor);
+        return knightThreatensKing(kingPos, opColor, board) ||
+                kingThreatensKing(kingPos, opColor, board) ||
+                rookOrQueenThreatensKing(kingPos, opColor, board) ||
+                bishopOrQueenThreatensKing(kingPos, opColor, board) ||
+                pawnThreatensKing(kingPos, opColor, board);
     }
 
-    private static boolean knightThreatensKing(ChessPosition pos, TeamColor opCol) {
+    private static boolean knightThreatensKing(ChessPosition pos, TeamColor opCol, ChessBoard board) {
         int[][] direction = {
                 {-2, -1}, {-1, -2}, {1, -2}, {2, -1},
                 {2, 1}, {1, 2}, {-1, 2}, {-2, 1}
@@ -187,7 +187,7 @@ public class ChessGame {
         return false;
     }
 
-    private static boolean kingThreatensKing(ChessPosition pos, TeamColor opCol) {
+    private static boolean kingThreatensKing(ChessPosition pos, TeamColor opCol, ChessBoard board) {
         int[][] direction = {
                 {-1, -1}, {-1, 0}, {-1, 1}, {0, -1},
                 {0, 1}, {1, -1}, {1, 0}, {1, 1}
@@ -208,23 +208,23 @@ public class ChessGame {
         return false;
     }
 
-    private static boolean rookOrQueenThreatensKing(ChessPosition pos, TeamColor opCol) {
+    private static boolean rookOrQueenThreatensKing(ChessPosition pos, TeamColor opCol, ChessBoard board) {
         int[][] directions = {
                 {1, 0}, {-1, 0}, {0, 1}, {0, -1}
         };
 
-        return lineThreatensKing(pos, opCol, directions, ChessPiece.PieceType.ROOK, ChessPiece.PieceType.QUEEN);
+        return lineThreatensKing(pos, opCol, directions, board, ChessPiece.PieceType.ROOK, ChessPiece.PieceType.QUEEN);
     }
 
-    private static boolean bishopOrQueenThreatensKing(ChessPosition pos, TeamColor opCol) {
+    private static boolean bishopOrQueenThreatensKing(ChessPosition pos, TeamColor opCol, ChessBoard board) {
         int[][] directions = {
                 {1, 1}, {1, -1}, {-1, 1}, {-1, -1}
         };
 
-        return lineThreatensKing(pos, opCol, directions, ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.QUEEN);
+        return lineThreatensKing(pos, opCol, directions, board, ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.QUEEN);
     }
 
-    private static boolean lineThreatensKing(ChessPosition pos, TeamColor opCol, int[][] directions, ChessPiece.PieceType... pieceTypes) {
+    private static boolean lineThreatensKing(ChessPosition pos, TeamColor opCol, int[][] directions, ChessBoard board, ChessPiece.PieceType... pieceTypes) {
         for (int[] direction : directions) {
             int nRow = pos.getRow();
             int nCol = pos.getColumn();
@@ -249,7 +249,7 @@ public class ChessGame {
         return false;
     }
 
-    private static boolean pawnThreatensKing(ChessPosition pos, TeamColor opCol) {
+    private static boolean pawnThreatensKing(ChessPosition pos, TeamColor opCol, ChessBoard board) {
         int[][] direction = (opCol == TeamColor.WHITE)
                 ? new int[][]{{-1, -1}, {-1, 1}}
                 : new int[][]{{1, -1}, {1, 1}};
@@ -323,7 +323,7 @@ public class ChessGame {
 
     private boolean hasValidMove(ChessPiece piece, ChessPosition currentPosition, TeamColor teamColor) {
         Collection<ChessMove> validMoves = piece.pieceMoves(board, currentPosition);
-        return validMoves.stream().anyMatch(move -> !ChessGame.wouldBeInCheck(teamColor, move, board));
+        return validMoves.stream().anyMatch(move -> !this.wouldBeInCheck(teamColor, move, board));
     }
 
 
@@ -334,7 +334,7 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        ChessGame.board = board;
+        this.board = board;
     }
 
     /**

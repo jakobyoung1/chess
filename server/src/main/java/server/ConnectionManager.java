@@ -72,9 +72,11 @@ public class ConnectionManager {
     public void broadcast(String excludeAuthToken, ServerMessage message, int gameID) {
         Map<String, Session> sessionMap = connections.get(gameID);
         if (sessionMap != null) {
+            System.out.println(sessionMap.size());
             List<String> closedConnections = new ArrayList<>();
             for (Map.Entry<String, Session> entry : sessionMap.entrySet()) {
                 String userAuth = entry.getKey();
+                System.out.println(userAuth);
                 Session session = entry.getValue();
 
                 if (!session.isOpen()) {
@@ -93,6 +95,9 @@ public class ConnectionManager {
             for (String closed : closedConnections) {
                 sessionMap.remove(closed);
             }
+
+        } else {
+            System.out.println("no sessions");
         }
     }
 }
