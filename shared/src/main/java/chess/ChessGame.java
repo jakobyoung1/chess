@@ -18,12 +18,22 @@ public class ChessGame {
 
     private ChessBoard board;
     private TeamColor turn;
+    private boolean gameOver;
+    private boolean blackResign;
+    private boolean whiteResign;
 
 
     public ChessGame() {
         board = new ChessBoard();
         board.resetBoard();
         turn = TeamColor.WHITE;
+        gameOver = false;
+        blackResign = false;
+        whiteResign = false;
+    }
+
+    public boolean isGameOver() {
+        return gameOver;
     }
 
     /**
@@ -40,6 +50,24 @@ public class ChessGame {
      */
     public void setTeamTurn(TeamColor team) {
         turn = team;
+    }
+
+    public boolean isBlackResigned() {
+        return blackResign;
+    }
+
+    public boolean isWhiteResigned() {
+        return whiteResign;
+    }
+
+    public void setBlackResigned(boolean b) {
+        blackResign = b;
+        gameOver = b;
+    }
+
+    public void setWhiteResigned(boolean b) {
+        whiteResign = b;
+        gameOver = b;
     }
 
     /**
@@ -279,8 +307,11 @@ public class ChessGame {
     if (!isInCheck(teamColor)) {
         return false;
     }
-
-    return check(teamColor);
+    if (check(teamColor)) {
+        gameOver = true;
+        return true;
+    }
+    return false;
 }
 
 
@@ -292,11 +323,15 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-    if (isInCheck(teamColor)) {
-        return false; // If in check, it cannot be stalemate
+        if (isInCheck(teamColor)) {
+            return false; // If in check, it cannot be stalemate
+        }
+        if (check(teamColor)) {
+            gameOver = true;
+            return true;
+        }
+        return false;
     }
-    return check(teamColor);
-}
 
     public boolean check(TeamColor teamColor) {
         for (int row = 1; row <= board.getHeight(); row++) {

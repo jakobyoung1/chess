@@ -121,6 +121,13 @@ public class ChessWebSocketHandler {
         String authToken = makeMove.getAuthToken();
 
         try {
+            AuthData auth = authDAO.getAuth(authToken);
+            if (auth == null) {
+                ErrorMessage errorMessage = new ErrorMessage("Invalid or expired authentication token.");
+                connections.sendMessage(gameID, authToken, new Gson().toJson(errorMessage));
+                return;
+            }
+
             // Fetch game data
             GameData game = gameDAO.getGame(gameID);
             if (game == null) {
@@ -129,10 +136,32 @@ public class ChessWebSocketHandler {
                 return;
             }
 
+            // Check if the game is over
+            if (game.getGame().isGameOver()) {
+                ErrorMessage errorMessage = new ErrorMessage("The game is already over. No further moves can be made.");
+                connections.sendMessage(gameID, authToken, new Gson().toJson(errorMessage));
+                return;
+            }
+
             // Get username and team color of the player making the move
             String username = getUsername(authToken);
             ChessGame.TeamColor color = Objects.equals(username, game.getBlackUsername()) ?
-                    ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
+                    ChessGame.TeamColor.BLACK : Objects.equals(username, game.getWhiteUsername()) ?
+                    ChessGame.TeamColor.WHITE : null;
+
+            // Check if the user is an observer (no team color)
+            if (color == null) {
+                ErrorMessage errorMessage = new ErrorMessage("Observers cannot make moves.");
+                connections.sendMessage(gameID, authToken, new Gson().toJson(errorMessage));
+                return;
+            }
+
+            // Check if either player has resigned
+            if (game.getGame().isBlackResigned() || game.getGame().isWhiteResigned()) {
+                ErrorMessage errorMessage = new ErrorMessage("Game over due to resignation.");
+                connections.sendMessage(gameID, authToken, new Gson().toJson(errorMessage));
+                return;
+            }
 
             // Check if it's the player's turn
             if (color != game.getGame().getTeamTurn()) {
@@ -160,6 +189,8 @@ public class ChessWebSocketHandler {
                 NotificationMessage gameOverNotification = new NotificationMessage(gameOverMessage);
                 connections.broadcast("", gameOverNotification, gameID);
             }
+
+            gameDAO.updateGame(game.getGameId(),game);
         } catch (InvalidMoveException e) {
             // Handle invalid moves
             ErrorMessage errorMessage = new ErrorMessage("Invalid move: " + e.getMessage());
@@ -186,11 +217,27 @@ public class ChessWebSocketHandler {
                 throw new Exception("Observers cannot resign the game.");
             }
 
+            // Set resign status based on the player color
+            if (Objects.equals(username, game.getBlackUsername())) {
+                game.getGame().setBlackResigned(true); // Mark Black as resigned
+            } else if (Objects.equals(username, game.getWhiteUsername())) {
+                game.getGame().setWhiteResigned(true); // Mark White as resigned
+            }
+
+            gameDAO.updateGame(game.getGameId(),game);
+
             String resignMessage = String.format("%s has resigned. GAME OVER\n", username);
             NotificationMessage notification = new NotificationMessage(resignMessage);
             connections.broadcast("", notification, gameID);
         } catch (Exception e) {
-
+            // Handle errors gracefully
+            ErrorMessage errorMessage = new ErrorMessage("An error occurred while processing the resignation.");
+            try {
+                session.getRemote().sendString(new Gson().toJson(errorMessage));
+            } catch (IOException ioException) {
+                System.err.println("Error sending message to session: " + ioException.getMessage());
+            }
+            System.err.println("Error in resign: " + e.getMessage());
         }
     }
 

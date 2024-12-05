@@ -40,7 +40,6 @@ public class GamePlayUI {
                 case "make move" -> makeMove(gameData.getGameId());
                 case "resign" -> {
                     resign(gameData.getGameId());
-                    return;
                 }
                 case "leave" -> {
                     leaveGame(gameData.getGameId());
