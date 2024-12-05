@@ -6,7 +6,6 @@ import chess.ChessPosition;
 import client.ServerFacade;
 import client.webSocketFacade;
 import model.GameData;
-import websocket.WebSocketClient;
 import websocket.commands.LeaveCommand;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.ResignCommand;
