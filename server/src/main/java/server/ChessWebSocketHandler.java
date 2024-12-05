@@ -119,33 +119,57 @@ public class ChessWebSocketHandler {
         int gameID = makeMove.getGameID();
         ChessMove move = makeMove.getMove();
         String authToken = makeMove.getAuthToken();
+
         try {
+            // Fetch game data
             GameData game = gameDAO.getGame(gameID);
-            String username = getUsername(authToken);
-
-            ChessGame.TeamColor color = Objects.equals(username, game.getBlackUsername()) ?
-                    ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
-
-            if (color != game.getGame().getTeamTurn()) {
+            if (game == null) {
+                ErrorMessage errorMessage = new ErrorMessage("Game not found for ID: " + gameID);
+                connections.sendMessage(gameID, authToken, new Gson().toJson(errorMessage));
                 return;
             }
 
+            // Get username and team color of the player making the move
+            String username = getUsername(authToken);
+            ChessGame.TeamColor color = Objects.equals(username, game.getBlackUsername()) ?
+                    ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
+
+            // Check if it's the player's turn
+            if (color != game.getGame().getTeamTurn()) {
+                ErrorMessage errorMessage = new ErrorMessage("It is not your turn.");
+                connections.sendMessage(gameID, authToken, new Gson().toJson(errorMessage));
+                return;
+            }
+
+            // Attempt to make the move
             game.getGame().makeMove(move);
             gameDAO.updateGame(gameID, game);
 
-            String moveMessage = String.format("%s has made a move: %s\n", username, move);
+            // Notify other players and observers
+            String moveMessage = String.format("%s (%s) has made a move: %s\n", username, color, move);
             NotificationMessage notification = new NotificationMessage(moveMessage);
-            connections.broadcast("", notification, gameID);
+            connections.broadcast(authToken, notification, gameID);
 
+            // Send updated game state to the player who made the move
+            LoadGameMessage loadGameMessage = new LoadGameMessage(game);
+            connections.sendMessage(gameID, authToken, new Gson().toJson(loadGameMessage));
+
+            // Check for game-ending conditions
             if (game.getGame().isInCheckmate(color)) {
                 String gameOverMessage = color + " is in checkmate. GAME OVER\n";
                 NotificationMessage gameOverNotification = new NotificationMessage(gameOverMessage);
                 connections.broadcast("", gameOverNotification, gameID);
             }
         } catch (InvalidMoveException e) {
-
+            // Handle invalid moves
+            ErrorMessage errorMessage = new ErrorMessage("Invalid move: " + e.getMessage());
+            connections.sendMessage(gameID, authToken, new Gson().toJson(errorMessage));
         } catch (Exception e) {
-
+            // Handle generic exceptions
+            ErrorMessage errorMessage = new ErrorMessage("An error occurred while making the move.");
+            connections.sendMessage(gameID, authToken, new Gson().toJson(errorMessage));
+            System.err.println("Error in makeMove: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
