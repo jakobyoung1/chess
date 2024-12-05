@@ -123,8 +123,13 @@ public class ChessWebSocketHandler {
         try {
             AuthData auth = authDAO.getAuth(authToken);
             if (auth == null) {
+                // Send the error message directly to the session
                 ErrorMessage errorMessage = new ErrorMessage("Invalid or expired authentication token.");
-                connections.sendMessage(gameID, authToken, new Gson().toJson(errorMessage));
+                try {
+                    session.getRemote().sendString(new Gson().toJson(errorMessage));
+                } catch (IOException e) {
+                    System.err.println("Error sending message to session: " + e.getMessage());
+                }
                 return;
             }
 
