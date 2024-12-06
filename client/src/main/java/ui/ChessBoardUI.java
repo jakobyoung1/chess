@@ -76,45 +76,25 @@ public class ChessBoardUI {
 
     private void drawBoardBlack(PrintStream out, ChessGame game) {
         writeLetters(out);
-        for (int j = 1; j < 9; j++){
+
+        for (int row = 1; row < 9; row++) {
             out.print(SET_TEXT_COLOR_WHITE);
-            out.print(j);
-            for (int i = 1; i < 9; i++) {
-                ChessPosition current = new ChessPosition(j,9-i);
-                if (current.equals(pos)){
-                    doMainPieceWhite(out, game, j, 9-i);
-                }
-                else if (highlightSquares != null && highlightSquares.contains(new ChessPosition(j, 9-i))){
-                    doHighlightWhite(out, game, j, 9-i);
-                }
-                else {
-                    if ((j % 2) != 0){
-                        if ((i % 2) == 0){
-                            setYellow(out);
-                        }
-                        else {
-                            setBrown(out);
-                        }
-                        evalBoard(out, game, j, 9-i);
-                    }
-                    else {
-                        if ((i % 2) == 0){
-                            setBrown(out);
-                        }
-                        else {
-                            setYellow(out);
-                        }
-                        evalBoard(out, game, j, 9-i);
-                    }
-                }
+            out.print(row);
+
+            for (int col = 1; col < 9; col++) {
+                ChessPosition current = new ChessPosition(row, 9 - col);
+                printSquare(out, game, row, 9 - col, current);
             }
+
             out.print(RESET_BG_COLOR);
             out.print(SET_TEXT_COLOR_WHITE);
-            out.print(j);
+            out.print(row);
             out.print("\n");
         }
+
         writeLetters(out);
     }
+
     private static void writeLetters(PrintStream out) {
         out.print(RESET_BG_COLOR);
         out.print(SET_TEXT_COLOR_WHITE);
@@ -153,8 +133,29 @@ public class ChessBoardUI {
             evalBoard(out, game, j, i);
         }
     }
-    
+
     private void drawBoardWhite(PrintStream out, ChessGame game) {
+        drawColumnHeaders(out);
+
+        for (int row = 1; row < 9; row++) {
+            out.print(SET_TEXT_COLOR_WHITE);
+            out.print(9 - row);
+
+            for (int col = 1; col < 9; col++) {
+                ChessPosition current = new ChessPosition(9 - row, col);
+                printSquare(out, game, 9 - row, col, current);
+            }
+
+            out.print(RESET_BG_COLOR);
+            out.print(SET_TEXT_COLOR_WHITE);
+            out.print(9 - row);
+            out.print("\n");
+        }
+
+        drawColumnHeaders(out);
+    }
+
+    private void drawColumnHeaders(PrintStream out) {
         out.print(RESET_BG_COLOR);
         out.print(SET_TEXT_COLOR_WHITE);
         out.print("  A ");
@@ -165,54 +166,37 @@ public class ChessBoardUI {
         out.print(" F ");
         out.print(" G ");
         out.print(" H \n");
-        for (int j = 1; j < 9; j++){
-            out.print(SET_TEXT_COLOR_WHITE);
-            out.print(9-j);
-            for (int i = 1; i < 9; i++) {
-                ChessPosition current = new ChessPosition(9-j, i);
-                if (current.equals(pos)){
-                    doMainPieceWhite(out, game, 9-j, i);
-                }
-                else if (highlightSquares != null && highlightSquares.contains(new ChessPosition(9-j, i))){
-                    doHighlightWhite(out, game, 9-j, i);
-                }
-                else {
-                    if ((j % 2) != 0){
-                        if ((i % 2) == 0){
-                            setYellow(out);
-                        }
-                        else {
-                            setBrown(out);
-                        }
-                        evalBoard(out, game, 9-j, i);
-                    }
-                    else {
-                        if ((i % 2) == 0){
-                            setBrown(out);
-                        }
-                        else {
-                            setYellow(out);
-                        }
-                        evalBoard(out, game, 9-j, i);
-                    }
-                }
+    }
 
-            }
-            out.print(RESET_BG_COLOR);
-            out.print(SET_TEXT_COLOR_WHITE);
-            out.print(9-j);
-            out.print("\n");
+    private void printSquare(PrintStream out, ChessGame game, int row, int col, ChessPosition current) {
+        if (current.equals(pos)) {
+            doMainPieceWhite(out, game, row, col);
+        } else if (highlightSquares != null && highlightSquares.contains(current)) {
+            doHighlightWhite(out, game, row, col);
+        } else {
+            printDefaultSquare(out, game, row, col);
         }
-        out.print(SET_TEXT_COLOR_WHITE);
-        out.print("  A ");
-        out.print(" B ");
-        out.print(" C ");
-        out.print(" D ");
-        out.print(" E ");
-        out.print(" F ");
-        out.print(" G ");
-        out.print(" H ");
-        out.print("\n");
+    }
+
+    private void printDefaultSquare(PrintStream out, ChessGame game, int row, int col) {
+        boolean isOddRow = (row % 2) != 0;
+        boolean isEvenCol = (col % 2) == 0;
+
+        if (isOddRow) {
+            if (isEvenCol) {
+                setYellow(out);
+            } else {
+                setBrown(out);
+            }
+        } else {
+            if (isEvenCol) {
+                setBrown(out);
+            } else {
+                setYellow(out);
+            }
+        }
+
+        evalBoard(out, game, row, col);
     }
 
 
@@ -274,11 +258,6 @@ public class ChessBoardUI {
 
     private static void setDarkGreen(PrintStream out) {
         out.print(SET_BG_COLOR_DARK_GREEN);
-        out.print(SET_TEXT_COLOR_WHITE);
-    }
-
-    private static void setNeonYellow(PrintStream out) {
-        out.print(SET_BG_COLOR_YELLOW);
         out.print(SET_TEXT_COLOR_WHITE);
     }
 
