@@ -21,7 +21,7 @@ public class Server {
         webSocketHandler = new ChessWebSocketHandler(gameDAO, authDAO);
     }
 
-    public int run(int port) throws DataAccessException {
+    public int run(int port) {
         if (!initialized) {
             Spark.port(port);
             Spark.webSocket("/ws", webSocketHandler);

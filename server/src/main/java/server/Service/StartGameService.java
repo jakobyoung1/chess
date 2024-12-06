@@ -13,9 +13,14 @@ public class StartGameService {
     private final GameDAO gameDAO;
     private static AtomicInteger nextgameid;
 
-    public StartGameService(GameDAO gameDAO) throws DataAccessException {
+    public StartGameService(GameDAO gameDAO) {
         this.gameDAO = gameDAO;
-        int maxGameId = gameDAO.getMaxGameId();
+        int maxGameId;
+        try {
+            maxGameId = gameDAO.getMaxGameId();
+        } catch(DataAccessException e) {
+            maxGameId = 0;
+        }
         nextgameid = new AtomicInteger(maxGameId + 1);
         System.out.println("Initialized nextgameid to " + nextgameid.get());
     }
