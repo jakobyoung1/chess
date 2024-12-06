@@ -51,7 +51,7 @@ public abstract class UserGameCommand {
             case JOIN_OBSERVER:
                 return new Gson().fromJson(json, JoinObserverCommand.class);
             case HIGHLIGHT_MOVES:
-                return new Gson().fromJson(json, HighlightLegalMoves.class);
+                return new Gson().fromJson(json, HighlightLegalMovesCommand.class);
             default:
                 throw new IllegalArgumentException("Unsupported command type: " + commandType);
         }
