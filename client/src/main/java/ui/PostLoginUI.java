@@ -127,6 +127,7 @@ public class PostLoginUI {
             ws = new WebSocketFacade("http://localhost:8080");
             ws.joinGame(authToken, gameData.getGameId(), color);
             GamePlayUI gamePlayUI = new GamePlayUI(ws, authToken, serverFacade);
+            ws.setGamePlayUI(gamePlayUI);
             inGame = true;
             gamePlayUI.display(gameData, color);
             inGame = false;
@@ -157,6 +158,7 @@ public class PostLoginUI {
             ws = new WebSocketFacade("http://localhost:8080");
             ws.joinGame(authToken, gameData.getGameId(), null);
             GamePlayUI gamePlayUI = new GamePlayUI(ws, authToken, serverFacade);
+            ws.setGamePlayUI(gamePlayUI);
             inGame = true;
             gamePlayUI.display(gameData, null);
             inGame = false;

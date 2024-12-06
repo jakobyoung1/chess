@@ -33,6 +33,7 @@ public class WebSocketFacade {
     private boolean messageHandlerSet = true;
     private ChessGame.TeamColor playerColor;
     private ChessBoardUI draw = new ChessBoardUI();
+    private GamePlayUI gamePlay;
 
     public WebSocketFacade(String url) throws Exception {
         try {
@@ -43,7 +44,7 @@ public class WebSocketFacade {
             this.session = container.connectToServer(this, socketURI);
             this.notificationHandler = new NotificationHandler() {
                 @Override
-                public void notify(ServerMessage serverMessage, String message) throws IOException {
+                public void notify(ServerMessage serverMessage, String message) throws Exception {
                     switch (serverMessage.getServerMessageType()) {
                         case NOTIFICATION -> notification(message);
                         case ERROR -> error(message);
@@ -58,7 +59,7 @@ public class WebSocketFacade {
                     ServerMessage notification = new Gson().fromJson(message, ServerMessage.class);
                     try {
                         notificationHandler.notify(notification, message);
-                    } catch (IOException e) {
+                    } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
                 }
@@ -69,7 +70,8 @@ public class WebSocketFacade {
     }
 
     public void error(String message) {
-        ServerMessage error  = ServerMessage.fromJson(message);
+        ErrorMessage error  = (ErrorMessage) ErrorMessage.fromJson(message);
+        System.out.println(error.getMessage());
     }
 
     public void notification(String message) {
@@ -77,12 +79,15 @@ public class WebSocketFacade {
         System.out.print(notification.getNotificationMessage());
     }
 
-    public void loadGame(String message) throws IOException {
+    public void loadGame(String message) throws Exception {
         LoadGameMessage loadGame  = new Gson().fromJson(message, LoadGameMessage.class);
         System.out.println("LOADGAME MESSAGE: " + message);
         GameData game = loadGame.getGameData();
         String bUsername = game.getBlackUsername();
         String wUsername = game.getWhiteUsername();
+        gamePlay.drawFromLoad(game);
+        System.out.print("Enter command (Make Move, Resign, Leave, Highlight Legal Moves, Redraw Board, Help): \n");
+
     }
 
     /**
@@ -99,7 +104,7 @@ public class WebSocketFacade {
 
     public void sendMessage(String message) throws IOException {
         if (session != null && session.isOpen()) {
-            System.out.println("Sending WS message: " + message);
+            //System.out.println("Sending WS message: " + message);
             session.getBasicRemote().sendText(message);
         } else {
             throw new IllegalStateException("WebSocket session is not open.");
@@ -109,10 +114,14 @@ public class WebSocketFacade {
     public void sendCommand(Object command) throws IOException {
         if (session != null && session.isOpen()) {
             String commandJson = new Gson().toJson(command);
-            System.out.println("Sending command: " + commandJson);
+            //System.out.println("Sending command: " + commandJson);
             session.getBasicRemote().sendText(commandJson);
         } else {
             throw new IllegalStateException("WebSocket session is not open.");
         }
+    }
+
+    public void setGamePlayUI(GamePlayUI gamePlayUI) {
+        gamePlay = gamePlayUI;
     }
 }

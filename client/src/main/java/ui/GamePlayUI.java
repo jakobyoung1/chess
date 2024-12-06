@@ -33,7 +33,6 @@ public class GamePlayUI {
     }
 
     public void display(GameData gameData, ChessGame.TeamColor color) throws Exception {
-        chessBoardUI.displayGame(gameData, color, null, server);
         this.gameData = gameData;
         this.color = color;
         boolean inGame = true;
@@ -65,6 +64,12 @@ public class GamePlayUI {
         RedrawBoardCommand command = new RedrawBoardCommand(authToken, gameData.getGameId());
         webSocketClient.sendCommand(command);
         chessBoardUI.displayGame(gameData, color, null, server); // Clear highlights and redraw
+        return "";
+    }
+
+    public String drawFromLoad(GameData gameData) throws Exception {
+        this.gameData = gameData;
+        chessBoardUI.displayGame(gameData,color,null,server);
         return "";
     }
 
@@ -101,37 +106,37 @@ public class GamePlayUI {
     }
 
     private void makeMove(int gameId) {
-        System.out.print("Enter start position (row and column separated by a space, e.g., '2 3'): ");
-        String start = scanner.nextLine();
+        System.out.print("Enter start position (e.g., 'e2'): ");
+        String start = scanner.nextLine().trim();
         int scol = -1;
         int srow = -1;
         int ecol = -1;
         int erow = -1;
 
-        if (start.matches("\\d \\d")) {
-            String[] startPos = start.split(" ");
-            srow = Integer.parseInt(startPos[0]);
-            scol = Integer.parseInt(startPos[1]);
+        // Validate and process start position
+        if (start.matches("[a-hA-H][1-8]")) { // Match letter for column and digit for row
+            scol = letterToNumber(start.charAt(0)); // Convert column letter to number
+            srow = Character.getNumericValue(start.charAt(1));
         } else {
-            System.out.println("Invalid input. Please enter row and column separated by a space.");
+            System.out.println("Invalid input. Please enter a position like 'e2'.");
             return;
         }
 
-        System.out.print("Enter end position (row and column separated by a space, e.g., '4 3'): ");
-        String end = scanner.nextLine();
+        System.out.print("Enter end position (e.g., 'e4'): ");
+        String end = scanner.nextLine().trim();
 
-        if (end.matches("\\d \\d")) {
-            String[] endPos = end.split(" ");
-            erow = Integer.parseInt(endPos[0]);
-            ecol = Integer.parseInt(endPos[1]);
+        // Validate and process end position
+        if (end.matches("[a-hA-H][1-8]")) { // Match letter for column and digit for row
+            ecol = letterToNumber(end.charAt(0)); // Convert column letter to number
+            erow = Character.getNumericValue(end.charAt(1));
         } else {
-            System.out.println("Invalid input. Please enter row and column separated by a space.");
+            System.out.println("Invalid input. Please enter a position like 'e4'.");
             return;
         }
 
         try {
             // Create and send the move command
-            var move = new ChessMove(new ChessPosition(scol, srow), new ChessPosition(ecol, erow), null);
+            var move = new ChessMove(new ChessPosition(srow, scol), new ChessPosition(erow, ecol), null);
             MakeMoveCommand command = new MakeMoveCommand(authToken, gameId, move);
             webSocketClient.sendCommand(command);
 
@@ -144,10 +149,10 @@ public class GamePlayUI {
                 }
             }
 
-            // Redraw the board with the updated game data
+            // Display the updated board
             chessBoardUI.displayGame(gameData, color, null, server);
         } catch (NumberFormatException e) {
-            System.out.println("Invalid input. Row and column must be numbers.");
+            System.out.println("Invalid input. Row and column must be valid numbers.");
         } catch (IllegalArgumentException e) {
             System.out.println("Invalid move format. Please try again.");
         } catch (IOException e) {
@@ -157,10 +162,15 @@ public class GamePlayUI {
         }
     }
 
+    // Helper method to convert column letters to numbers
+    private int letterToNumber(char letter) {
+        letter = Character.toLowerCase(letter); // Normalize to lowercase
+        return letter - 'a' + 1; // Convert 'a' -> 1, 'b' -> 2, ..., 'h' -> 8
+    }
+
     private void resign(int gameId) throws IOException {
-        ResignCommand command = new ResignCommand("authToken", gameId);
+        ResignCommand command = new ResignCommand(authToken, gameId);
         webSocketClient.sendCommand(command);
-        System.out.println("You have resigned from the game.");
     }
 
     private void leaveGame(int gameId) throws IOException {

@@ -118,14 +118,14 @@ public class ChessBoardUI {
     private static void writeLetters(PrintStream out) {
         out.print(RESET_BG_COLOR);
         out.print(SET_TEXT_COLOR_WHITE);
-        out.print("  8 ");
-        out.print(" 7 ");
-        out.print(" 6 ");
-        out.print(" 5 ");
-        out.print(" 4 ");
-        out.print(" 3 ");
-        out.print(" 2 ");
-        out.print(" 1 \n");
+        out.print("  H ");
+        out.print(" G ");
+        out.print(" F ");
+        out.print(" E ");
+        out.print(" D ");
+        out.print(" C ");
+        out.print(" B ");
+        out.print(" A \n");
     }
 
     private void doMainPieceWhite(PrintStream out, ChessGame game, int j, int i) {
@@ -157,14 +157,14 @@ public class ChessBoardUI {
     private void drawBoardWhite(PrintStream out, ChessGame game) {
         out.print(RESET_BG_COLOR);
         out.print(SET_TEXT_COLOR_WHITE);
-        out.print("  1 ");
-        out.print(" 2 ");
-        out.print(" 3 ");
-        out.print(" 4 ");
-        out.print(" 5 ");
-        out.print(" 6 ");
-        out.print(" 7 ");
-        out.print(" 8 \n");
+        out.print("  A ");
+        out.print(" B ");
+        out.print(" C ");
+        out.print(" D ");
+        out.print(" E ");
+        out.print(" F ");
+        out.print(" G ");
+        out.print(" H \n");
         for (int j = 1; j < 9; j++){
             out.print(SET_TEXT_COLOR_WHITE);
             out.print(9-j);
@@ -204,14 +204,14 @@ public class ChessBoardUI {
             out.print("\n");
         }
         out.print(SET_TEXT_COLOR_WHITE);
-        out.print("  1 ");
-        out.print(" 2 ");
-        out.print(" 3 ");
-        out.print(" 4 ");
-        out.print(" 5 ");
-        out.print(" 6 ");
-        out.print(" 7 ");
-        out.print(" 8 ");
+        out.print("  A ");
+        out.print(" B ");
+        out.print(" C ");
+        out.print(" D ");
+        out.print(" E ");
+        out.print(" F ");
+        out.print(" G ");
+        out.print(" H ");
         out.print("\n");
     }
 

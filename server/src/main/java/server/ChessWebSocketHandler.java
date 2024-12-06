@@ -227,6 +227,19 @@ public class ChessWebSocketHandler {
                 // Mark the game as over and persist the state
                 game.getGame().setGameOver(true);
                 gameDAO.updateGame(gameID, game);
+            } else if (game.getGame().isInCheck(opponentColor)) {
+                String gameOverMessage = opponentColor + " is in check. \n";
+                NotificationMessage gameOverNotification = new NotificationMessage(gameOverMessage);
+                connections.broadcast("", gameOverNotification, gameID);
+                gameDAO.updateGame(gameID, game);
+            } else if (game.getGame().isInStalemate(opponentColor)) {
+                // Game is in stalemate
+                String gameOverMessage = " STALEMATE. GAME OVER\n";
+                NotificationMessage gameOverNotification = new NotificationMessage(gameOverMessage);
+                connections.broadcast("", gameOverNotification, gameID);
+                // Mark the game as over and persist the state
+                game.getGame().setGameOver(true);
+                gameDAO.updateGame(gameID, game);
             }
         } catch (InvalidMoveException e) {
             // Handle invalid moves
@@ -257,20 +270,23 @@ public class ChessWebSocketHandler {
             // Check if the game is already over due to a previous resignation
             if (game.getGame().isBlackResigned() || game.getGame().isWhiteResigned()) {
                 throw new Exception("The game is already over due to a previous resignation.");
+            } else {
+                // Set resign status based on the player color
+                if (Objects.equals(username, game.getBlackUsername())) {
+                    game.getGame().setBlackResigned(true); // Mark Black as resigned
+                } else if (Objects.equals(username, game.getWhiteUsername())) {
+                    game.getGame().setWhiteResigned(true); // Mark White as resigned
+                }
+
+                gameDAO.updateGame(game.getGameId(), game);
+
+                System.out.println("You have resigned from the game.");
+                String resignMessage = String.format("%s has resigned. GAME OVER\n", username);
+                NotificationMessage notification = new NotificationMessage(resignMessage);
+                connections.broadcast("", notification, gameID);
             }
 
-            // Set resign status based on the player color
-            if (Objects.equals(username, game.getBlackUsername())) {
-                game.getGame().setBlackResigned(true); // Mark Black as resigned
-            } else if (Objects.equals(username, game.getWhiteUsername())) {
-                game.getGame().setWhiteResigned(true); // Mark White as resigned
-            }
 
-            gameDAO.updateGame(game.getGameId(), game);
-
-            String resignMessage = String.format("%s has resigned. GAME OVER\n", username);
-            NotificationMessage notification = new NotificationMessage(resignMessage);
-            connections.broadcast("", notification, gameID);
         } catch (Exception e) {
             // Handle errors gracefully
             ErrorMessage errorMessage = new ErrorMessage(
