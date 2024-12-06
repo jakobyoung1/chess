@@ -212,19 +212,15 @@ public class ChessWebSocketHandler {
             String moveMessage = String.format("%s (%s) has made a move: %s\n", username, color, move);
             NotificationMessage notification = new NotificationMessage(moveMessage);
             connections.broadcast(authToken, notification, gameID); // Broadcast to all except the player who made the move
-            // Send the updated game state to all players and observers
             LoadGameMessage loadGameMessage = new LoadGameMessage(game);
             connections.broadcast("", loadGameMessage, gameID); // Broadcast the updated game state to everyone
-            // Check for game-ending conditions
             ChessGame.TeamColor opponentColor = (color == ChessGame.TeamColor.BLACK) ?
                     ChessGame.TeamColor.WHITE :
                     ChessGame.TeamColor.BLACK;
             if (game.getGame().isInCheckmate(opponentColor)) {
-                // Opponent is in checkmate
                 String gameOverMessage = opponentColor + " is in checkmate. GAME OVER\n";
                 NotificationMessage gameOverNotification = new NotificationMessage(gameOverMessage);
                 connections.broadcast("", gameOverNotification, gameID);
-                // Mark the game as over and persist the state
                 game.getGame().setGameOver(true);
                 gameDAO.updateGame(gameID, game);
             } else if (game.getGame().isInCheck(opponentColor)) {
@@ -233,20 +229,16 @@ public class ChessWebSocketHandler {
                 connections.broadcast("", gameOverNotification, gameID);
                 gameDAO.updateGame(gameID, game);
             } else if (game.getGame().isInStalemate(opponentColor)) {
-                // Game is in stalemate
                 String gameOverMessage = " STALEMATE. GAME OVER\n";
                 NotificationMessage gameOverNotification = new NotificationMessage(gameOverMessage);
                 connections.broadcast("", gameOverNotification, gameID);
-                // Mark the game as over and persist the state
                 game.getGame().setGameOver(true);
                 gameDAO.updateGame(gameID, game);
             }
         } catch (InvalidMoveException e) {
-            // Handle invalid moves
-            ErrorMessage errorMessage = new ErrorMessage("Invalid move: " + e.getMessage());
+           ErrorMessage errorMessage = new ErrorMessage("Invalid move: " + e.getMessage());
             connections.sendMessage(gameID, authToken, new Gson().toJson(errorMessage));
         } catch (Exception e) {
-            // Handle generic exceptions
             ErrorMessage errorMessage = new ErrorMessage("An error occurred while making the move.");
             connections.sendMessage(gameID, authToken, new Gson().toJson(errorMessage));
             System.err.println("Error in makeMove: " + e.getMessage());
