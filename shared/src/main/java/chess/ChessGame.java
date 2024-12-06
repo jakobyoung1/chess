@@ -256,7 +256,8 @@ public class ChessGame {
         return lineThreatensKing(pos, opCol, directions, board, ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.QUEEN);
     }
 
-    private static boolean lineThreatensKing(ChessPosition pos, TeamColor opCol, int[][] directions, ChessBoard board, ChessPiece.PieceType... pieceTypes) {
+    private static boolean lineThreatensKing(ChessPosition pos, TeamColor opCol, int[][] directions,
+                                             ChessBoard board, ChessPiece.PieceType... pieceTypes) {
         for (int[] direction : directions) {
             int nRow = pos.getRow();
             int nCol = pos.getColumn();
