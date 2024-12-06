@@ -152,7 +152,6 @@ public class ChessWebSocketHandler {
         int gameID = makeMove.getGameID();
         ChessMove move = makeMove.getMove();
         String authToken = makeMove.getAuthToken();
-
         try {
             // Validate the authentication token
             AuthData auth = authDAO.getAuth(authToken);
@@ -166,7 +165,6 @@ public class ChessWebSocketHandler {
                 }
                 return;
             }
-
             // Fetch game data
             GameData game = gameDAO.getGame(gameID);
             if (game == null) {
@@ -174,7 +172,6 @@ public class ChessWebSocketHandler {
                 connections.sendMessage(gameID, authToken, new Gson().toJson(errorMessage));
                 return;
             }
-
             // Check if the game is already over
             if (game.getGame().isGameOver()) {
                 ErrorMessage errorMessage = new ErrorMessage("The game is already over. No further moves can be made.");
@@ -185,58 +182,48 @@ public class ChessWebSocketHandler {
                 }
                 return;
             }
-
             // Get username and team color of the player making the move
             String username = getUsername(authToken);
             ChessGame.TeamColor color = Objects.equals(username, game.getBlackUsername()) ?
                     ChessGame.TeamColor.BLACK : Objects.equals(username, game.getWhiteUsername()) ?
                     ChessGame.TeamColor.WHITE : null;
-
             // Check if the user is an observer (no team color)
             if (color == null) {
                 ErrorMessage errorMessage = new ErrorMessage("Observers cannot make moves.");
                 connections.sendMessage(gameID, authToken, new Gson().toJson(errorMessage));
                 return;
             }
-
             // Check if either player has resigned
             if (game.getGame().isBlackResigned() || game.getGame().isWhiteResigned()) {
                 ErrorMessage errorMessage = new ErrorMessage("Game over due to resignation.");
                 connections.sendMessage(gameID, authToken, new Gson().toJson(errorMessage));
                 return;
             }
-
             // Check if it's the player's turn
             if (color != game.getGame().getTeamTurn()) {
                 ErrorMessage errorMessage = new ErrorMessage("It is not your turn.");
                 connections.sendMessage(gameID, authToken, new Gson().toJson(errorMessage));
                 return;
             }
-
             // Attempt to make the move
             game.getGame().makeMove(move);
             gameDAO.updateGame(gameID, game);
-
             // Notify all other players and observers about the move
             String moveMessage = String.format("%s (%s) has made a move: %s\n", username, color, move);
             NotificationMessage notification = new NotificationMessage(moveMessage);
             connections.broadcast(authToken, notification, gameID); // Broadcast to all except the player who made the move
-
             // Send the updated game state to all players and observers
             LoadGameMessage loadGameMessage = new LoadGameMessage(game);
             connections.broadcast("", loadGameMessage, gameID); // Broadcast the updated game state to everyone
-
             // Check for game-ending conditions
             ChessGame.TeamColor opponentColor = (color == ChessGame.TeamColor.BLACK) ?
                     ChessGame.TeamColor.WHITE :
                     ChessGame.TeamColor.BLACK;
-
             if (game.getGame().isInCheckmate(opponentColor)) {
                 // Opponent is in checkmate
                 String gameOverMessage = opponentColor + " is in checkmate. GAME OVER\n";
                 NotificationMessage gameOverNotification = new NotificationMessage(gameOverMessage);
                 connections.broadcast("", gameOverNotification, gameID);
-
                 // Mark the game as over and persist the state
                 game.getGame().setGameOver(true);
                 gameDAO.updateGame(gameID, game);

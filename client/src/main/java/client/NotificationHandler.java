@@ -1,10 +1,9 @@
 package client;
 
-
-import websocket.messages.ServerMessage;
+import websocket.messages.*;
 
 import java.io.IOException;
 
-public interface notificationHandler {
+public interface NotificationHandler {
     void notify(ServerMessage serverMessage, String message) throws IOException;
 }

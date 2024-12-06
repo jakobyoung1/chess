@@ -25,7 +25,8 @@ public abstract class UserGameCommand {
         RESIGN,
         JOIN_PLAYER,
         REDRAW,
-        JOIN_OBSERVER
+        JOIN_OBSERVER,
+        HIGHLIGHT_MOVES
     }
 
     public static UserGameCommand fromJson(String json) {
@@ -49,6 +50,8 @@ public abstract class UserGameCommand {
                 return new Gson().fromJson(json, RedrawBoardCommand.class);
             case JOIN_OBSERVER:
                 return new Gson().fromJson(json, JoinObserverCommand.class);
+            case HIGHLIGHT_MOVES:
+                return new Gson().fromJson(json, HighlightLegalMoves.class);
             default:
                 throw new IllegalArgumentException("Unsupported command type: " + commandType);
         }

@@ -2,22 +2,11 @@ package ui;
 
 import chess.ChessGame;
 import client.ServerFacade;
-import client.webSocketFacade;
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
+import client.WebSocketFacade;
 import model.GameData;
-import websocket.commands.ConnectCommand;
-import websocket.messages.ErrorMessage;
-import websocket.messages.LoadGameMessage;
-import websocket.messages.NotificationMessage;
-import websocket.messages.ServerMessage;
 
-import javax.websocket.MessageHandler;
-import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
-
-import static websocket.messages.ServerMessage.ServerMessageType.*;
 
 public class PostLoginUI {
     private final ServerFacade serverFacade;
@@ -25,8 +14,8 @@ public class PostLoginUI {
     private final Scanner scanner;
     private final ChessBoardUI chessBoardUI;
     private final String username;
-    private webSocketFacade webSocketClient;
-    private webSocketFacade ws;
+    private WebSocketFacade webSocketClient;
+    private WebSocketFacade ws;
     boolean inGame = false;
 
     public PostLoginUI(ServerFacade serverFacade, String authToken, String username) {
@@ -135,7 +124,7 @@ public class PostLoginUI {
             games = serverFacade.listGames();
             gameData = games.get(gameNumber - 1);
             System.out.println("Joined game: " + gameData.getGameName() + " as " + color);
-            ws = new webSocketFacade("http://localhost:8080");
+            ws = new WebSocketFacade("http://localhost:8080");
             ws.joinGame(authToken, gameData.getGameId(), color);
             GamePlayUI gamePlayUI = new GamePlayUI(ws, authToken, serverFacade);
             inGame = true;
@@ -165,7 +154,7 @@ public class PostLoginUI {
             var gameData = games.get(gameNumber - 1);
             System.out.println("Observing game: " + gameData.getGameName());
 
-            ws = new webSocketFacade("http://localhost:8080");
+            ws = new WebSocketFacade("http://localhost:8080");
             ws.joinGame(authToken, gameData.getGameId(), null);
             GamePlayUI gamePlayUI = new GamePlayUI(ws, authToken, serverFacade);
             inGame = true;
@@ -187,9 +176,4 @@ public class PostLoginUI {
             webSocketClient = null;
         }
     }
-
-//    private void startGameplay(GameData gameData) throws IOException {
-//        GamePlayUI gameplayUI = new GamePlayUI(webSocketClient);
-//        gameplayUI.display(gameData);
-//    }
 }

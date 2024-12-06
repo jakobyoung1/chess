@@ -11,18 +11,18 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class StartGameService {
     private final GameDAO gameDAO;
-    private static AtomicInteger NEXTGAMEID;
+    private static AtomicInteger nextgameid;
 
     public StartGameService(GameDAO gameDAO) throws DataAccessException {
         this.gameDAO = gameDAO;
         int maxGameId = gameDAO.getMaxGameId();
-        NEXTGAMEID = new AtomicInteger(maxGameId + 1);
-        System.out.println("Initialized NEXTGAMEID to " + NEXTGAMEID.get());
+        nextgameid = new AtomicInteger(maxGameId + 1);
+        System.out.println("Initialized nextgameid to " + nextgameid.get());
     }
 
     public StartGameResult startGame(StartGameRequest request) throws DataAccessException {
 
-        int gameId = NEXTGAMEID.getAndIncrement();
+        int gameId = nextgameid.getAndIncrement();
         System.out.println("starting game: " + gameId);
 
         if (request.gameName() == null || request.gameName().isEmpty()) {

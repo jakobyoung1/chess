@@ -4,7 +4,7 @@ import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPosition;
 import client.ServerFacade;
-import client.webSocketFacade;
+import client.WebSocketFacade;
 import model.GameData;
 import websocket.commands.LeaveCommand;
 import websocket.commands.MakeMoveCommand;
@@ -15,13 +15,13 @@ import java.util.Scanner;
 
 public class GamePlayUI {
 
-    private final webSocketFacade webSocketClient;
+    private final WebSocketFacade webSocketClient;
     private final ChessBoardUI chessBoardUI;
     private final Scanner scanner;
     private final String authToken;
     private final ServerFacade server;
 
-    public GamePlayUI(webSocketFacade webSocketClient, String authToken, ServerFacade server) {
+    public GamePlayUI(WebSocketFacade webSocketClient, String authToken, ServerFacade server) {
         this.webSocketClient = webSocketClient;
         this.chessBoardUI = new ChessBoardUI();
         this.scanner = new Scanner(System.in);

@@ -2,7 +2,8 @@ package client;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
-import com.sun.nio.sctp.NotificationHandler;
+import com.sun.nio.sctp.HandlerResult;
+import com.sun.nio.sctp.Notification;
 import model.GameData;
 import ui.ChessBoardUI;
 import ui.GamePlayUI;
@@ -25,30 +26,28 @@ import java.util.Arrays;
 import static websocket.messages.ServerMessage.ServerMessageType.ERROR;
 
 @ClientEndpoint
-public class webSocketFacade {
+public class WebSocketFacade {
 
     public Session session;
-    notificationHandler notificationHandler;
+    NotificationHandler notificationHandler;
     private boolean messageHandlerSet = true;
     private ChessGame.TeamColor playerColor;
     private ChessBoardUI draw = new ChessBoardUI();
 
-    public webSocketFacade(String url) throws Exception {
+    public WebSocketFacade(String url) throws Exception {
         try {
             url = url.replace("http://", "ws://").replace("https://", "wss://");
             URI socketURI = new URI(url + "/ws");
 
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             this.session = container.connectToServer(this, socketURI);
-            this.notificationHandler = new notificationHandler() {
+            this.notificationHandler = new NotificationHandler() {
                 @Override
                 public void notify(ServerMessage serverMessage, String message) throws IOException {
-                    //System.out.println("SERVER MESSAGE: " + serverMessage);
                     switch (serverMessage.getServerMessageType()) {
                         case NOTIFICATION -> notification(message);
                         case ERROR -> error(message);
                         case LOAD_GAME -> loadGame(message);
-                        case null -> System.out.println("NULL message type");
                     }
                 }
             };
@@ -98,18 +97,6 @@ public class webSocketFacade {
         sendMessage(new Gson().toJson(command));
     }
 
-    /**
-     * Joins a game as an observer.
-     */
-    public void joinObserver(String authToken, int gameId) throws IOException {
-        if (session == null || !session.isOpen()) {
-            throw new IllegalStateException("WebSocket is not connected.");
-        }
-
-        JoinObserverCommand command = new JoinObserverCommand(authToken, gameId);
-        sendMessage(new Gson().toJson(command));
-    }
-
     public void sendMessage(String message) throws IOException {
         if (session != null && session.isOpen()) {
             System.out.println("Sending WS message: " + message);
@@ -119,23 +106,6 @@ public class webSocketFacade {
         }
     }
 
-
-    @OnOpen
-    public void onOpen(Session session) {
-        System.out.println("WebSocket connection opened: " + session.getId());
-    }
-
-    @OnClose
-    public void onClose(Session session, CloseReason reason) {
-        //System.out.println("WebSocket connection closed: " + reason.getReasonPhrase());
-    }
-
-    @OnError
-    public void onError(Session session, Throwable throwable) {
-        System.err.println("WebSocket error: " + throwable.getMessage());
-        throwable.printStackTrace();
-    }
-
     public void sendCommand(Object command) throws IOException {
         if (session != null && session.isOpen()) {
             String commandJson = new Gson().toJson(command);
@@ -143,22 +113,6 @@ public class webSocketFacade {
             session.getBasicRemote().sendText(commandJson);
         } else {
             throw new IllegalStateException("WebSocket session is not open.");
-        }
-    }
-
-    public void close() {
-        if (session != null && session.isOpen()) {
-            try {
-                session.close();
-                //System.out.println("WebSocket connection closed.");
-            } catch (IOException e) {
-                System.err.println("Error closing WebSocket connection: " + e.getMessage());
-                e.printStackTrace();
-            } finally {
-                session = null; // Ensure session is null after closing
-            }
-        } else {
-            System.out.println("WebSocket connection is already closed.");
         }
     }
 }
