@@ -6,6 +6,8 @@ import model.GameData;
 import requests.JoinGameRequest;
 import results.JoinGameResult;
 
+import java.util.Objects;
+
 public class JoinGameService {
     private final GameDAO gameDAO;
 
@@ -44,7 +46,7 @@ public class JoinGameService {
                 return new JoinGameResult(request.gameID(), "Error: Color taken");
             }
         } else if ("BLACK".equals(request.playerColor())) {
-            if (game.getBlackUsername() == null || game.getWhiteUsername().equals(request.playerColor())) {
+            if (game.getBlackUsername() == null || Objects.equals(game.getWhiteUsername(), request.playerColor())) {
                 // Assign the player to Black if unoccupied
                 game.setBlackUsername(request.username());
             } else if (!game.getBlackUsername().equals(request.username())) {
